@@ -3855,6 +3855,11 @@ namespace LogWizard
                 add.load_config(config_file);
             if (add.ShowDialog(this) == DialogResult.OK) {
                 log_settings_string settings = new log_settings_string(add.settings);
+                if (settings.type == log_type.file && string.IsNullOrEmpty(settings.name)) {
+                    // User didn't select a file
+                    set_status("Select a log file to open!", status_ctrl.status_type.err, 1000);
+                    return;
+                }
                 if (is_log_in_history(ref settings)) {
                     // we already have this in history
                     create_text_reader(settings);

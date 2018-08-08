@@ -1209,7 +1209,7 @@
             // 
             // ofd
             // 
-            this.ofd.Filter = "Text Files|*.txt|Log Files|*.log|All Files|*.*";
+            this.ofd.Filter = "Log Files|*.log;*.txt|All Files|*.*";
             // 
             // refresh
             // 

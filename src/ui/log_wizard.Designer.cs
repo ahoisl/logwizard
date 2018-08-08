@@ -103,11 +103,11 @@
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripSeparator();
             this.aboutToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.whatupMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.refreshAddViewButtons = new System.Windows.Forms.Timer(this.components);
             this.openLogSamplesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.defaultSampleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.bigLogToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.smallSampleLogToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.refreshAddViewButtons = new System.Windows.Forms.Timer(this.components);
             this.newViewMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.toggleTopmost)).BeginInit();
             this.toggleMenu.SuspendLayout();
@@ -164,7 +164,7 @@
             this.newFilteredView.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.newFilteredView.ContextMenuStrip = this.newViewMenu;
             this.newFilteredView.Font = new System.Drawing.Font("Segoe UI", 7F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.newFilteredView.Location = new System.Drawing.Point(392, 29);
+            this.newFilteredView.Location = new System.Drawing.Point(390, 29);
             this.newFilteredView.Name = "newFilteredView";
             this.newFilteredView.Size = new System.Drawing.Size(18, 20);
             this.newFilteredView.TabIndex = 1;
@@ -199,7 +199,7 @@
             // 
             this.delFilteredView.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.delFilteredView.Font = new System.Drawing.Font("Segoe UI", 7F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.delFilteredView.Location = new System.Drawing.Point(410, 29);
+            this.delFilteredView.Location = new System.Drawing.Point(408, 29);
             this.delFilteredView.Name = "delFilteredView";
             this.delFilteredView.Size = new System.Drawing.Size(18, 20);
             this.delFilteredView.TabIndex = 2;
@@ -226,7 +226,7 @@
             this.label5.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label5.Location = new System.Drawing.Point(5, 12);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(65, 19);
+            this.label5.Size = new System.Drawing.Size(64, 19);
             this.label5.TabIndex = 3;
             this.label5.Text = "Template";
             this.tip.SetToolTip(this.label5, "\r\n");
@@ -260,7 +260,7 @@
             this.synchronizedWithFullLog.Checked = true;
             this.synchronizedWithFullLog.CheckState = System.Windows.Forms.CheckState.Checked;
             this.synchronizedWithFullLog.Font = new System.Drawing.Font("Segoe UI", 7F);
-            this.synchronizedWithFullLog.Location = new System.Drawing.Point(284, 29);
+            this.synchronizedWithFullLog.Location = new System.Drawing.Point(282, 29);
             this.synchronizedWithFullLog.Name = "synchronizedWithFullLog";
             this.synchronizedWithFullLog.Size = new System.Drawing.Size(46, 20);
             this.synchronizedWithFullLog.TabIndex = 1;
@@ -276,7 +276,7 @@
             this.synchronizeWithExistingLogs.Checked = true;
             this.synchronizeWithExistingLogs.CheckState = System.Windows.Forms.CheckState.Checked;
             this.synchronizeWithExistingLogs.Font = new System.Drawing.Font("Segoe UI", 7F);
-            this.synchronizeWithExistingLogs.Location = new System.Drawing.Point(238, 29);
+            this.synchronizeWithExistingLogs.Location = new System.Drawing.Point(236, 29);
             this.synchronizeWithExistingLogs.Name = "synchronizeWithExistingLogs";
             this.synchronizeWithExistingLogs.Size = new System.Drawing.Size(46, 20);
             this.synchronizeWithExistingLogs.TabIndex = 3;
@@ -617,7 +617,7 @@
             this.splitDescription.Panel2.Controls.Add(this.description);
             this.splitDescription.Panel2MinSize = 100;
             this.splitDescription.Size = new System.Drawing.Size(974, 450);
-            this.splitDescription.SplitterDistance = 306;
+            this.splitDescription.SplitterDistance = 304;
             this.splitDescription.SplitterWidth = 6;
             this.splitDescription.TabIndex = 18;
             this.splitDescription.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.splitDescription_SplitterMoved);
@@ -638,8 +638,8 @@
             this.filteredLeft.Panel1.Controls.Add(this.viewsTab);
             this.filteredLeft.Panel1MinSize = 100;
             this.filteredLeft.Panel2MinSize = 100;
-            this.filteredLeft.Size = new System.Drawing.Size(974, 306);
-            this.filteredLeft.SplitterDistance = 467;
+            this.filteredLeft.Size = new System.Drawing.Size(974, 304);
+            this.filteredLeft.SplitterDistance = 465;
             this.filteredLeft.SplitterWidth = 6;
             this.filteredLeft.TabIndex = 0;
             this.filteredLeft.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.filteredLeft_SplitterMoved);
@@ -655,7 +655,7 @@
             this.viewsTab.Location = new System.Drawing.Point(0, 3);
             this.viewsTab.Name = "viewsTab";
             this.viewsTab.SelectedIndex = 0;
-            this.viewsTab.Size = new System.Drawing.Size(462, 304);
+            this.viewsTab.Size = new System.Drawing.Size(460, 302);
             this.viewsTab.TabIndex = 0;
             this.viewsTab.SelectedIndexChanged += new System.EventHandler(this.viewsTab_SelectedIndexChanged);
             this.viewsTab.DragDrop += new System.Windows.Forms.DragEventHandler(this.filteredViews_DragDrop);
@@ -667,7 +667,7 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 24);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(454, 276);
+            this.tabPage1.Size = new System.Drawing.Size(452, 274);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "View";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -682,7 +682,7 @@
             this.dropHere.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             this.dropHere.Location = new System.Drawing.Point(5, 3);
             this.dropHere.Name = "dropHere";
-            this.dropHere.Size = new System.Drawing.Size(443, 276);
+            this.dropHere.Size = new System.Drawing.Size(441, 274);
             this.dropHere.TabIndex = 0;
             this.dropHere.Text = "Drop a Log file here\r\n to open";
             this.dropHere.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -695,7 +695,7 @@
             this.description.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.description.Location = new System.Drawing.Point(0, 0);
             this.description.Name = "description";
-            this.description.Size = new System.Drawing.Size(974, 138);
+            this.description.Size = new System.Drawing.Size(974, 140);
             this.description.TabIndex = 0;
             // 
             // refresh
@@ -890,13 +890,7 @@
             this.hotkeysHelpToolStripMenuItem,
             this.aboutToolStripMenuItem1});
             this.whatupMenu.Name = "whatupMenu";
-            this.whatupMenu.Size = new System.Drawing.Size(205, 286);
-            // 
-            // refreshAddViewButtons
-            // 
-            this.refreshAddViewButtons.Enabled = true;
-            this.refreshAddViewButtons.Interval = 250;
-            this.refreshAddViewButtons.Tick += new System.EventHandler(this.refreshAddViewButtons_Tick);
+            this.whatupMenu.Size = new System.Drawing.Size(205, 264);
             // 
             // openLogSamplesToolStripMenuItem
             // 
@@ -928,6 +922,12 @@
             this.smallSampleLogToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
             this.smallSampleLogToolStripMenuItem.Text = "Small Sample Log";
             this.smallSampleLogToolStripMenuItem.Click += new System.EventHandler(this.smallSampleLogToolStripMenuItem_Click);
+            // 
+            // refreshAddViewButtons
+            // 
+            this.refreshAddViewButtons.Enabled = true;
+            this.refreshAddViewButtons.Interval = 250;
+            this.refreshAddViewButtons.Tick += new System.EventHandler(this.refreshAddViewButtons_Tick);
             // 
             // log_wizard
             // 

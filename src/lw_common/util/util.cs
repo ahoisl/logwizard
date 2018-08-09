@@ -738,7 +738,7 @@ namespace lw_common {
                 file.Read(buff, 0, (int) len);
 
                 var detected = EncodingTools.DetectInputCodepage(buff);
-                if (!detected.Equals(Encoding.Default))
+                if (!detected.Equals(Encoding.Default) && !detected.Equals(Encoding.ASCII))
                     return detected;
 
                 // Return UTF8 if possible

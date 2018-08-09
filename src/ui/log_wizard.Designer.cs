@@ -99,7 +99,6 @@
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.refreshToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.monitorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripSeparator();
             this.aboutToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.whatupMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
@@ -853,13 +852,6 @@
             this.exportToolStripMenuItem.Text = "Export";
             this.exportToolStripMenuItem.Click += new System.EventHandler(this.exportToolStripMenuItem_Click);
             // 
-            // monitorToolStripMenuItem
-            // 
-            this.monitorToolStripMenuItem.Name = "monitorToolStripMenuItem";
-            this.monitorToolStripMenuItem.Size = new System.Drawing.Size(204, 22);
-            this.monitorToolStripMenuItem.Text = "Monitor";
-            this.monitorToolStripMenuItem.Click += new System.EventHandler(this.monitorToolStripMenuItem_Click);
-            // 
             // aboutToolStripMenuItem
             // 
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
@@ -885,7 +877,6 @@
             this.toolStripSeparator3,
             this.refreshToolStripMenuItem,
             this.exportToolStripMenuItem,
-            this.monitorToolStripMenuItem,
             this.aboutToolStripMenuItem,
             this.hotkeysHelpToolStripMenuItem,
             this.aboutToolStripMenuItem1});
@@ -1047,7 +1038,6 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
         private System.Windows.Forms.ToolStripMenuItem refreshToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exportToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem monitorToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator aboutToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem1;
         private System.Windows.Forms.ContextMenuStrip whatupMenu;

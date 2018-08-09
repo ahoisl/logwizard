@@ -3220,20 +3220,6 @@ namespace LogWizard
             update_status_text(true);
         }
 
-        private static string tn2_file() {
-            return Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\TableNinja.v2\\TableNinja2.log";
-        }
-
-        private static string hm2_file() {
-            // FIXME I think this is not the right file
-            return Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\HoldemManager\\hm2.log";
-        }
-
-        private static string hm3_file() {
-            return Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Max Value Software\\Holdem Manager\\3.0\\Logs\\holdemmanager3.log.txt";
-        }
-
-
         private void toggleTopmost_MouseClick(object sender, MouseEventArgs e) {
             bool is_right_click = (e.Button & MouseButtons.Right) == MouseButtons.Right;
             if (!is_right_click) {
@@ -3814,19 +3800,6 @@ namespace LogWizard
 
         private void exportToolStripMenuItem_Click(object sender, EventArgs e) {
             exportMenu.Show(Cursor.Position);
-        }
-
-        private void monitorToolStripMenuItem_Click(object sender, EventArgs e) {
-            List<MenuItem> items = new List<MenuItem>();
-            if (File.Exists(tn2_file()))
-                items.Add(new MenuItem("TableNinja II", (o, args) => on_file_drop(tn2_file())));
-            if (File.Exists(hm2_file()))
-                items.Add(new MenuItem("HM2", (o, args) => on_file_drop(hm2_file())));
-            if (File.Exists(hm3_file()))
-                items.Add(new MenuItem("HM3", (o, args) => on_file_drop(hm3_file())));
-
-            var monitor_menu = new ContextMenu(items.ToArray());
-            monitor_menu.Show(this, PointToClient(Cursor.Position));
         }
 
         private void aboutToolStripMenuItem1_Click(object sender, EventArgs e) {

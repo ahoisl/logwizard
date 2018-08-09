@@ -224,6 +224,7 @@ namespace lw_common.ui {
 
         private void use_Click(object sender, EventArgs e) {
             found_syntax_ = syntax.Text;
+            found_syntax_ = found_syntax_.Replace("\\t", "\t");
             DialogResult = DialogResult.OK;
         }
     }

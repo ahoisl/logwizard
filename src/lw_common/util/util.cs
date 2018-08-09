@@ -941,12 +941,6 @@ namespace lw_common {
             return out_image;
         }
 
-
-
-
-
-
-
         private static string key_to_action(Keys code, string prefix) {
             if (code == Keys.None)
                 return "";

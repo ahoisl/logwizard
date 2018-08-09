@@ -285,8 +285,8 @@ namespace lw_common.ui {
 
         private void append_copy_actions(List<action> actions) {
             bool multi = parent_.multi_sel_idx_ui_thread.Count > 1;
-            actions.Add(new action { category = "Copy", name = "Selected Line" + (multi ? "s" : "") + " To Clipboard (Just Message)", simple = simple_action.copy_msg });
-            actions.Add(new action { category = "Copy", name = "Selected Line" + (multi ? "s" : "") + " To Clipboard (Full Line)", simple = simple_action.copy_full_line });
+            actions.Add(new action { category = "Copy", name = "Message", simple = simple_action.copy_msg });
+            actions.Add(new action { category = "Copy", name = "Line", simple = simple_action.copy_full_line });
         }
 
         private void append_find_actions(List<action> actions) {

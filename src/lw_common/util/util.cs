@@ -42,7 +42,6 @@ using Microsoft.Win32;
 using Timer = System.Windows.Forms.Timer;
 
 namespace lw_common {
-
     // http://stackoverflow.com/questions/3874134/cleaning-up-code-littered-with-invokerequired
     public static class ControlHelpers
     {
@@ -84,6 +83,17 @@ namespace lw_common {
         private const int MAX_OLD_LOGS = 25;
 
         public static readonly char[] any_enter_char = new[] {'\r', '\n'};
+
+        private static Regex utf8Check = new Regex(@"\A("
+                + @"[\x09\x0A\x0D\x20-\x7E]"
+                + @"|[\xC2-\xDF][\x80-\xBF]"
+                + @"|\xE0[\xA0-\xBF][\x80-\xBF]"
+                + @"|[\xE1-\xEC\xEE\xEF][\x80-\xBF]{2}"
+                + @"|\xED[\x80-\x9F][\x80-\xBF]"
+                + @"|\xF0[\x90-\xBF][\x80-\xBF]{2}"
+                + @"|[\xF1-\xF3][\x80-\xBF]{3}"
+                + @"|\xF4[\x80-\x8F][\x80-\xBF]{2}"
+                + @")*\z");
 
         // this way I can emulate "release" behavior in debug mode - I want to avoid using #ifs as much as possible
 #if DEBUG
@@ -731,13 +741,18 @@ namespace lw_common {
                 if (!detected.Equals(Encoding.Default))
                     return detected;
 
+                // Return UTF8 if possible
+                // https://www.w3.org/International/questions/qa-forms-utf-8
+                if (util.utf8Check.IsMatch(Encoding.ASCII.GetString(buff))) {
+                    return Encoding.UTF8;
+                }
+
                 // use user's default
                 return Encoding.Default;
             } catch {
                 return null;
             }
         }
-
 
         [DllImport("shell32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         private static extern void SHChangeNotify(uint wEventId, uint uFlags, IntPtr dwItem1, IntPtr dwItem2);

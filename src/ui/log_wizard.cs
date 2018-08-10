@@ -132,6 +132,7 @@ namespace LogWizard
             full_log_ctrl_.show_name = false;
             full_log_ctrl_.show_view(true);
 
+            filtCtrl.status = status;
             filtCtrl.design_mode = false;
             filtCtrl.on_save = save;
             filtCtrl.ui_to_view = (view_idx) => log_view_for_tab(view_idx).set_filter(filtCtrl.to_filter_row_list());
@@ -1594,9 +1595,7 @@ namespace LogWizard
             ui_context ctx = cur_context();
             List<raw_filter_row> lvf = new List<raw_filter_row>();
             foreach (ui_filter filt in ctx.views[idx].filters) {
-                var row = new raw_filter_row(filt.text, filt.apply_to_existing_lines);
-                row.enabled = filt.enabled;
-                row.dimmed = filt.dimmed;
+                var row = new raw_filter_row(filt.text, filt.apply_to_existing_lines) {enabled = filt.enabled};
                 if (row.is_valid)
                     lvf.Add(row);
             }
@@ -2065,6 +2064,8 @@ namespace LogWizard
             ++ignore_change_;
             logHistory.SelectedIndex = logHistory.Items.Count - 1;
             --ignore_change_;
+
+            filtCtrl.settings = existing.settings;
         }
 
         private void logHistory_DropDownClosed(object sender, EventArgs e) {
@@ -2192,6 +2193,7 @@ namespace LogWizard
             if (full_log_ctrl_ != null)
                 full_log_ctrl_.refresh();
             refresh_cur_log_view();
+            filtCtrl.settings = cur_history().settings;
             save();
         }
 
@@ -2491,10 +2493,6 @@ namespace LogWizard
                 return action_type.increase_font;
             case "subtract":
                 return action_type.decrease_font;
-            case "space":
-                if (filtCtrl.can_handle_toggle_enable_dimmed_now)
-                    return action_type.toggle_enabled_dimmed;
-                break;
 
             case "ctrl-h":
                 return action_type.toggle_history_dropdown;
@@ -2838,7 +2836,7 @@ namespace LogWizard
 
 
             case action_type.toggle_enabled_dimmed:
-                filtCtrl.toggle_enabled_dimmed();
+                filtCtrl.toggle_enabled();
                 break;
 
             case action_type.export_notes:
@@ -2990,8 +2988,8 @@ namespace LogWizard
                 else if (list_pane != null) {
                     list_pane.Focus();
                     // maybe not such a good idea for notes pane???? TOTHINK
-                    if (list_pane.SelectedIndex < 0 && list_pane.GetItemCount() > 0)
-                        list_pane.SelectedIndex = 0;
+                    //if (list_pane.SelectedIndex < 0 && list_pane.GetItemCount() > 0)
+                    //    list_pane.SelectedIndex = 0;
                 } else
                     cur_pane.Focus();
             }, 10);

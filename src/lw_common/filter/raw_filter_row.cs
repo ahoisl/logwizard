@@ -39,7 +39,7 @@ namespace lw_common {
         public const string FILTER_ID_PREFIX = "# // ";
 
         protected bool Equals(raw_filter_row other) {
-            return same(other) && (enabled == other.enabled) && (dimmed == other.dimmed);
+            return same(other) && enabled == other.enabled;
         }
 
         public override bool Equals(object obj) {
@@ -100,7 +100,6 @@ namespace lw_common {
         private bool valid_ = true;
         
         private bool enabled_ = true;
-        private bool dimmed_ = false;
 
         public override string ToString() {
             return font_.ToString() + "; " + unique_id_;
@@ -108,7 +107,7 @@ namespace lw_common {
 
         // returns a string that **** uniqueyly identifies **** the UNIQUE data of the filter
         //
-        // in other words, if two filters' guid are equal, they are the ***same*** filter (except for enabled, dimmed, font information)
+        // in other words, if two filters' guid are equal, they are the ***same*** filter (except for enabled, font information)
         public string unique_id {
             get {
                 return unique_id_;
@@ -172,7 +171,6 @@ namespace lw_common {
             unique_id_ = other.unique_id_;
             valid_ = other.valid_;
             enabled_ = other.enabled;
-            dimmed_ = other.dimmed_;
 
             font_ = font_info.default_font.copy();
             update_font();
@@ -258,19 +256,10 @@ namespace lw_common {
             result.fg = get_fg_color(result.fg, enabled);
             return result;
         }
-
-        // if !enabled && dimmed:  - dim this raw_filter_row compared to the rest
+        
         public bool enabled {
-            get { return enabled_; }
+            get => enabled_;
             set { enabled_ = value;
-                update_font();
-            }
-        }
-
-        public bool dimmed {
-            get { return dimmed_; }
-            set {
-                dimmed_ = value; 
                 update_font();
             }
         }
@@ -318,7 +307,6 @@ namespace lw_common {
 
         public void preserve_cache_copy(raw_filter_row from) {
             enabled_ = from.enabled;
-            dimmed_ = from.dimmed;
             // 1.0.91+ this is very important - in case only the font has changed (the rest is the same), we don't want a full refresh
             //         we will use the new font though
             font_.copy_from( from.font_);

@@ -160,9 +160,10 @@ namespace lw_common {
         public static Control focused_ctrl() {
             Control focusedControl = null;
             IntPtr focusedHandle = GetFocus();
-            if(focusedHandle != IntPtr.Zero)
+            if (focusedHandle != IntPtr.Zero)
                 // Note that if the focused Control is not a .Net control, then this will return null.
-                focusedControl = Control.FromHandle(focusedHandle);
+                focusedControl = Control.FromHandle(focusedHandle) ?? Control.FromChildHandle(focusedHandle);
+
             return focusedControl;
         }
 

@@ -193,7 +193,6 @@
     <None Include="app.config">
       <SubType>Designer</SubType>
     </None>
-    <None Include="docs\todo.internal.txt" />
     <Content Include="icons\arrow.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

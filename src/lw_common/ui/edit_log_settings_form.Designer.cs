@@ -1132,8 +1132,7 @@
             "File",
             "Windows Event Log",
             "Debug Viewer",
-            "Database",
-            "Multiple"});
+            "Database"});
             this.type.Location = new System.Drawing.Point(144, 8);
             this.type.Margin = new System.Windows.Forms.Padding(6);
             this.type.Name = "type";
@@ -1209,7 +1208,7 @@
             // 
             // ofd
             // 
-            this.ofd.Filter = "Text Files|*.txt|Log Files|*.log|All Files|*.*";
+            this.ofd.Filter = "Log Files|*.log;*.txt|All Files|*.*";
             // 
             // refresh
             // 

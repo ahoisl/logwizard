@@ -108,7 +108,6 @@ namespace LogWizard
         {
             InitializeComponent();
             show_tips_ = new show_tips(status);
-            whatsup.animate = false;
             toggled_to_custom_ui_ = first_available_toggle_custom_ui();
             forms_.Add(this);
             Text += " " + version();
@@ -136,7 +135,7 @@ namespace LogWizard
             filtCtrl.design_mode = false;
             filtCtrl.on_save = save;
             filtCtrl.ui_to_view = (view_idx) => log_view_for_tab(view_idx).set_filter(filtCtrl.to_filter_row_list());
-            filtCtrl.on_rerun_view = (view_idx) => refreshToolStripMenuItem_Click(null, null);
+            filtCtrl.on_rerun_view = (view_idx) => refreshToolStripMenuItem1_Click(null, null);
             filtCtrl.on_refresh_view = (view_idx) => {
                 log_view_for_tab(view_idx).Refresh();
                 full_log.list.Refresh();
@@ -194,8 +193,6 @@ namespace LogWizard
                 }, 10);
             else 
                 set_status("To open the Last Log, just do <i>Ctrl-H, Enter</i>");
-
-            util.postpone(animate_whatsup, util.is_debug ? 2500 : 10000);
 
             if (util.is_debug) {
                 // testing
@@ -261,16 +258,8 @@ namespace LogWizard
         private void recreate_history_combo() {
             ++ignore_change_;
             history_list_.recreate_combo(this, logHistory, global_ui, toggled_to_custom_ui_);
+            fill_open_recent(history_list_.get_history(this, logHistory, global_ui, 1011));
             --ignore_change_;
-        }
-
-        private void animate_whatsup() {
-            if (sett_.get("animate_whatsup", "1") != "1")
-                return;
-            sett_.set("animate_whatsup", "0");
-            sett_.save();
-            whatsup.animate = true;
-            whatsup.animate_interval_ms = 30000;
         }
 
         // 1.6.3+ - "(interim)" - are interim versions - they are not stable ; they contain small fixes for beta or stable versions
@@ -1080,33 +1069,30 @@ namespace LogWizard
                 break;
 
             case log_view_right_click.simple_action.view_add_copy:
-                createACopyOfTheExistingViewToolStripMenuItem_Click(null,null);
+                copyToolStripMenuItem_Click(null,null);
                 break;
             case log_view_right_click.simple_action.view_add_new:
-                createANewViewFromScratchToolStripMenuItem_Click(null,null);
+                fromScratchToolStripMenuItem_Click(null,null);
                 break;
             case log_view_right_click.simple_action.view_delete:
                 delView_Click(null,null);
                 break;
 
-            case log_view_right_click.simple_action.button_toggles:
-                show_toggles_menu();
-                break;
             case log_view_right_click.simple_action.button_preferences:
-                whatsupPreferences_Click(null,null);
+                preferencesToolStripMenuItem_Click(null,null);
                 break;
             case log_view_right_click.simple_action.button_refresh:
-                refreshToolStripMenuItem_Click(null,null);
+                refreshToolStripMenuItem1_Click(null,null);
                 break;
 
             case log_view_right_click.simple_action.export_log_and_notes:
                 export_notes_to_logwizard_file();
                 break;
             case log_view_right_click.simple_action.export_view:
-                exportCurrentViewtotxtAndhtmlFilesToolStripMenuItem_Click(null,null);
+                exportCurrentViewtxthtmlToolStripMenuItem_Click(null,null);
                 break;
             case log_view_right_click.simple_action.export_notes:
-                exportNotestotxtAndhtmlFilesToolStripMenuItem_Click(null,null);
+                exportNotestxthtmlToolStripMenuItem_Click(null,null);
                 break;
 
             case log_view_right_click.simple_action.find_find:
@@ -1403,10 +1389,6 @@ namespace LogWizard
             while (viewsTab.TabCount > new_count)
                 remove_log_view_tab(viewsTab.TabCount - 1);
             --ignore_change_;
-        }
-
-        private void new_view_Click(object sender, EventArgs e) {
-            newViewMenu.Show(Cursor.Position);
         }
 
         private void delView_Click(object sender, EventArgs e) {
@@ -2735,7 +2717,7 @@ namespace LogWizard
                 new log_wizard( ).Show();
                 break;
             case action_type.show_preferences:
-                whatsupPreferences_Click(null, null);
+                preferencesToolStripMenuItem_Click(null, null);
                 break;
 
             case action_type.increase_font:
@@ -2769,7 +2751,7 @@ namespace LogWizard
                 }
                 break;
             case action_type.refresh:
-                refreshToolStripMenuItem_Click(null, null);
+                refreshToolStripMenuItem1_Click(null, null);
                 break;
             case action_type.toggle_title:
                 toggle_title();
@@ -2861,7 +2843,7 @@ namespace LogWizard
                 break;
 
             case action_type.open_log:
-                whatsupOpen_Click(null, null);
+                openLogToolStripMenuItem_Click(null, null);
                 break;
 
             case action_type.toggle_number_base:
@@ -3218,28 +3200,13 @@ namespace LogWizard
             update_status_text(true);
         }
 
-        private static string tn2_file() {
-            return Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\TableNinja.v2\\TableNinja2.log";
-        }
-
-        private static string hm2_file() {
-            // FIXME I think this is not the right file
-            return Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\HoldemManager\\hm2.log";
-        }
-
-        private static string hm3_file() {
-            return Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Max Value Software\\Holdem Manager\\3.0\\Logs\\holdemmanager3.log.txt";
-        }
-
-
         private void toggleTopmost_MouseClick(object sender, MouseEventArgs e) {
             bool is_right_click = (e.Button & MouseButtons.Right) == MouseButtons.Right;
             if (!is_right_click) {
                 TopMost = !TopMost;
                 global_ui.topmost = TopMost;
                 update_topmost_image();
-            } else 
-                show_toggles_menu();
+            }
         }
 
         private void toggleTopmost_Click(object sender, EventArgs e) {
@@ -3493,192 +3460,7 @@ namespace LogWizard
             string friendly_name = sub_file_name + " From ZIP - " + util.friendly_size(fi.Length) + " (" + zip_file + ")";
             on_file_drop(zip_dir + "\\" + unique, friendly_name);
         }
-
-        private void exportLogNotestoLogWizardFileToolStripMenuItem_Click(object sender, EventArgs e) {
-            export_notes_to_logwizard_file();
-        }
-
-        private void exportCurrentViewtotxtAndhtmlFilesToolStripMenuItem_Click(object sender, EventArgs ea) {
-            var lv = selected_view();
-            try {
-                string prefix = util.local_dir() + "exported_views";
-                util.create_dir(prefix);
-                prefix += "\\View " + util.remove_disallowed_filename_chars(lv.name + " from " + cur_history().ui_short_friendly_name) + " (" + DateTime.Now.ToString("yyyy-MM-dd HH-mm") + ")";
-
-                var export = selected_view().export();
-
-                File.WriteAllText(prefix + ".txt", export.to_text());
-                File.WriteAllText(prefix + ".html", export.to_html());
-
-                util.open_in_explorer(prefix + ".html");
-            } catch (Exception e) {
-                logger.Error("can't export notes to txt/html " + e.Message);
-            }
-        }
-
-        private void exportCurrentViewToCSVToolStripMenuItem_Click(object sender, EventArgs ea) {
-            var lv = selected_view();
-            try {
-                string prefix = util.local_dir() + "exported_views";
-                util.create_dir(prefix);
-                prefix += "\\View " + util.remove_disallowed_filename_chars(lv.name + " from " + cur_history().ui_short_friendly_name) + " (" + DateTime.Now.ToString("yyyy-MM-dd HH-mm") + ")";
-
-                var export = selected_view().export_all_columns();
-
-                File.WriteAllText(prefix + ".csv", export.to_csv());
-
-                util.open_in_explorer(prefix + ".csv");
-            } catch (Exception e) {
-                logger.Error("can't export notes to csv " + e.Message);
-            }
-        }
-
-        private void exportNotestotxtAndhtmlFilesToolStripMenuItem_Click(object sender, EventArgs ea) {
-            try {
-                string prefix = util.local_dir() + "exported_notes";
-                util.create_dir(prefix);
-                prefix += "\\Notes on " + new FileInfo(selected_file_name()).Name + " (" + DateTime.Now.ToString("yyyy-MM-dd HH-mm") + ")";
-                var export = notes.export_notes();
-                File.WriteAllText(prefix + ".txt", export.to_text());
-                File.WriteAllText(prefix + ".html", export.to_html());
-
-                util.open_in_explorer(prefix + ".html");
-            } catch (Exception e) {
-                logger.Error("can't export notes to txt/html " + e.Message);
-            }
-        }
-
-
-        private void update_toggles() {
-            logger.Debug("update toggles, " + global_ui.show_source);
-            currentViewToolStripMenuItem.Checked = global_ui.show_current_view;
-            fullLogToolStripMenuItem.Checked = global_ui.show_fulllog;
-            tableHeaderToolStripMenuItem.Checked = global_ui.show_header;
-            tabsToolStripMenuItem.Checked = global_ui.show_tabs;
-            titleToolStripMenuItem.Checked = global_ui.show_title;
-            statusToolStripMenuItem.Checked = global_ui.show_status;
-            filterPaneToolStripMenuItem.Checked = global_ui.show_filter;
-            notesPaneToolStripMenuItem.Checked = global_ui.show_notes;
-            sourcePanetopmostToolStripMenuItem.Checked = global_ui.show_source;
-            topmostToolStripMenuItem.Checked = global_ui.topmost;
-            detailsToolStripMenuItem.Checked = global_ui.show_details;
-
-            var lv = selected_view();
-            bool on_full_log = is_focus_on_full_log();
-            toolStripExtraFilter.Enabled = !on_full_log && lv.filter_friendly_name != "";
-            toolStripShowAllLines.Enabled = !on_full_log;
-            toolStripExtraFilter.Checked = lv.filter_view;
-            toolStripShowAllLines.Checked = lv.show_full_log;
-            toolStripExtraFilter.Text = lv.filter_friendly_name != "" ? "Extra Filter: " + lv.filter_friendly_name : "(no filter)";
-        }
-
-
-        private void currentViewToolStripMenuItem_Click(object sender, EventArgs e) {
-            show_full_log_type now = shown_full_log_now();
-            show_full_log_type next = now;
-            switch (now) {
-            case show_full_log_type.both:
-                next = show_full_log_type.just_full_log;
-                break;
-            case show_full_log_type.just_view:
-                next = show_full_log_type.just_full_log;
-                break;
-            case show_full_log_type.just_full_log:
-                next = show_full_log_type.both;
-                break;
-            default:
-                Debug.Assert(false);
-                break;
-            }
-            show_full_log(next);
-        }
-
-        private void fullLogToolStripMenuItem_Click(object sender, EventArgs e) {
-            show_full_log_type now = shown_full_log_now();
-            show_full_log_type next = now;
-            switch (now) {
-            case show_full_log_type.both:
-                next = show_full_log_type.just_view;
-                break;
-            case show_full_log_type.just_view:
-                next = show_full_log_type.both;
-                break;
-            case show_full_log_type.just_full_log:
-                next = show_full_log_type.just_view;
-                break;
-            default:
-                Debug.Assert(false);
-                break;
-            }
-            show_full_log(next);
-        }
-
-        private void tableHeaderToolStripMenuItem_Click(object sender, EventArgs e) {
-            toggle_view_header();
-        }
-
-        private void tabsToolStripMenuItem_Click(object sender, EventArgs e) {
-            toggle_view_tabs();
-        }
-
-        private void titleToolStripMenuItem_Click(object sender, EventArgs e) {
-            toggle_title();
-        }
-
-        private void filterPaneToolStripMenuItem_Click(object sender, EventArgs e) {
-            global_ui.show_filter = !global_ui.show_filter;
-            show_left_pane(global_ui.show_left_pane);
-        }
-
-        private void notesPaneToolStripMenuItem_Click(object sender, EventArgs e) {
-            global_ui.show_notes = !global_ui.show_notes;
-            show_left_pane(global_ui.show_left_pane);
-        }
-
-        private void sourcePanetopmostToolStripMenuItem_Click(object sender, EventArgs e) {
-            global_ui.show_source = !global_ui.show_source;
-            show_source(global_ui.show_source);
-        }
-
-        private void statusToolStripMenuItem_Click(object sender, EventArgs e) {
-            toggle_status();
-        }
-
-        private void topmostToolStripMenuItem_Click(object sender, EventArgs e) {
-            TopMost = !TopMost;
-            global_ui.topmost = TopMost;
-            update_topmost_image();
-        }
-
-        private void detailsToolStripMenuItem_Click(object sender, EventArgs e) {
-            toggle_details();
-        }
-
-
-        private void show_toggles_menu() {
-            update_toggles();
-            toggleMenu.Closing += Toggle_menu_on_closing;            
-            toggleMenu.Show(Cursor.Position, util.menu_direction(toggleMenu, Cursor.Position));
-        }
-
-        private void Toggle_menu_on_closing(object sender, ToolStripDropDownClosingEventArgs e) {
-            e.Cancel = e.CloseReason == ToolStripDropDownCloseReason.ItemClicked;
-            if ( e.Cancel)
-                util.postpone(update_toggles,1);
-        }
-
-        private void whatIsThisToolStripMenuItem_Click(object sender, EventArgs e) {
-            Process.Start("https://github.com/jtorjo/logwizard/wiki/Toggles");
-        }
-
-        private void toolStripShowAllLines_Click(object sender, EventArgs e) {
-            handle_action(action_type.toggle_show_full_log);
-        }
-
-        private void toolStripExtraFilter_Click(object sender, EventArgs e) {
-            handle_action(action_type.toggle_filter_view);
-        }
-
+        
         // if copy_of_view is not null, we're creating a copy of that view
         private string new_view_name(ui_view copy_of_view = null) {
             if (copy_of_view != null)
@@ -3691,32 +3473,6 @@ namespace LogWizard
                 name = Path.GetFileNameWithoutExtension(new FileInfo(selected_file_name()).Name) + "_View" + (cur.views.Count + 1);            
 
             return name;
-        }
-
-        private void createACopyOfTheExistingViewToolStripMenuItem_Click(object sender, EventArgs e) {
-            ui_context cur = cur_context();
-            int cur_view = viewsTab.SelectedIndex;
-            var filters = cur_view >= 0 ? cur.views[cur_view].filters : new List<ui_filter>();
-
-            ui_view new_ = new ui_view() {name = new_view_name(cur.views[cur_view]), filters = filters.ToList()};
-            cur.views.Insert(cur_view + 1, new_);
-
-            viewsTab.TabPages.Insert(cur_view + 1, new_.name);
-            viewsTab.SelectedIndex = cur_view + 1;
-            ensure_we_have_log_view_for_tab(cur_view + 1);
-            save();
-        }
-
-        private void createANewViewFromScratchToolStripMenuItem_Click(object sender, EventArgs e) {
-            ui_context cur = cur_context();
-            int cur_view = viewsTab.SelectedIndex;
-            ui_view new_ = new ui_view() {name = new_view_name(), filters = new List<ui_filter>()};
-            cur.views.Insert(cur_view + 1, new_);
-
-            viewsTab.TabPages.Insert(cur_view + 1, new_.name);
-            viewsTab.SelectedIndex = cur_view + 1;
-            ensure_we_have_log_view_for_tab(cur_view + 1);
-            save();
         }
 
         private void filteredLeft_SplitterMoved(object sender, SplitterEventArgs e) {
@@ -3763,74 +3519,6 @@ namespace LogWizard
         }
 
 
-        private void whatsup_Click(object sender, EventArgs e) {
-            whatupMenu.Show(Cursor.Position, util.menu_direction(whatupMenu, Cursor.Position));
-        }
-
-
-        private void whatsupNew_Click(object sender, EventArgs e) {
-            new log_wizard( ).Show();
-        }
-
-        private void whatsupToggles_Click(object sender, EventArgs e) {
-            show_toggles_menu();
-        }
-
-        private void whatsupPreferences_Click(object sender, EventArgs e) {
-            var old_sync_colors = app.inst.syncronize_colors;
-            var old_sync_gray = app.inst.sync_colors_all_views_gray_non_active;
-            var sett = new settings_form(this);
-            sett.ShowDialog();
-            notes.set_author(app.inst.notes_author_name, app.inst.notes_initials, app.inst.notes_color);
-
-            bool sync_changed = app.inst.syncronize_colors != old_sync_colors || old_sync_gray != app.inst.sync_colors_all_views_gray_non_active;
-            if (sync_changed)
-                full_log.list.Refresh();
-
-            filtCtrl.update_colors();
-
-            if ( sett.wants_reset_settings)
-                reset_settings();
-            if ( sett.needs_restart)
-                restart_app();
-        }
-
-        private void historyToolStripMenuItem_Click(object sender, EventArgs e) {
-            logHistory.Visible = true;
-            handle_action(action_type.toggle_history_dropdown);
-        }
-
-        private void hotkeysHelpToolStripMenuItem_Click(object sender, EventArgs e) {
-            Process.Start("https://github.com/jtorjo/logwizard/wiki/Hotkeys");
-        }
-
-        private void refreshToolStripMenuItem_Click(object sender, EventArgs e) {
-            if (text_ != null)
-                log_parser_.reload();
-            refresh_filter_found();
-        }
-
-        private void exportToolStripMenuItem_Click(object sender, EventArgs e) {
-            exportMenu.Show(Cursor.Position);
-        }
-
-        private void monitorToolStripMenuItem_Click(object sender, EventArgs e) {
-            List<MenuItem> items = new List<MenuItem>();
-            if (File.Exists(tn2_file()))
-                items.Add(new MenuItem("TableNinja II", (o, args) => on_file_drop(tn2_file())));
-            if (File.Exists(hm2_file()))
-                items.Add(new MenuItem("HM2", (o, args) => on_file_drop(hm2_file())));
-            if (File.Exists(hm3_file()))
-                items.Add(new MenuItem("HM3", (o, args) => on_file_drop(hm3_file())));
-
-            var monitor_menu = new ContextMenu(items.ToArray());
-            monitor_menu.Show(this, PointToClient(Cursor.Position));
-        }
-
-        private void aboutToolStripMenuItem1_Click(object sender, EventArgs e) {
-            new about_form(this,new_releases_, cur_release_).Show(this);
-        }
-
         private void refreshAddViewButtons_Tick(object sender, EventArgs e) {
             var button_rect= newFilteredView.RectangleToScreen(newFilteredView.ClientRectangle);
             var mouse = Cursor.Position;
@@ -3842,17 +3530,18 @@ namespace LogWizard
             synchronizeWithExistingLogs.Visible = visible;
             synchronizedWithFullLog.Visible = visible;
         }
-
-        private void whatsupOpen_Click(object sender, EventArgs e) {
-            do_open_log("", "");
-        }
-
+        
         private void do_open_log(string initial_settings_str, string config_file) {
             var add = new edit_log_settings_form(initial_settings_str, edit_log_settings_form.edit_type.add);
             if (config_file != "")
                 add.load_config(config_file);
             if (add.ShowDialog(this) == DialogResult.OK) {
                 log_settings_string settings = new log_settings_string(add.settings);
+                if (settings.type == log_type.file && string.IsNullOrEmpty(settings.name)) {
+                    // User didn't select a file
+                    set_status("Select a log file to open!", status_ctrl.status_type.err, 1000);
+                    return;
+                }
                 if (is_log_in_history(ref settings)) {
                     // we already have this in history
                     create_text_reader(settings);
@@ -3997,6 +3686,270 @@ namespace LogWizard
                 foreach (var view in all_log_views_and_full_log())
                     if ( !view.formatter_applies_only_to_me)
                         view.toggle_abbreviation();
+        }
+
+        private void newWindowToolStripMenuItem_Click(object sender, EventArgs e) {
+            new log_wizard().Show();
+        }
+
+        private void cloneCurrentToolStripMenuItem_Click(object sender, EventArgs e) {
+            ui_context cur = cur_context();
+            int cur_view = viewsTab.SelectedIndex;
+            var filters = cur_view >= 0 ? cur.views[cur_view].filters : new List<ui_filter>();
+
+            ui_view new_ = new ui_view() { name = new_view_name(cur.views[cur_view]), filters = filters.ToList() };
+            cur.views.Insert(cur_view + 1, new_);
+
+            viewsTab.TabPages.Insert(cur_view + 1, new_.name);
+            viewsTab.SelectedIndex = cur_view + 1;
+            ensure_we_have_log_view_for_tab(cur_view + 1);
+            save();
+        }
+
+        private void fromScratchToolStripMenuItem_Click(object sender, EventArgs e) {
+            ui_context cur = cur_context();
+            int cur_view = viewsTab.SelectedIndex;
+            ui_view new_ = new ui_view() { name = new_view_name(), filters = new List<ui_filter>() };
+            cur.views.Insert(cur_view + 1, new_);
+
+            viewsTab.TabPages.Insert(cur_view + 1, new_.name);
+            viewsTab.SelectedIndex = cur_view + 1;
+            ensure_we_have_log_view_for_tab(cur_view + 1);
+            save();
+        }
+
+        private void openLogToolStripMenuItem_Click(object sender, EventArgs e) {
+            do_open_log("", "");
+        }
+
+        private void exportLogNotesLogWizardToolStripMenuItem_Click(object sender, EventArgs e) {
+            export_notes_to_logwizard_file();
+        }
+
+        private void exportCurrentViewcsvToolStripMenuItem_Click(object sender, EventArgs e) {
+            var lv = selected_view();
+            try
+            {
+                string prefix = util.local_dir() + "exported_views";
+                util.create_dir(prefix);
+                prefix += "\\View " + util.remove_disallowed_filename_chars(lv.name + " from " + cur_history().ui_short_friendly_name) + " (" + DateTime.Now.ToString("yyyy-MM-dd HH-mm") + ")";
+
+                var export = selected_view().export_all_columns();
+
+                File.WriteAllText(prefix + ".csv", export.to_csv());
+
+                util.open_in_explorer(prefix + ".csv");
+            }
+            catch (Exception ex)
+            {
+                logger.Error("can't export notes to csv " + ex.Message);
+            }
+        }
+
+        private void exportCurrentViewtxthtmlToolStripMenuItem_Click(object sender, EventArgs e) {
+            var lv = selected_view();
+            try
+            {
+                string prefix = util.local_dir() + "exported_views";
+                util.create_dir(prefix);
+                prefix += "\\View " + util.remove_disallowed_filename_chars(lv.name + " from " + cur_history().ui_short_friendly_name) + " (" + DateTime.Now.ToString("yyyy-MM-dd HH-mm") + ")";
+
+                var export = selected_view().export();
+
+                File.WriteAllText(prefix + ".txt", export.to_text());
+                File.WriteAllText(prefix + ".html", export.to_html());
+
+                util.open_in_explorer(prefix + ".html");
+            }
+            catch (Exception ex)
+            {
+                logger.Error("can't export notes to txt/html " + ex.Message);
+            }
+        }
+
+        private void exportNotestxthtmlToolStripMenuItem_Click(object sender, EventArgs e) {
+            try
+            {
+                string prefix = util.local_dir() + "exported_notes";
+                util.create_dir(prefix);
+                prefix += "\\Notes on " + new FileInfo(selected_file_name()).Name + " (" + DateTime.Now.ToString("yyyy-MM-dd HH-mm") + ")";
+                var export = notes.export_notes();
+                File.WriteAllText(prefix + ".txt", export.to_text());
+                File.WriteAllText(prefix + ".html", export.to_html());
+
+                util.open_in_explorer(prefix + ".html");
+            }
+            catch (Exception ex)
+            {
+                logger.Error("can't export notes to txt/html " + ex.Message);
+            }
+        }
+
+        private void preferencesToolStripMenuItem_Click(object sender, EventArgs e) {
+            var old_sync_colors = app.inst.syncronize_colors;
+            var old_sync_gray = app.inst.sync_colors_all_views_gray_non_active;
+            var sett = new settings_form(this);
+            sett.ShowDialog();
+            notes.set_author(app.inst.notes_author_name, app.inst.notes_initials, app.inst.notes_color);
+
+            bool sync_changed = app.inst.syncronize_colors != old_sync_colors || old_sync_gray != app.inst.sync_colors_all_views_gray_non_active;
+            if (sync_changed)
+                full_log.list.Refresh();
+
+            filtCtrl.update_colors();
+
+            if (sett.wants_reset_settings)
+                reset_settings();
+            if (sett.needs_restart)
+                restart_app();
+        }
+
+        private void refreshToolStripMenuItem1_Click(object sender, EventArgs e) {
+            if (text_ != null)
+                log_parser_.reload();
+            refresh_filter_found();
+        }
+
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e) {
+            save();
+            Close();
+        }
+
+        private void fill_open_recent(List<history> history) {
+            var MAX_OPEN_RECENT = 5;
+            var items = new List<ToolStripMenuItem>();
+            for (var i = history.Count - 1; i >= 0 && i >= history.Count - MAX_OPEN_RECENT; i--) {
+                var entry = history[i];
+                var item = new ToolStripMenuItem(entry.ui_short_friendly_name);
+                var iteration = i;
+                item.Click += (o, args) => {
+                    logHistory.SelectedIndex = iteration;
+                    logHistory_SelectedIndexChanged(null, null);
+                };
+                items.Add(item);
+            }
+            openRecentToolStripMenuItem.DropDownItems.Clear();
+            openRecentToolStripMenuItem.DropDownItems.AddRange(items.ToArray());
+        }
+
+        private void copyToolStripMenuItem_Click(object sender, EventArgs e) {
+            handle_action(action_type.copy_to_clipboard);
+        }
+
+        private void copyLineToolStripMenuItem_Click(object sender, EventArgs e) {
+            handle_action(action_type.copy_full_line_to_clipboard);
+        }
+
+        private void findToolStripMenuItem_Click(object sender, EventArgs e) {
+            handle_action(action_type.search);
+        }
+
+        private void goToToolStripMenuItem_Click(object sender, EventArgs e) {
+            handle_action(action_type.go_to_line);
+        }
+
+        private void toggleCurrentViewToolStripMenuItem_Click(object sender, EventArgs e) {
+            show_full_log_type now = shown_full_log_now();
+            show_full_log_type next = now;
+            switch (now)
+            {
+                case show_full_log_type.both:
+                    next = show_full_log_type.just_full_log;
+                    break;
+                case show_full_log_type.just_view:
+                    next = show_full_log_type.just_full_log;
+                    break;
+                case show_full_log_type.just_full_log:
+                    next = show_full_log_type.both;
+                    break;
+                default:
+                    Debug.Assert(false);
+                    break;
+            }
+            show_full_log(next);
+        }
+
+        private void toggleFullLogToolStripMenuItem_Click(object sender, EventArgs e) {
+            show_full_log_type now = shown_full_log_now();
+            show_full_log_type next = now;
+            switch (now)
+            {
+                case show_full_log_type.both:
+                    next = show_full_log_type.just_view;
+                    break;
+                case show_full_log_type.just_view:
+                    next = show_full_log_type.both;
+                    break;
+                case show_full_log_type.just_full_log:
+                    next = show_full_log_type.just_view;
+                    break;
+                default:
+                    Debug.Assert(false);
+                    break;
+            }
+            show_full_log(next);
+        }
+
+        private void toggleTableHeaderToolStripMenuItem_Click(object sender, EventArgs e) {
+            handle_action(action_type.toggle_view_header);
+        }
+
+        private void toggleViewTabsToolStripMenuItem_Click(object sender, EventArgs e) {
+            handle_action(action_type.toggle_view_tabs);
+        }
+
+        private void toggleTitleToolStripMenuItem_Click(object sender, EventArgs e) {
+            handle_action(action_type.toggle_title);
+        }
+
+        private void toggleStatusToolStripMenuItem_Click(object sender, EventArgs e) {
+            handle_action(action_type.toggle_status);
+        }
+
+        private void toggleFilterPaneToolStripMenuItem_Click(object sender, EventArgs e) {
+            handle_action(action_type.toggle_filters);
+        }
+
+        private void toggleNotesPaneToolStripMenuItem_Click(object sender, EventArgs e) {
+            handle_action(action_type.toggle_notes);
+        }
+
+        private void toggleSourcePaneToolStripMenuItem_Click(object sender, EventArgs e) {
+            handle_action(action_type.toggle_source);
+        }
+
+        private void toggleDetailsToolStripMenuItem_Click(object sender, EventArgs e) {
+            handle_action(action_type.toggle_details);
+        }
+
+        private void showAllLinesToolStripMenuItem_Click(object sender, EventArgs e) {
+            handle_action(action_type.toggle_show_full_log);
+        }
+
+        private void viewToolStripMenuItem_DropDownOpening(object sender, EventArgs e) {
+            toggleCurrentViewToolStripMenuItem.Checked = global_ui.show_current_view;
+            toggleFullLogToolStripMenuItem.Checked = global_ui.show_fulllog;
+            toggleTablerHeaderToolStripMenuItem.Checked = global_ui.show_header;
+            toggleViewTabsToolStripMenuItem.Checked = global_ui.show_tabs;
+            toggleTitleToolStripMenuItem.Checked = global_ui.show_title;
+            toggleStatusToolStripMenuItem.Checked = global_ui.show_status;
+            toggleFilterPaneToolStripMenuItem.Checked = global_ui.show_filter;
+            toggleNotesPaneToolStripMenuItem.Checked = global_ui.show_notes;
+            toggleSourcePaneToolStripMenuItem.Checked = global_ui.show_source;
+            //topmostToolStripMenuItem.Checked = global_ui.topmost;
+            toggleDetailsToolStripMenuItem.Checked = global_ui.show_details;
+
+            var lv = selected_view();
+            bool on_full_log = is_focus_on_full_log();
+            showAllLinesToolStripMenuItem.Enabled = !on_full_log;
+        }
+
+        private void openHelpToolStripMenuItem_Click(object sender, EventArgs e) {
+            // TODO
+        }
+
+        private void aboutToolStripMenuItem2_Click(object sender, EventArgs e) {
+            new about_form(this, new_releases_, cur_release_).Show(this);
         }
 
         private void defaultSampleToolStripMenuItem_Click(object sender, EventArgs e) {

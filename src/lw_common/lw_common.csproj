@@ -435,6 +435,10 @@
     <None Include="Resources\eyedropper.png" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\SyntaxDetector\SyntaxDetector.csproj">
+      <Project>{3AC3F327-0DA9-4991-9AC7-69FB55DFC04A}</Project>
+      <Name>SyntaxDetector</Name>
+    </ProjectReference>
     <ProjectReference Include="3rdparty\color_picker\color_picker.csproj">
       <Project>{5d703fc5-ea9a-4bbb-bf08-e3a80efddaa8}</Project>
       <Name>color_picker</Name>

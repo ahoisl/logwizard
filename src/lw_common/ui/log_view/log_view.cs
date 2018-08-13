@@ -1376,7 +1376,7 @@ namespace lw_common.ui {
 
         // y offset - how many rows are visible, on top of this row?
         private int visible_row_y_offset(int row_idx) {
-            if (model_.item_count < 1)
+            if (model_.item_count < 1 || row_idx == -1)
                 return 0;
 
             const int PAD = 5;

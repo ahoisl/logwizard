@@ -524,8 +524,7 @@ namespace lw_common.ui {
                 if (fileTypeTab.SelectedIndex == 0) {
                     // line-by-line , try to find syntax
                     string file_syntax = log_to.file_to_syntax(fileName.Text);
-                    if ( file_syntax == "")
-                        file_syntax = new find_log_syntax().try_find_log_syntax_file(fileName.Text);
+                    file_syntax = new find_log_syntax().try_find_log_syntax_file(fileName.Text);
                     settings_.syntax.set(file_syntax);
                 }
                 update_syntax();

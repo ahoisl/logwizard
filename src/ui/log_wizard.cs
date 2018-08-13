@@ -3945,7 +3945,7 @@ namespace LogWizard
         }
 
         private void openHelpToolStripMenuItem_Click(object sender, EventArgs e) {
-            // TODO
+            new help_form().Show(this);
         }
 
         private void aboutToolStripMenuItem2_Click(object sender, EventArgs e) {

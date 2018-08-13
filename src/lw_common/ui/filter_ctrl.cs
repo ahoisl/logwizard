@@ -425,7 +425,7 @@ namespace lw_common.ui {
 
             ui_to_view(view_idx_);
             on_save();
-            on_rerun_view(view_idx_);
+            do_refresh();
 
             util.postpone(() => {
                 variableBox.Focus();
@@ -510,9 +510,10 @@ namespace lw_common.ui {
         }
 
         private void selectColor_Click(object sender, EventArgs e) {
-            if (filterCtrl.SelectedIndex < 0)
-                return; // there's nothing selected
+            color_click("color");
+        }
 
+        private void color_click(string color) {
             var sel = new select_color_form();
             if (sel.ShowDialog() == DialogResult.OK) {
                 string sel_color = util.color_to_str(sel.SelectedColor);
@@ -520,42 +521,31 @@ namespace lw_common.ui {
                 var lines = filterBox.Lines.ToList();
                 int sel_start = filterBox.SelectionStart;
                 int edited_line = util.index_to_line(filterBox.Text, sel_start);
-                if (edited_line >= 0 && !filter_line.is_color_or_font_line(lines[edited_line]))
+                if (edited_line >= 0 && !lines[edited_line].Trim().StartsWith(color))
                     // user is editing a line that is not a color line
                     edited_line = -1;
                 if (edited_line == -1) {
                     // it's not with the cursor on a line - find the first line that would actually be a color
                     for (int i = 0; i < lines.Count && edited_line == -1; ++i)
-                        if (filter_line.is_color_or_font_line(lines[i]))
+                        if (lines[i].Trim().StartsWith(color))
                             edited_line = i;
                 }
-                if (edited_line != -1) {
-                    // in this case, he's editing the color from a given line
-                    bool is_color_line = filter_line.is_color_or_font_line(lines[edited_line]);
-                    bool is_replacing = lines[edited_line].Split(new[] { " " }, StringSplitOptions.RemoveEmptyEntries).Length <= 2 &&
-                                        lines[edited_line].TrimEnd() == lines[edited_line];
-                    if (is_color_line) {
-                        if (is_replacing)
-                            lines[edited_line] = (lines[edited_line].Trim().StartsWith("color ") ? "color" : "match_color") + " " + sel_color;
-                        else
-                            lines[edited_line] += " " + sel_color;
-                    } else
-                        // the edited line does not contain any color, thus, we append the color line
-                        edited_line = -1;
-                }
-
 
                 if (edited_line == -1) {
-                    if (lines.Last().Trim() != "") {
-                        lines.Add("color " + sel_color);
+                    if (lines.Count >= 0 && lines.Last().Trim() == "") {
+                        lines[lines.Count - 1] = $"{color} {sel_color}";
                     } else {
-                        lines[lines.Count - 1] = "color " + sel_color;
+                        lines.Add($"{color} {sel_color}");
                     }
+
                     sel_start = -1;
+                } else {
+                    // in this case, he's editing the color from a given line
+                    lines[edited_line] = $"{color} {sel_color}";
                 }
 
 
-                filterBox.Text = util.concatenate(lines, NL);
+                filterBox.Lines = lines.ToArray();
                 if (sel_start >= 0 && sel_start < filterBox.TextLength)
                     filterBox.SelectionStart = sel_start;
 
@@ -736,9 +726,7 @@ namespace lw_common.ui {
             if (s == "ctrl-return") {
                 before_ctrl_enter_ = filterBox.Text;
                 e.Handled = true;
-                ui_to_view(view_idx_);
-                on_save();
-                do_refresh();
+                addFilter_Click(this, null);
             }
 
         }
@@ -881,58 +869,7 @@ namespace lw_common.ui {
         }
 
         private void selectMatchColor_Click(object sender, EventArgs e) {
-            if (filterCtrl.SelectedIndex < 0)
-                return; // there's nothing selected
-
-            var sel = new select_color_form();
-            if (sel.ShowDialog() == DialogResult.OK) {
-                string sel_color = util.color_to_str(sel.SelectedColor);
-
-                var lines = filterBox.Lines.ToList();
-                int sel_start = filterBox.SelectionStart;
-                int edited_line = util.index_to_line(filterBox.Text, sel_start);
-                if (edited_line >= 0 && !filter_line.is_color_or_font_line(lines[edited_line]))
-                    // user is editing a line that is not a color line
-                    edited_line = -1;
-                if (edited_line == -1) {
-                    // it's not with the cursor on a line - find the first line that would actually be a color
-                    for (int i = 0; i < lines.Count && edited_line == -1; ++i)
-                        if (filter_line.is_color_or_font_line(lines[i]))
-                            edited_line = i;
-                }
-                if (edited_line != -1) {
-                    // in this case, he's editing the color from a given line
-                    bool is_color_line = filter_line.is_color_or_font_line(lines[edited_line]);
-                    bool is_replacing = lines[edited_line].Split(new[] { " " }, StringSplitOptions.RemoveEmptyEntries).Length <= 2 &&
-                                        lines[edited_line].TrimEnd() == lines[edited_line];
-                    if (is_color_line) {
-                        if (is_replacing)
-                            lines[edited_line] = (lines[edited_line].Trim().StartsWith("color ") ? "color" : "match_color") + " " + sel_color;
-                        else
-                            lines[edited_line] += " " + sel_color;
-                    } else
-                        // the edited line does not contain any color, thus, we append the color line
-                        edited_line = -1;
-                }
-
-                if (edited_line == -1) {
-                    if (lines.Last().Trim() != "") {
-                        lines.Add("match_color " + sel_color);
-                    } else {
-                        lines[lines.Count - 1] = "match_color " + sel_color;
-                    }
-
-                    sel_start = -1;
-                }
-
-                filterBox.Lines = lines.ToArray();
-                if (sel_start >= 0 && sel_start < filterBox.TextLength)
-                    filterBox.SelectionStart = sel_start;
-
-                ui_to_view(view_idx_);
-                on_save();
-                do_refresh();
-            }
+            color_click("match_color");
         }
 
         private void caseSensitiveCheck_Changed(object sender, EventArgs e) {
@@ -989,7 +926,7 @@ namespace lw_common.ui {
         }
 
         private void filterCtrl_ItemChecked(object sender, ItemCheckedEventArgs e) {
-            var item = (sender as ObjectListView)?.Items[0];
+            var item = e.Item;
             if (item != null) {
                 toggle_enabled(item as OLVListItem);
             }

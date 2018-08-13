@@ -679,7 +679,7 @@ namespace lw_common {
             // FIXME note: we should normally care about the last match before old_match_count as well, to see maybe it still matches some "addition" lines
             //             but we ignore that for now
             //
-            // when impleemnting the above, make sure to find the last matched line, not an existing addition
+            // when implementing the above, make sure to find the last matched line, not an existing addition
 
             bool has_additions = false;
             foreach (filter_row row in rows)

@@ -59,16 +59,18 @@ namespace lw_common {
                                                     "# Custom date/time format, a' la C#\r\n" +
                                                     "time.format_time=MM/dd HH:mm:ss,fff\r\n" +
                                                     "time.light=#adc7e8\r\n" +
+                                                    "alternate.row_count=1\r\n" +
+                                                    "alternate.color=#f5f5f5\r\n" +
                                                     "\r\n" +
                                                     "[msg]\r\n" +
                                                     "format\r\n" +
                                                     "number.color=darkred\r\n" +
-                                                    @"regex.expr=(?<=\[).*(?=\])|(?<=\().*(?=\))|(?<=\{).*(?=\})" + "\r\n" + // brackets
+                                                    @"regex.expr=\[.*?\]|\(.*?\)|\{.*?\}" + "\r\n" + // brackets
                                                     "regex.format=lighter\r\n" +
-                                                    "regex2.expr=(?<=\")(?:\\\\.|[^\"\\\\])*(?=\")|(?<=')(?:\\\\.|[^'\\\\])*(?=')\r\n" + // strings
+                                                    "regex2.expr=\"(?:\\\\.|[^\"\\\\])*?\"|'(?:\\\\.|[^'\\\\])*?'\r\n" + // strings
                                                     "regex2.format=darkviolet\r\n" +
-                                                    "alternate.row_count=1\r\n" +
-                                                    "alternate.color=#fbfdf9\r\n" +
+                                                    @"regex3.expr=(?:[a-zA-Z]\:|\\\\[\w\.]+\\[\w.$]+)\\(?:[\w]+\\)*[\w \.]+" + "\r\n" + // files
+                                                    "regex3.format=darkviolet\r\n" +
                                                     "multiline.multi=0\r\n" +
                                                     "multiline.alternate_format=lighter\r\n" +
                                                     "multiline.separator=|\r\n" +

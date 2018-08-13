@@ -41,10 +41,8 @@ using lw_common;
 using lw_common.ui.format;
 using LogWizard;
 
-namespace lw_common.ui
-{
-    public partial class log_view : UserControl, IDisposable
-    {
+namespace lw_common.ui {
+    public partial class log_view : UserControl, IDisposable {
         private static log4net.ILog logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         public const string FULLLOG_NAME = "__all_this_is_fulllog__";
@@ -52,7 +50,7 @@ namespace lw_common.ui
         public const string ALL_VIEWS = "__all_views__";
 
         private Form parent;
-        private readonly filter filter_ ;
+        private readonly filter filter_;
         private log_reader log_ = null;
 
         // only for showing the View(s) column correctly
@@ -122,8 +120,11 @@ namespace lw_common.ui
 
         private log_view_quick_filter quick_filter_ = null;
 
-        public log_view(Form parent, string name)
-        {
+        // for resizing columns
+        private int mouseIsDown = 0;
+        private bool clientResize = false;
+
+        public log_view(Form parent, string name) {
             Debug.Assert(parent is log_view_parent);
 
             logger.Debug("new log view " + name);
@@ -135,7 +136,7 @@ namespace lw_common.ui
             ++ignore_change_;
             viewName.Text = name;
             --ignore_change_;
-            model_ = new log_view_data_source(this.list, this ) { name = name };
+            model_ = new log_view_data_source(this.list, this) { name = name };
             list.VirtualListDataSource = model_;
             snooper_ = new snoop_filter(this);
             quick_filter_ = new log_view_quick_filter(snooper_);
@@ -193,15 +194,7 @@ namespace lw_common.ui
         }
 
         private void List_on_column_width_changed(object sender, ColumnWidthChangedEventArgs e) {
-            if (!is_changing_column_width_)
-                return;
-            if (e.ColumnIndex == msgCol.Index)
-                return;
 
-            is_changing_column_width_ = false;
-            
-            edit.update_ui();
-            column_positions = log_view_show_columns.column_positions_as_string(this);
         }
 
         private void list_ColumnRightClick(object sender, ColumnClickEventArgs e) {
@@ -237,8 +230,8 @@ namespace lw_common.ui
             menu.Items.Add(new ToolStripSeparator());
             var to_left = new ToolStripMenuItem("Move [" + cur_col_text + "] to Left (<-)");
             var to_right = new ToolStripMenuItem("Move [" + cur_col_text + "] to Right (->)");
-            to_left.Click += (a,ee) => move_column_to_left(cur_col);
-            to_right.Click += (a,ee) => move_column_to_right(cur_col);
+            to_left.Click += (a, ee) => move_column_to_left(cur_col);
+            to_right.Click += (a, ee) => move_column_to_right(cur_col);
 
             menu.Items.Add(to_left);
             menu.Items.Add(to_right);
@@ -246,11 +239,11 @@ namespace lw_common.ui
             menu.Items.Add(new ToolStripSeparator());
             var edit_aliases = new ToolStripMenuItem("Edit Aliases...");
             menu.Items.Add(edit_aliases);
-            edit_aliases.Click += (a,ee) => this.edit_aliases();
+            edit_aliases.Click += (a, ee) => this.edit_aliases();
 
             var edit_log_settings = new ToolStripMenuItem("Edit Log Settings...");
             menu.Items.Add(edit_log_settings);
-            edit_log_settings.Click += (a,ee) => lv_parent.edit_log_settings();
+            edit_log_settings.Click += (a, ee) => lv_parent.edit_log_settings();
 
             var edit_formatting = new ToolStripMenuItem("Edit Column Formatting...");
             menu.Items.Add(edit_formatting);
@@ -274,7 +267,7 @@ namespace lw_common.ui
             }
             snooper_.on_aliases(filter_.log.aliases);
 
-            foreach (info_type i in Enum.GetValues(typeof (info_type))) {
+            foreach (info_type i in Enum.GetValues(typeof(info_type))) {
                 // for msg column - we use the default name
                 if (i == info_type.max || i == info_type.msg || i == info_type.line || i == info_type.view)
                     continue;
@@ -292,15 +285,15 @@ namespace lw_common.ui
                 return; // only when we know all columns, can we show/hide/set positions
 
             var description_pane = this.description_pane();
-            var description_cols = description_pane != null ? description_pane.shown_columns : null;
-            foreach (info_type col_type in Enum.GetValues(typeof (info_type))) 
-                if ( info_type_io.is_snoopable(col_type))
+            var description_cols = description_pane?.shown_columns;
+            foreach (info_type col_type in Enum.GetValues(typeof(info_type)))
+                if (info_type_io.is_snoopable(col_type))
                     if (filter_.log.aliases.has_column(col_type)) {
                         var col = log_view_cell.column(this, col_type);
                         var snoop = snooper_.snoop_for(col_type);
                         int sel = sel_row_idx_ui_thread;
                         var bounds = Rectangle.Empty;
-                        if ( sel >= 0)
+                        if (sel >= 0)
                             bounds = list.GetItem(sel).GetSubItemBounds(col.Index);
 
                         update_snoop_visibility(col_type);
@@ -335,7 +328,7 @@ namespace lw_common.ui
             if (visible) {
                 int sel = sel_row_idx_ui_thread;
                 var bounds = Rectangle.Empty;
-                if ( sel >= 0 && col.is_visible())
+                if (sel >= 0 && col.is_visible())
                     bounds = list.GetItem(sel).GetSubItemBounds(col.Index);
                 bool visible_in_view = bounds.Width > 0 && bounds.Height > 0;
                 var description_pane = this.description_pane();
@@ -344,7 +337,7 @@ namespace lw_common.ui
                 bool visible_in_details = description_cols != null && description_cols.Contains(col_type);
                 visible = sel >= 0 && (visible_in_view || visible_in_details);
             }
-            snoop.is_visible = visible;            
+            snoop.is_visible = visible;
         }
 
         private void update_snoop_visibility() {
@@ -354,9 +347,9 @@ namespace lw_common.ui
             if (!snooper_.aliases_set)
                 return; // only when we know all columns, can we show/hide/set positions
 
-            foreach (info_type col_type in Enum.GetValues(typeof (info_type))) 
-                if ( info_type_io.is_snoopable(col_type))
-                    if (filter_.log.aliases.has_column(col_type)) 
+            foreach (info_type col_type in Enum.GetValues(typeof(info_type)))
+                if (info_type_io.is_snoopable(col_type))
+                    if (filter_.log.aliases.has_column(col_type))
                         update_snoop_visibility(col_type);
         }
 
@@ -387,22 +380,22 @@ namespace lw_common.ui
         }
 
         private void move_column_to_left(OLVColumn col) {
-            if ( col.DisplayIndex > 0)
+            if (col.DisplayIndex > 0)
                 col.DisplayIndex = col.DisplayIndex - 1;
-            foreach ( var c in list.AllColumns)
+            foreach (var c in list.AllColumns)
                 c.LastDisplayIndex = c.DisplayIndex;
             list.Refresh();
         }
         private void move_column_to_right(OLVColumn col) {
-            if ( col.DisplayIndex < list.Columns.Count - 1)
+            if (col.DisplayIndex < list.Columns.Count - 1)
                 col.DisplayIndex = col.DisplayIndex + 1;
-            foreach ( var c in list.AllColumns)
+            foreach (var c in list.AllColumns)
                 c.LastDisplayIndex = c.DisplayIndex;
             list.Refresh();
         }
 
         private void save_column_positions(string positions_str) {
-            log_.write_settings.column_positions.set( apply_column_settings_only_to_me ? name : ALL_VIEWS, positions_str);
+            log_.write_settings.column_positions.set(apply_column_settings_only_to_me ? name : ALL_VIEWS, positions_str);
             update_cur_col();
         }
 
@@ -410,13 +403,13 @@ namespace lw_common.ui
         //
         // it contains the columns that are available for showing
         public List<info_type> available_columns {
-            get { 
-                return log_ != null ? log_.settings.available_columns.get().Split(new [] { ","}, StringSplitOptions.RemoveEmptyEntries)
-                .Select(x => (info_type) int.Parse(x)).ToList() : new List<info_type>(); 
+            get {
+                return log_ != null ? log_.settings.available_columns.get().Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries)
+                .Select(x => (info_type)int.Parse(x)).ToList() : new List<info_type>();
             }
             internal set {
                 if (log_ != null) {
-                    log_.write_settings.available_columns.set(util.concatenate(value.Select(x => (int) x), ","));
+                    log_.write_settings.available_columns.set(util.concatenate(value.Select(x => (int)x), ","));
                     lv_parent.on_available_columns_known();
                 }
             }
@@ -427,7 +420,7 @@ namespace lw_common.ui
             set {
                 if (log_ != null) {
                     log_.write_settings.apply_column_positions_to_me.set(name, value);
-                    save_column_positions( column_positions);
+                    save_column_positions(column_positions);
                 }
             }
         }
@@ -437,13 +430,13 @@ namespace lw_common.ui
             get {
                 if (log_ == null)
                     return "";
-                return log_.settings.column_positions.get( apply_column_settings_only_to_me ? name : ALL_VIEWS ) ;
+                return log_.settings.column_positions.get(apply_column_settings_only_to_me ? name : ALL_VIEWS);
             }
             set {
                 if (column_positions == value)
                     return; // nothing changed
 
-                if (log_ != null && value != "") 
+                if (log_ != null && value != "")
                     save_column_positions(value);
             }
         }
@@ -472,7 +465,7 @@ namespace lw_common.ui
                 else if (model_.is_running_filter)
                     status = "Running Filter";
 
-                if (status != "") 
+                if (status != "")
                     status += util.ellipsis_suffix();
                 bool was_seaching = last_search_status_ != "";
                 last_search_status_ = status;
@@ -526,7 +519,7 @@ namespace lw_common.ui
                 var parent = tab_control;
                 var page = tab_parent;
                 // note: .TabPages is not really a collection, so I don't want to use IndexOf - RemoveAt works incorrectly, so, for me, all bets are off
-                for ( int idx = 0; idx < parent.TabPages.Count; ++idx)
+                for (int idx = 0; idx < parent.TabPages.Count; ++idx)
                     if (parent.TabPages[idx] == page)
                         return idx;
 
@@ -543,10 +536,10 @@ namespace lw_common.ui
                 this.async_call_and_wait(() => sel = list.SelectedIndex);
                 if (sel >= 0)
                     return sel;
-                
+
                 ListView.SelectedIndexCollection multi = null;
                 this.async_call_and_wait(() => multi = list.SelectedIndices);
-                if ( multi != null)
+                if (multi != null)
                     if (multi.Count > 0)
                         return multi[0];
 
@@ -560,9 +553,9 @@ namespace lw_common.ui
                 int sel = list.SelectedIndex;
                 if (sel >= 0)
                     return sel;
-                
+
                 ListView.SelectedIndexCollection multi = list.SelectedIndices;
-                if ( multi != null)
+                if (multi != null)
                     if (multi.Count > 0)
                         return multi[0];
 
@@ -584,12 +577,12 @@ namespace lw_common.ui
             get {
                 List<int> sel = new List<int>();
                 var multi = list.SelectedIndices;
-                if ( multi != null)
-                    for ( int i = 0; i < multi.Count; ++i)
+                if (multi != null)
+                    for (int i = 0; i < multi.Count; ++i)
                         sel.Add(multi[i]);
-                
+
                 var cur_row = list.SelectedIndex;
-                if ( sel.Count == 0 && cur_row >= 0)
+                if (sel.Count == 0 && cur_row >= 0)
                     // in this case, a single selection
                     sel.Add(cur_row);
                 return sel;
@@ -617,7 +610,7 @@ namespace lw_common.ui
 
                 int sel = sel_row_idx;
                 if (sel >= 0) {
-                    var r = list.GetItem(sel).GetSubItemBounds( visible_column( cur_col_));
+                    var r = list.GetItem(sel).GetSubItemBounds(visible_column(cur_col_));
                     if (r.Height == 0) {
                         // this can happen when the message is not visible at all
                         r = list.GetItem(sel).Bounds;
@@ -640,7 +633,7 @@ namespace lw_common.ui
             get {
                 int sel = sel_row_idx;
                 if (sel >= 0)
-                    return list.GetItem(sel).GetSubItem( visible_column( cur_col_)).Text;
+                    return list.GetItem(sel).GetSubItem(visible_column(cur_col_)).Text;
                 else
                     return "";
             }
@@ -665,7 +658,7 @@ namespace lw_common.ui
             get {
                 int sel = sel_row_idx;
                 if (sel >= 0)
-                    return item_at(sel) .match.line.part(info_type.msg);
+                    return item_at(sel).match.line.part(info_type.msg);
                 return "";
             }
         }
@@ -773,20 +766,19 @@ namespace lw_common.ui
                         model_.item_filter = (i, a) => item_run_several_filters(i, filters);
                     }
                 }
-            }
-            else if ( filter_view) 
+            } else if (filter_view)
                 Debug.Assert(model_.item_filter != null);
             model_.set_filter(filter_view, show_full_log);
         }
 
         private List<int> filters_matching_sel_line() {
             List<int> filter_row_indexes = new List<int>();
-            if ( sel_row_idx < 0)
+            if (sel_row_idx < 0)
                 return filter_row_indexes;
 
             int row_idx = 0;
             foreach (var match in util.to_list(sel.matches)) {
-                if ( match)
+                if (match)
                     filter_row_indexes.Add(row_idx);
                 ++row_idx;
             }
@@ -808,7 +800,7 @@ namespace lw_common.ui
                 // it's not from our view, it's from the full log
                 return false;
 
-            foreach ( int idx in row_indexes)
+            foreach (int idx in row_indexes)
                 if (idx < count) {
                     if (!i.matches[idx])
                         return false;
@@ -846,7 +838,7 @@ namespace lw_common.ui
         public string filter_friendly_name {
             get {
                 string sel_text = edit.sel_text;
-                if ( sel_text != "")
+                if (sel_text != "")
                     return sel_text + " (case-insensitive)";
 
                 if (cur_search_ != null)
@@ -947,7 +939,7 @@ namespace lw_common.ui
                 last_item_count_while_current_view_ = 0;
                 available_columns_refreshed_ = -1;
                 use_previous_available_columns_ = false;
-                if ( !was_null)
+                if (!was_null)
                     clear();
                 logger.Debug("[view] new log for " + name + " - " + log.log_name);
                 update_x_of_y();
@@ -957,7 +949,7 @@ namespace lw_common.ui
         }
 
         public void update_edit() {
-            edit.force_refresh();            
+            edit.force_refresh();
         }
 
         public void clear_edit() {
@@ -980,19 +972,19 @@ namespace lw_common.ui
         private void reload_column_formatter() {
             var sett = log_.write_settings;
             bool apply_to_me = sett.apply_column_formatting_to_me.get(name);
-            var format = sett.column_formatting.get( apply_to_me ? name : ALL_VIEWS );
+            var format = sett.column_formatting.get(apply_to_me ? name : ALL_VIEWS);
             if (!apply_to_me && format == "") {
                 format = app.inst.default_column_format;
                 sett.column_formatting.set(ALL_VIEWS, format);
             }
 
-            formatter_.load(format);            
+            formatter_.load(format);
         }
 
-        public void update_show_name() {            
+        public void update_show_name() {
             viewName.Visible = show_name_;
             labelName.Visible = show_name_;
- 
+
             int height = viewName.Height + 2;
             list.Top = !show_name_ ? list.Top - height : list.Top + height;
             list.Height = !show_name_ ? list.Height + height : list.Height - height;
@@ -1012,7 +1004,7 @@ namespace lw_common.ui
 
             viewName.Visible = show;
             labelName.Visible = show;
- 
+
             int height = list.HeaderControl.ClientRectangle.Height;
             list.Top = !show ? list.Top - height : list.Top + height;
             list.Height = !show ? list.Height + height : list.Height - height;
@@ -1043,18 +1035,18 @@ namespace lw_common.ui
 
         public void on_action(action_type action) {
             switch (action) {
-            case action_type.home:
-            case action_type.end:
-            case action_type.pageup:
-            case action_type.pagedown:
-            case action_type.arrow_up:
-            case action_type.arrow_down:
-            case action_type.shift_arrow_down:
-            case action_type.shift_arrow_up:
-                break;
-            default:
-                Debug.Assert(false);
-                return;
+                case action_type.home:
+                case action_type.end:
+                case action_type.pageup:
+                case action_type.pagedown:
+                case action_type.arrow_up:
+                case action_type.arrow_down:
+                case action_type.shift_arrow_down:
+                case action_type.shift_arrow_up:
+                    break;
+                default:
+                    Debug.Assert(false);
+                    return;
             }
             edit.clear_sel();
 
@@ -1067,59 +1059,59 @@ namespace lw_common.ui
             int rows_per_page = visible_rows.Item2 - visible_rows.Item1;
             int height = list.Height - list.HeaderControl.ClientRectangle.Height;
             switch (action) {
-            case action_type.home:
-                sel = 0;
-                break;
-            case action_type.end:
-                sel = count - 1;
-                break;
-            case action_type.pageup:
-                if (sel >= 0) {
-                    int new_sel = sel - rows_per_page;
-                    sel = new_sel >= 0 ? new_sel : 0;
-                }
-                break;
-            case action_type.pagedown:
-                if (sel < count - 1) {
-                    int new_sel = sel + rows_per_page;
-                    sel = new_sel <= count - 1 ? new_sel : count - 1;
-                }
-                break;
-            case action_type.arrow_up:
-                if ( sel > 0)
-                    --sel;
-                break;
-            case action_type.arrow_down:
-                if ( sel < count - 1)
-                    ++sel;
-                break;
+                case action_type.home:
+                    sel = 0;
+                    break;
+                case action_type.end:
+                    sel = count - 1;
+                    break;
+                case action_type.pageup:
+                    if (sel >= 0) {
+                        int new_sel = sel - rows_per_page;
+                        sel = new_sel >= 0 ? new_sel : 0;
+                    }
+                    break;
+                case action_type.pagedown:
+                    if (sel < count - 1) {
+                        int new_sel = sel + rows_per_page;
+                        sel = new_sel <= count - 1 ? new_sel : count - 1;
+                    }
+                    break;
+                case action_type.arrow_up:
+                    if (sel > 0)
+                        --sel;
+                    break;
+                case action_type.arrow_down:
+                    if (sel < count - 1)
+                        ++sel;
+                    break;
 
-            // default list behavior is wrong, we need to override
-            case action_type.shift_arrow_up:                
-                if (sel > 0) {
-                    int existing = selected_indices_array().Min();
-                    if (existing > 0) {
-                        list.SelectedIndices.Add(existing - 1);
-                        ensure_row_visible(existing);
+                // default list behavior is wrong, we need to override
+                case action_type.shift_arrow_up:
+                    if (sel > 0) {
+                        int existing = selected_indices_array().Min();
+                        if (existing > 0) {
+                            list.SelectedIndices.Add(existing - 1);
+                            ensure_row_visible(existing);
+                        }
+                        return;
                     }
-                    return;
-                }
-                break;
-            // default list behavior is wrong, we need to override
-            case action_type.shift_arrow_down:
-                if (sel < count - 1) {
-                    int existing = selected_indices_array().Max();
-                    if (existing < count - 1) {
-                        list.SelectedIndices.Add(existing + 1);
-                        ensure_row_visible(existing);                        
+                    break;
+                // default list behavior is wrong, we need to override
+                case action_type.shift_arrow_down:
+                    if (sel < count - 1) {
+                        int existing = selected_indices_array().Max();
+                        if (existing < count - 1) {
+                            list.SelectedIndices.Add(existing + 1);
+                            ensure_row_visible(existing);
+                        }
+                        return;
                     }
-                    return;
-                }
-                break;
+                    break;
 
             }
             if (sel >= 0 && sel_row_idx != sel) {
-                select_row_idx( sel, select_type.notify_parent);
+                select_row_idx(sel, select_type.notify_parent);
                 ensure_row_visible(sel);
             }
             edit.update_sel();
@@ -1127,11 +1119,11 @@ namespace lw_common.ui
 
         private List<int> selected_indices_array() {
             List<int> sel = new List<int>();
-            if ( list.SelectedIndices != null)
-                for ( int i = 0; i < list.SelectedIndices.Count; ++i)
+            if (list.SelectedIndices != null)
+                for (int i = 0; i < list.SelectedIndices.Count; ++i)
                     sel.Add(list.SelectedIndices[i]);
             return sel;
-        } 
+        }
 
         private bool needs_scroll_to_last() {
             if (item_count < 1)
@@ -1164,26 +1156,26 @@ namespace lw_common.ui
         public void update_x_of_y() {
             compute_title_fonts();
 
-            string x_idx =  sel_row_idx >= 0 ? "" + (sel_row_idx+1) : "";
-            string x_line =  sel_line_idx >= 0 ? "" + (sel_line_idx + 1) : "";
+            string x_idx = sel_row_idx >= 0 ? "" + (sel_row_idx + 1) : "";
+            string x_line = sel_line_idx >= 0 ? "" + (sel_line_idx + 1) : "";
             string y = "" + item_count;
             string header = (app.inst.show_view_line_count || app.inst.show_view_selected_line || app.inst.show_view_selected_index ? (x_idx != "" ? x_idx + " of " + y : "(" + y + ")") : "");
             if (app.inst.show_view_line_count || app.inst.show_view_selected_line || app.inst.show_view_selected_index) {
                 bool show_full_count = !is_full_log && item_count < filter_.full_count;
                 if (show_full_count)
-                    header += " (" + filter_.full_count +  ")";
+                    header += " (" + filter_.full_count + ")";
             }
             string x_of_y_msg = (show_name_in_header ? "[" + name + "] " : "") + "Message " + header;
             string x_of_y_title = "";
             if (app.inst.show_view_line_count && app.inst.show_view_selected_index)
                 x_of_y_title = " (" + (x_idx != "" ? x_idx + "/" : "") + y + ")";
             else if (!app.inst.show_view_line_count && app.inst.show_view_selected_index) {
-                if ( x_idx != "")
+                if (x_idx != "")
                     x_of_y_title = " (" + x_idx + ")";
             } else if (app.inst.show_view_line_count && !app.inst.show_view_selected_index)
                 x_of_y_title = " (" + y + ")";
 
-            if ( x_line != "" && app.inst.show_view_selected_line && !is_current_view)
+            if (x_line != "" && app.inst.show_view_selected_line && !is_current_view)
                 x_of_y_title = " [" + x_line + "] " + x_of_y_title;
             x_of_y_title = x_of_y_title.TrimEnd();
 
@@ -1198,7 +1190,7 @@ namespace lw_common.ui
                 // this is so that the "Toggle topmost" does not obscure the first tab's name
                 tab_text = "    " + tab_text;
             if (tab_parent != null) {
-                if ( tab_parent.Text != tab_text)
+                if (tab_parent.Text != tab_text)
                     tab_parent.Text = tab_text;
             }
 
@@ -1218,29 +1210,29 @@ namespace lw_common.ui
         private void on_change(filter.change_type change) {
             logger.Debug("[view] change: " + change + " on " + name);
             switch (change) {
-            case filter.change_type.new_lines:
-                // ... so that we're showing the new lines instantly
-                this.async_call(refresh);
-                break;
-            case filter.change_type.changed_filter:
-                this.async_call(() => render_.clear_format_cache("changed filter"));
-                this.async_call(refresh);
-                break;
+                case filter.change_type.new_lines:
+                    // ... so that we're showing the new lines instantly
+                    this.async_call(refresh);
+                    break;
+                case filter.change_type.changed_filter:
+                    this.async_call(() => render_.clear_format_cache("changed filter"));
+                    this.async_call(refresh);
+                    break;
 
-            case filter.change_type.file_rewritten:
-                this.async_call(clear);
-                break;
+                case filter.change_type.file_rewritten:
+                    this.async_call(clear);
+                    break;
 
-            default:
-                Debug.Assert(false);
-                break;
+                default:
+                    Debug.Assert(false);
+                    break;
             }
         }
 
         public void clear() {
             render_.clear_format_cache("file rewritten");
             filter_.clear();
-            
+
             // 1.8.18+ at this point, we clear the filter and/or search            
             model_.set_filter(false, true);
             edit.clear_sel();
@@ -1269,10 +1261,10 @@ namespace lw_common.ui
 
             if (old_item_count_ == new_item_count && !needs_ui_update) {
                 // nothing changed
-                if ( model_.item_count > 0 && sel_row_idx == -1 && !is_full_log && is_current_view)
+                if (model_.item_count > 0 && sel_row_idx == -1 && !is_full_log && is_current_view)
                     // just switched to another view where nothing was selected - go to end by default
                     go_last();
-                return; 
+                return;
             }
 
             if (needs_ui_update) {
@@ -1301,66 +1293,66 @@ namespace lw_common.ui
 
 
         // if first item is true, we found colors, and the colors are item2 & 3
-        private Tuple<bool,Color,Color> has_found_colors(int row_idx, log_view other_log, bool is_sel) {
+        private Tuple<bool, Color, Color> has_found_colors(int row_idx, log_view other_log, bool is_sel) {
             var i = item_at(row_idx) as full_log_match_item;
 
             int line_idx = i.match.line_idx;
             match_item found_line = null;
             switch (app.inst.syncronize_colors) {
-            case app.synchronize_colors_type.none: // nothing to do
-                return new Tuple<bool, Color, Color>(true, font_info.default_font.fg, font_info.default_font.bg);
-            case app.synchronize_colors_type.with_current_view:
-                found_line = other_log.filter_.matches.binary_search(line_idx).Item1 as match_item;
-                if (found_line != null) 
-                    return new Tuple<bool, Color, Color>(true, found_line.fg(this), found_line.bg(this));
-                break;
-            case app.synchronize_colors_type.with_all_views:
-                found_line = other_log.filter_.matches.binary_search(line_idx).Item1 as match_item;
-                if (found_line != null) {
-                    Color bg = found_line.bg(this), fg = found_line.fg(this);
-                    if (app.inst.sync_colors_all_views_gray_non_active && !is_sel)
-                        fg = util.grayer_color(fg);
-                    return new Tuple<bool, Color, Color>(true, fg, bg);
-                }
-                break;
-            default:
-                Debug.Assert(false);
-                break;
+                case app.synchronize_colors_type.none: // nothing to do
+                    return new Tuple<bool, Color, Color>(true, font_info.default_font.fg, font_info.default_font.bg);
+                case app.synchronize_colors_type.with_current_view:
+                    found_line = other_log.filter_.matches.binary_search(line_idx).Item1 as match_item;
+                    if (found_line != null)
+                        return new Tuple<bool, Color, Color>(true, found_line.fg(this), found_line.bg(this));
+                    break;
+                case app.synchronize_colors_type.with_all_views:
+                    found_line = other_log.filter_.matches.binary_search(line_idx).Item1 as match_item;
+                    if (found_line != null) {
+                        Color bg = found_line.bg(this), fg = found_line.fg(this);
+                        if (app.inst.sync_colors_all_views_gray_non_active && !is_sel)
+                            fg = util.grayer_color(fg);
+                        return new Tuple<bool, Color, Color>(true, fg, bg);
+                    }
+                    break;
+                default:
+                    Debug.Assert(false);
+                    break;
             }
             return new Tuple<bool, Color, Color>(false, util.transparent, util.transparent);
         }
 
-        public Tuple<Color,Color> update_colors_for_line(int row_idx, List<log_view> other_logs, int sel_idx) {
+        public Tuple<Color, Color> update_colors_for_line(int row_idx, List<log_view> other_logs, int sel_idx) {
             Debug.Assert(other_logs.Count > 0 && sel_idx < other_logs.Count);
 
             Tuple<bool, Color, Color> found_colors = null;
             switch (app.inst.syncronize_colors) {
-            case app.synchronize_colors_type.none:
-                found_colors = has_found_colors(row_idx, other_logs[0], false);
-                break;
-            case app.synchronize_colors_type.with_current_view:
-                found_colors = has_found_colors(row_idx, other_logs[sel_idx], true);
-                break;
-            case app.synchronize_colors_type.with_all_views:
-                found_colors = has_found_colors(row_idx, other_logs[sel_idx], true);
-                if (found_colors.Item1)
+                case app.synchronize_colors_type.none:
+                    found_colors = has_found_colors(row_idx, other_logs[0], false);
                     break;
-                for (int idx = 0; idx < other_logs.Count; ++idx)
-                    if (idx != sel_idx) {
-                        found_colors = has_found_colors(row_idx, other_logs[idx], false);
-                        if (found_colors.Item1)
-                            break;
-                    }
-                break;
-            default:
-                Debug.Assert(false);
-                break;
+                case app.synchronize_colors_type.with_current_view:
+                    found_colors = has_found_colors(row_idx, other_logs[sel_idx], true);
+                    break;
+                case app.synchronize_colors_type.with_all_views:
+                    found_colors = has_found_colors(row_idx, other_logs[sel_idx], true);
+                    if (found_colors.Item1)
+                        break;
+                    for (int idx = 0; idx < other_logs.Count; ++idx)
+                        if (idx != sel_idx) {
+                            found_colors = has_found_colors(row_idx, other_logs[idx], false);
+                            if (found_colors.Item1)
+                                break;
+                        }
+                    break;
+                default:
+                    Debug.Assert(false);
+                    break;
             }
 
-            if ( found_colors != null && found_colors.Item1)
+            if (found_colors != null && found_colors.Item1)
                 return new Tuple<Color, Color>(found_colors.Item2, found_colors.Item3);
 
-            return new Tuple<Color, Color>( font_info.full_log_gray.fg, font_info.full_log_gray.bg );
+            return new Tuple<Color, Color>(font_info.full_log_gray.fg, font_info.full_log_gray.bg);
         }
 
         // returns the rows that are visible
@@ -1395,7 +1387,7 @@ namespace lw_common.ui
             if (row.Height == 0 || row.Width == 0) {
                 // in this case, this row is not visible at this time
                 Debug.Assert(false);
-                return 0;                
+                return 0;
             }
 
             int offset = (row.Y - top.Bounds.Y) / row_height;
@@ -1448,7 +1440,7 @@ namespace lw_common.ui
                         select_row_idx(0, select_type.do_not_notify_parent);
                     else
                         // in this case, we failed to go to the last item - try again ASAP
-                        util.postpone(go_last, 10);                    
+                        util.postpone(go_last, 10);
                 }
             }
         }
@@ -1627,7 +1619,7 @@ namespace lw_common.ui
                 time = time.AddMilliseconds(forward ? time_ms : -time_ms);
                 go_to_closest_time(time);
             } else
-            // in this case, there is no time logged, or it was invalid
+                // in this case, there is no time logged, or it was invalid
                 util.beep(util.beep_type.err);
         }
 
@@ -1728,9 +1720,9 @@ namespace lw_common.ui
             if (row_idx >= 0) {
                 var i = model_.item_at(row_idx);
                 var col_idx = e.Column.fixed_index();
-                string text = log_view_cell.cell_value(i, col_idx) ; 
+                string text = log_view_cell.cell_value(i, col_idx);
                 var cell = i.override_print(this, text, col_idx, column_formatter_base.format_cell.location_type.view);
-                
+
                 int char_idx = 0;
                 using (Graphics g = CreateGraphics()) {
                     var widths = render.text_widths(g, text);
@@ -1738,7 +1730,7 @@ namespace lw_common.ui
                     for (int idx = 0; idx < widths.Count; ++idx)
                         widths[idx] += offset_x;
 
-                    var mouse = list.PointToClient( Cursor.Position);
+                    var mouse = list.PointToClient(Cursor.Position);
                     char_idx = widths.FindLastIndex(x => x < mouse.X);
                     if (widths.Count == 0 || widths.Last() < mouse.X)
                         char_idx = widths.Count;
@@ -1747,7 +1739,7 @@ namespace lw_common.ui
                         char_idx = 0;
                 }
 
-                if ( char_idx >= 0 && char_idx < cell.format_text. text.Length)
+                if (char_idx >= 0 && char_idx < cell.format_text.text.Length)
                     tooltip = formatter.get_tooltip(cell, char_idx);
             }
 
@@ -1797,24 +1789,20 @@ namespace lw_common.ui
             var msg_details = this.msg_details;
             if (msg_details != null && msg_details.visible()) {
                 msg_details.force_temporary_hide(this);
-            }
-            else if (edit.sel_text != "") {
+            } else if (edit.sel_text != "") {
                 edit.escape();
-            }
-            else if (cur_search_ != null) {
+            } else if (cur_search_ != null) {
                 cur_search_ = null;
                 render_.clear_format_cache("search cleared");
                 list.Refresh();
-            }
-            else if (cur_filter_row_idx_ >= 0) {
+            } else if (cur_filter_row_idx_ >= 0) {
                 unmark();
-            }
-            else if (app.inst.edit_mode != app.edit_mode_type.always && is_editing) {
+            } else if (app.inst.edit_mode != app.edit_mode_type.always && is_editing) {
                 is_editing_ = false;
                 edit.update_ui();
             }
 
-            if ( edit.sel_text == "")
+            if (edit.sel_text == "")
                 edit.force_refresh();
         }
 
@@ -1835,12 +1823,12 @@ namespace lw_common.ui
 
             string sel_text = edit.sel_text.ToLower();
             await Task.Run((() => {
-                ++is_searching_ ;
+                ++is_searching_;
                 if (cur_search_ != null || sel_text != "")
                     search_for_text_next();
                 else if (cur_filter_row_idx_ >= 0)
                     search_for_next_match(cur_filter_row_idx_);
-                --is_searching_ ;
+                --is_searching_;
             }));
             lv_parent.sel_changed(log_view_sel_change_type.search);
         }
@@ -1937,7 +1925,7 @@ namespace lw_common.ui
             for (int idx = next_row; idx < count && found < 0; ++idx) {
                 // 1.2.7+ - if user has selected something, search for that
                 if (sel_text != "") {
-                    if ( row_contains_search_text(idx, all_visible_column_indexes))
+                    if (row_contains_search_text(idx, all_visible_column_indexes))
                         found = idx;
                     continue;
                 }
@@ -1971,7 +1959,7 @@ namespace lw_common.ui
             for (int idx = prev_row; idx >= 0 && found < 0; --idx) {
                 // 1.2.7+ - if user has selected something, search for that
                 if (sel_text != "") {
-                    if ( row_contains_search_text(idx, all_visible_column_indexes))
+                    if (row_contains_search_text(idx, all_visible_column_indexes))
                         found = idx;
                     continue;
                 }
@@ -2059,7 +2047,7 @@ namespace lw_common.ui
             match_item i = item_at(row);
 
             string font = list.Font.Name;
-            export_text.cell c = new export_text.cell(0, 0, sel_text) {fg = i.fg(this), bg = i.bg(this), font = font, font_size = 7};
+            export_text.cell c = new export_text.cell(0, 0, sel_text) { fg = i.fg(this), bg = i.bg(this), font = font, font_size = 7 };
             export.add_cell(c);
             return export;
         }
@@ -2079,7 +2067,7 @@ namespace lw_common.ui
                         do_print = column_idx == msgCol.fixed_index();
                     if (do_print) {
                         string txt = cell_value(i, column_idx);
-                        export_text.cell c = new export_text.cell(row_idx, visible_idx, txt) {fg = i.fg(this), bg = i.bg(this), font = font, font_size = 7};
+                        export_text.cell c = new export_text.cell(row_idx, visible_idx, txt) { fg = i.fg(this), bg = i.bg(this), font = font, font_size = 7 };
                         export.add_cell(c);
                         ++visible_idx;
                     }
@@ -2255,7 +2243,7 @@ namespace lw_common.ui
                 for (int column_idx = 0; column_idx < list.AllColumns.Count; ++column_idx) {
                     if (list.AllColumns[column_idx].IsVisible) {
                         string txt = cell_value(i, column_idx);
-                        export_text.cell c = new export_text.cell(idx, visible_idx, txt) {fg = i.fg(this), bg = i.bg(this), font = font, font_size = 7};
+                        export_text.cell c = new export_text.cell(idx, visible_idx, txt) { fg = i.fg(this), bg = i.bg(this), font = font, font_size = 7 };
                         export.add_cell(c);
                         ++visible_idx;
                     }
@@ -2266,14 +2254,14 @@ namespace lw_common.ui
         }
 
         public enum export_type {
-            export_line_column, do_not_export_line_column, 
+            export_line_column, do_not_export_line_column,
             // in this case, it will export it if there's at least one gap between two rows (like, Line 325 and 328 - two lines missing)
             export_line_column_if_needed
         }
 
         public export_text export_all_columns(export_type type = export_type.export_line_column_if_needed) {
             export_text export = new export_text();
-            
+
             int count = filter_.match_count;
             if (count < 1)
                 // nothing to export
@@ -2281,12 +2269,12 @@ namespace lw_common.ui
 
             bool export_line = true;
             switch (type) {
-            case export_type.export_line_column:                export_line = true; break;
-            case export_type.do_not_export_line_column:         export_line = false; break;
-            case export_type.export_line_column_if_needed:      
-                // ... note: we could have it in reverse order
-                export_line = Math.Abs( item_at(count - 1).line_idx - item_at(0).line_idx ) != count - 1; break;
-            default:                                            Debug.Assert(false); break;
+                case export_type.export_line_column: export_line = true; break;
+                case export_type.do_not_export_line_column: export_line = false; break;
+                case export_type.export_line_column_if_needed:
+                    // ... note: we could have it in reverse order
+                    export_line = Math.Abs(item_at(count - 1).line_idx - item_at(0).line_idx) != count - 1; break;
+                default: Debug.Assert(false); break;
             }
 
             int visible_idx = 0;
@@ -2304,7 +2292,7 @@ namespace lw_common.ui
 
             foreach (var col in export_columns) {
                 match_item i = item_at(0);
-                var txt = filter_.log.aliases.friendly_name(col) ;
+                var txt = filter_.log.aliases.friendly_name(col);
 
                 export_text.cell c = new export_text.cell(0, visible_idx, txt) { fg = i.fg(this), bg = i.bg(this), font = font, font_size = 7 };
                 export.add_cell(c);
@@ -2329,17 +2317,17 @@ namespace lw_common.ui
         public bool is_editing {
             get {
                 switch (app.inst.edit_mode) {
-                case app.edit_mode_type.always:
-                    return true;
+                    case app.edit_mode_type.always:
+                        return true;
 
-                case app.edit_mode_type.with_space:
-                    return is_editing_;
+                    case app.edit_mode_type.with_space:
+                        return is_editing_;
 
-                case app.edit_mode_type.with_right_arrow:
-                    return is_editing_;
-                default:
-                    Debug.Assert(false);
-                    return false;
+                    case app.edit_mode_type.with_right_arrow:
+                        return is_editing_;
+                    default:
+                        Debug.Assert(false);
+                        return false;
                 }
             }
         }
@@ -2390,7 +2378,7 @@ namespace lw_common.ui
         public List<string> unique_values(info_type col_type, int max_unique_values) {
             int count = item_count;
             HashSet<string> values = new HashSet<string>();
-            for (int i = 0; i < count && values.Count < max_unique_values; ++i) 
+            for (int i = 0; i < count && values.Count < max_unique_values; ++i)
                 values.Add(log_view_cell.cell_value_by_type(item_at(i), col_type));
 
             return values.ToList();
@@ -2453,33 +2441,33 @@ namespace lw_common.ui
 
                 // see if user wants to turn off editing
                 switch (app.inst.edit_mode) {
-                case app.edit_mode_type.always:
-                    // in this case, we're always in edit-mode
-                    break;
-
-                // toggle this edit mode OFF
-                case app.edit_mode_type.with_space:
-                    if (keyData == Keys.Space) {
-                        is_editing_ = false;
-                        edit.update_ui();
-                        return true;
-                    }
-                    break;
-
-                // moving to another line will toggle this edit mode off
-                case app.edit_mode_type.with_right_arrow:
-                    switch (keyData) {
-                    case Keys.Up:
-                    case Keys.Down:
-                    case Keys.PageUp:
-                    case Keys.PageDown:
-                    case Keys.Home:
-                    case Keys.End:
-                        is_editing_ = false;
-                        edit.update_ui();
+                    case app.edit_mode_type.always:
+                        // in this case, we're always in edit-mode
                         break;
-                    }
-                    break;
+
+                    // toggle this edit mode OFF
+                    case app.edit_mode_type.with_space:
+                        if (keyData == Keys.Space) {
+                            is_editing_ = false;
+                            edit.update_ui();
+                            return true;
+                        }
+                        break;
+
+                    // moving to another line will toggle this edit mode off
+                    case app.edit_mode_type.with_right_arrow:
+                        switch (keyData) {
+                            case Keys.Up:
+                            case Keys.Down:
+                            case Keys.PageUp:
+                            case Keys.PageDown:
+                            case Keys.Home:
+                            case Keys.End:
+                                is_editing_ = false;
+                                edit.update_ui();
+                                break;
+                        }
+                        break;
                 }
             }
 
@@ -2528,31 +2516,31 @@ namespace lw_common.ui
                 }
 
                 switch (keyData) {
-                case Keys.Up:
-                    on_action(action_type.arrow_up);
-                    return true;
-                case Keys.Down:
-                    on_action(action_type.arrow_down);
-                    return true;
-                case Keys.PageUp:
-                    on_action(action_type.pageup);
-                    return true;
-                case Keys.PageDown:
-                    on_action(action_type.pagedown);
-                    return true;
+                    case Keys.Up:
+                        on_action(action_type.arrow_up);
+                        return true;
+                    case Keys.Down:
+                        on_action(action_type.arrow_down);
+                        return true;
+                    case Keys.PageUp:
+                        on_action(action_type.pageup);
+                        return true;
+                    case Keys.PageDown:
+                        on_action(action_type.pagedown);
+                        return true;
 
-                case Keys.Home:
-                    if (edit.SelectionStart == 0 && edit.SelectionLength == 0) 
-                        on_action(action_type.home);
-                    else 
-                        edit.go_to_char(0);
-                    return true;
-                case Keys.End:
-                    if (edit.SelectionStart == edit.TextLength) 
-                        on_action(action_type.end);
-                    else 
-                        edit.go_to_char(edit.TextLength);
-                    return true;
+                    case Keys.Home:
+                        if (edit.SelectionStart == 0 && edit.SelectionLength == 0)
+                            on_action(action_type.home);
+                        else
+                            edit.go_to_char(0);
+                        return true;
+                    case Keys.End:
+                        if (edit.SelectionStart == edit.TextLength)
+                            on_action(action_type.end);
+                        else
+                            edit.go_to_char(edit.TextLength);
+                        return true;
                 }
             }
 
@@ -2665,7 +2653,7 @@ namespace lw_common.ui
                     edit.update_ui();
                     edit.go_to_text(txt);
                 } else
-                // the search result is visible only on the description pane
+                    // the search result is visible only on the description pane
                     edit.force_sel_text(txt);
                 lv_parent.sel_changed(log_view_sel_change_type.search);
             }
@@ -2678,6 +2666,68 @@ namespace lw_common.ui
         private void list_Scroll(object sender, ScrollEventArgs e) {
             scrolling_time_ = DateTime.Now;
             hide_edit_while_scrolling();
+            resize_cols();
+        }
+
+        public void resize_cols() {
+            var longest_shown = new Dictionary<string, int>();
+            foreach (var visibleItem in get_visible_items(list)) {
+                for (int i = 0; i < visibleItem.SubItems.Count; i++) {
+                    var sItem = visibleItem.SubItems[i];
+                    var col = list.Columns[i].Text;
+                    if (!longest_shown.ContainsKey(col)) {
+                        longest_shown.Add(col, sItem.Text.Length);
+                        continue;
+                    }
+
+                    if (sItem.Text.Length > longest_shown[col]) {
+                        longest_shown[col] = sItem.Text.Length;
+                    }
+                }
+            }
+            if (longest_shown.Count < list.Columns.Count) return;
+            foreach (ColumnHeader col in list.Columns) {
+                int new_width = -1;
+                // TODO? Replace ints with setting values
+                if (longest_shown.ContainsKey(col.Text)) {
+                    var used_space = longest_shown[col.Text] * 8;
+                    if (col.Width > used_space) {
+                        new_width = used_space;
+                    }
+                }
+
+                if (col.Text == "Line") {
+                    app.inst.sett.get("");
+                    new_width = longest_shown["Line"] * 8 + 5;
+                } else if (col.Text == "Level") {
+                    new_width = longest_shown["Level"] * 8;
+                }
+
+                if (longest_shown[col.Text] == 0) {
+                    new_width = 0;
+                }
+
+                if (new_width >= 0) {
+                    col.Width = Math.Max(new_width, 1);
+                }
+            }
+        }
+
+        private List<ListViewItem> get_visible_items(ListView list) {
+            var res = new List<ListViewItem>();
+            var top = list.TopItem;
+            if (top == null) return res;
+            // -3 & +6 because of scrollwheel velocity
+            ListViewItem next = list.Items[Math.Max(0, top.Index - 3)];
+            int count = list.Height / next.Bounds.Height - 1 + 6;
+            for (int i = 1; i <= count; i++) {
+                res.Add(next);
+                if (next.Index + 1 >= list.Items.Count) {
+                    break;
+                }
+                next = list.Items[next.Index + 1];
+            }
+            return res;
         }
 
         public void hide_edit_while_scrolling() {
@@ -2702,10 +2752,12 @@ namespace lw_common.ui
         }
 
         private void list_MouseUp(object sender, MouseEventArgs e) {
+            --mouseIsDown;
             edit.on_mouse_up();
         }
 
         private void list_MouseDown(object sender, MouseEventArgs e) {
+            ++mouseIsDown;
             if ((e.Button & MouseButtons.Right) == MouseButtons.Right)
                 right_click_.right_click();
             if ((e.Button & MouseButtons.Left) == MouseButtons.Left)
@@ -2750,24 +2802,23 @@ namespace lw_common.ui
         }
 
 
-        private void list_MouseMove(object sender, MouseEventArgs e)
-        {
+        private void list_MouseMove(object sender, MouseEventArgs e) {
             var focus = win32.focused_ctrl();
             bool here = focus == list || focus == edit;
             if (!here)
                 return;
             // see if hovering header
-            var mouse = list.PointToClient( Cursor.Position);
+            var mouse = list.PointToClient(Cursor.Position);
             bool hovers_header = show_header && list.HeaderControl.ClientRectangle.Contains(mouse);
             if (hovers_header)
                 return;
-            
+
             bool busy = is_searching_ > 0 || model_.is_running_filter;
             list.Cursor = busy ? Cursors.WaitCursor : Cursors.IBeam;
         }
 
         private void refreshUI_Tick(object sender, EventArgs e) {
-            if ( log_ != null)
+            if (log_ != null)
                 update_snoop_visibility();
         }
     }

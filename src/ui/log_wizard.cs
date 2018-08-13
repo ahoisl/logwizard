@@ -1498,10 +1498,11 @@ namespace LogWizard
                     }
                     full_log_ctrl_.refresh();
                     full_log_ctrl_.set_view_selected_view_name(lv.name);
-                } else
+                } else {
                     // 1.4.3+ we always refresh the full log - since we allow toggling "show all lines" in all views
                     //        we need the full log to contain all lines
                     full_log.refresh();
+                }
 
                 update_msg_details(false);
                 refresh_filter_found();
@@ -1917,13 +1918,12 @@ namespace LogWizard
                 }
             }
 
+            // 1.4.3+ we always refresh the full log - since we allow toggling "show all lines" in all views
+            //        we need the full log to contain all lines
+            full_log_ctrl_.refresh();
             if (global_ui.show_fulllog) {
-                full_log_ctrl_.refresh();
                 full_log_ctrl_.set_view_selected_view_name(lv.name);
-            } else
-                // 1.4.3+ we always refresh the full log - since we allow toggling "show all lines" in all views
-                //        we need the full log to contain all lines
-                full_log_ctrl_.refresh();
+            }
 
             update_msg_details(false);
             refresh_filter_found();
@@ -2172,8 +2172,7 @@ namespace LogWizard
 
             load();
 
-            if (full_log_ctrl_ != null)
-                full_log_ctrl_.refresh();
+            full_log_ctrl_?.refresh();
             refresh_cur_log_view();
             filtCtrl.settings = cur_history().settings;
             save();
@@ -3220,6 +3219,7 @@ namespace LogWizard
             // remember position - if Visible
             save_location();
             selected_view().refresh();
+            selected_view().resize_cols();
         }
 
         private void log_wizard_LocationChanged(object sender, EventArgs e) {

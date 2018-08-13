@@ -35,12 +35,11 @@ namespace lw_common.ui.format.column_formatters {
                         Image bmp = null;
                         string prefix = pic.Substring(0, sep).Trim().ToLower();
                         string file = pic.Substring(sep + 2).Trim();
-                        if (prefix == "" || file == "")
-                            continue;
+                        if (prefix == "" || file == "") continue;
                         file = util.absolute_logwizard_filename(file);
+                        if(file == "") continue;
                         try {
-                            if (file != "") 
-                                bmp = Image.FromFile(file);                            
+                            bmp = Image.FromFile(file);                            
                         } catch(Exception e) {                            
                             logger.Error("bad picture " + e.Message);
                         }
@@ -58,7 +57,7 @@ namespace lw_common.ui.format.column_formatters {
         }
 
         internal override void format_before_do_replace(format_cell cell) {
-            string text = cell.format_text.text.ToLower();
+            string text = cell.format_text.text.Trim().ToLower();
             var exists = name_to_picture_.Keys.FirstOrDefault(x => text.StartsWith(x));
             picture_ = exists != null ? name_to_picture_[exists] : null;
             if ( picture_ != null)

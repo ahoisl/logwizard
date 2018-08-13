@@ -21,6 +21,7 @@
 
  * **** Get Latest version at https://github.com/jtorjo/logwizard **** 
 */
+using SyntaxDetector;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -60,11 +61,12 @@ namespace lw_common {
                 byte[] readBuffer = new byte[READ_TO_GUESS_SYNTAX];
                 int bytes = fs.Read(readBuffer, 0, READ_TO_GUESS_SYNTAX);
                 string now = encoding.GetString(readBuffer, 0, bytes);
-                string[] lines = now.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
-
+                string[] lines = now.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries);
+                
                 // go back to where we were
                 fs.Seek(pos, SeekOrigin.Begin);
-                string found = try_find_log_syntax(lines);
+                //string found = try_find_log_syntax(lines);
+                string found = new SyntaxDetector.SyntaxDetector().DetectSyntax(lines);
                 return found;
             } catch {
                 return UNKNOWN_SYNTAX;

@@ -348,6 +348,10 @@
       <Project>{d7c0968b-59ca-4f94-a875-ef9de8f098eb}</Project>
       <Name>lw_common</Name>
     </ProjectReference>
+    <ProjectReference Include="SyntaxDetector\SyntaxDetector.csproj">
+      <Project>{3ac3f327-0da9-4991-9ac7-69fb55dfc04a}</Project>
+      <Name>SyntaxDetector</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

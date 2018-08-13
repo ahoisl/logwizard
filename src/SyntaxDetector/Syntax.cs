@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -45,6 +46,26 @@ namespace SyntaxDetector {
             parts = list;
         }
 
+        public Syntax GetDowngrade() {
+            foreach(var part in parts) {
+                if(part.type == Type.Class || part.type == Type.Function) {
+                    var result = (Syntax) Clone();
+                    result.parts.Clear();
+                    foreach (var p in parts) {
+                        if (p.type == Type.Class || p.type == Type.Function) {
+                            var np = (SyntaxPart) p.Clone();
+                            np.type = Type.Message;
+                            result.parts.Add(np);
+                        } else {
+                            result.parts.Add(p);
+                        }
+                    }
+                    return result;
+                }
+            }
+            return null;
+        }
+
         public object Clone() {
             var clone = new Syntax();
             foreach(var part in parts) {
@@ -65,13 +86,17 @@ namespace SyntaxDetector {
 
         public override string ToString() {
             var sb = new StringBuilder();
+            var msgs = 0;
+            foreach(var part in parts) {
+                if (part.type == Type.Message) msgs++;
+            }
             var ctx = 0;
-            for(var i = parts.Count - 1; i >= 0; i--) {
+            for(var i = 0; i < parts.Count; i++) {
                 var part = parts[i];
                 var nextPart = i < parts.Count - 1 ? parts[i + 1] : null;
-                sb.Insert(0, " ");
-                sb.Insert(0, part.GetSyntaxString(nextPart != null ? nextPart.startSequence : "1", ctx));
+                sb.Append(part.GetSyntaxString(nextPart != null ? nextPart.startSequence : "1", ctx == msgs - 1 ? 0 : ctx));
                 if (part.type == Type.Message) ctx++;
+                if(i < parts.Count - 1) sb.Append(" ");
             }
             return sb.ToString();
         }

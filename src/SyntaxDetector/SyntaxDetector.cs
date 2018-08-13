@@ -19,13 +19,17 @@ namespace SyntaxDetector {
 
                 var tree = new Detection(line);
                 var syntax = tree.GenerateSyntaxes();
-                syntax.ForEach(s => s.Clean());
                 for(var i = 0; i < syntax.Count; i++) {
                     for(var k = i - 1; k >= 0; k--) {
                         if(syntax[i].Equals(syntax[k])) {
                             syntax.RemoveAt(k);
                             i--;
                         }
+                    }
+                    syntax[i].Clean();
+                    var downgrade = syntax[i].GetDowngrade();
+                    if (downgrade != null) {
+                        syntax.Add(downgrade);
                     }
                 }
 
@@ -64,9 +68,11 @@ namespace SyntaxDetector {
                     }
                 }
 
+                if (bestSyntax.parts.Count == 1 && bestSyntax.parts[0].type == Type.Message) return string.Empty;
+
                 return bestSyntax.ToString();
             } else {
-                return null;
+                return string.Empty;
             }
         }
 

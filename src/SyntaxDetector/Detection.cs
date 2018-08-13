@@ -133,7 +133,19 @@ namespace SyntaxDetector {
             types.Add((Type.File, (float)fileScore / maxFileScore));
 
             // Class
-            // TODO
+            int classScore = 0, maxClassScore = 2;
+            if(input.Contains(".") && !input.Contains("..")) {
+                classScore++;
+                var containsRestricted = false;
+                foreach(var c in input.ToCharArray()) {
+                    if(!char.IsLetter(c) && !char.IsDigit(c) && c != '.' && c != '+') {
+                        containsRestricted = true;
+                        break;
+                    }
+                }
+                if (!containsRestricted) classScore++;
+            }
+            types.Add((Type.Class, (float)classScore / maxClassScore));
 
             // Function
             // Can't really detect this

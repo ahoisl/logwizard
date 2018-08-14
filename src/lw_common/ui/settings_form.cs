@@ -304,7 +304,7 @@ namespace lw_common.ui {
         }
 
         private void hotkeyslink_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
-            Process.Start("https://github.com/jtorjo/logwizard/wiki/Hotkeys");
+            Process.Start("https://github.com/habjoc/logwizard/wiki/Hotkeys");
         }
 
         private void browseFont_Click(object sender, EventArgs e) {
@@ -333,7 +333,7 @@ namespace lw_common.ui {
         }
 
         private void formatHelp_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
-            Process.Start("https://github.com/jtorjo/logwizard/wiki/Formatters");
+            Process.Start("https://github.com/habjoc/logwizard/wiki/Formatters");
         }
     }
 }

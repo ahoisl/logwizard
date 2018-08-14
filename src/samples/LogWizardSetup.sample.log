@@ -2,7 +2,7 @@
 11:06:12,939 main       INFO  wizard_intro - This is a LogWizard Setup sample! Load it in your "Log Wizard" application, 
 11:06:12,939 main       INFO  wizard_intro - to see what LogWizard can do!
 11:06:12,939 main       INFO  wizard_intro - 
-11:06:12,939 main       INFO  wizard_intro - https://github.com/jtorjo/logwizard/wiki
+11:06:12,939 main       INFO  wizard_intro - https://github.com/habjoc/logwizard/wiki
 11:06:12,939 main       INFO  wizard_intro - 
 11:06:12,939 main       INFO  wizard_intro - Eager? Wanna play? Press Alt-F to show the Filter Pane.
 11:06:12,939 main       INFO  wizard_intro - Now press Ctrl-Shift-O (Open in Windows Explorer). In the current directory,
@@ -55,7 +55,7 @@
 11:06:12,939 main       INFO  wi2b - (name = we allow some predefined color names, such as 'blue', 'lightgray', 'darkred', etc.)
 11:06:12,939 main       INFO  wi2b - Or, just click on the "eyedropper" button, select a color, and press Enter. That's it!
 11:06:12,939 main       INFO  wi2b - 
-11:06:12,939 main       INFO  wi2b - For more tips on dealing with filters, check out https://github.com/jtorjo/logwizard/wiki/Filters
+11:06:12,939 main       INFO  wi2b - For more tips on dealing with filters, check out https://github.com/habjoc/logwizard/wiki/Filters
 11:06:12,939 main       INFO  wi2b - Enabling/disabling a specific filter is very easy - just Check/uncheck its "Enb" box.
 11:06:12,939 main       INFO  wi2b - 
 11:06:12,939 main       INFO  wi2b - For instance, just go and disable - first the first filter, then the second one. 
@@ -102,7 +102,7 @@
 11:06:12,939 main       INFO  wi4 - You can just toggle it off for now ('Alt-S' hotkey).
 11:06:12,939 main       INFO  wi4 - 
 11:06:12,939 main       INFO  wi4 - 
-11:06:12,939 main       INFO  wi4 - More info about the Syntax: https://github.com/jtorjo/logwizard/wiki/Syntax
+11:06:12,939 main       INFO  wi4 - More info about the Syntax: https://github.com/habjoc/logwizard/wiki/Syntax
 11:06:12,939 main       INFO  wi4 - More info about Templates: http://www.codeproject.com/Articles/1023815/LogWizard-Log-Viewing-Made-Easy#LogWizardTemplates%28Advanced%2912
 11:06:12,939 main       INFO  wi4 - 
 11:06:12,939 main       INFO  wi4 - 

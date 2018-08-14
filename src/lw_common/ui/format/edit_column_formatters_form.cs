@@ -86,7 +86,7 @@ namespace lw_common.ui {
         }
 
         private void help_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
-            Process.Start("https://github.com/jtorjo/logwizard/wiki/Formatters");
+            Process.Start("https://github.com/habjoc/logwizard/wiki/Formatters");
         }
 
         private void ok_Click(object sender, EventArgs e) {

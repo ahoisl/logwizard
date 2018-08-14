@@ -29,13 +29,10 @@
             this.olvColumn2 = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
             this.olvColumn3 = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
             this.addNoteToLineLabel = new System.Windows.Forms.Label();
-            this.addNoteToLine = new System.Windows.Forms.Label();
             this.showDeletedLines = new System.Windows.Forms.CheckBox();
             this.curNote = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.selectColor = new System.Windows.Forms.Button();
-            this.sortByTime = new System.Windows.Forms.RadioButton();
-            this.sortByLine = new System.Windows.Forms.RadioButton();
             this.saveTimer = new System.Windows.Forms.Timer(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.notesCtrl)).BeginInit();
             this.SuspendLayout();
@@ -105,26 +102,17 @@
             this.addNoteToLineLabel.TabIndex = 1;
             this.addNoteToLineLabel.Text = "Add Note to Line";
             // 
-            // addNoteToLine
-            // 
-            this.addNoteToLine.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.addNoteToLine.AutoSize = true;
-            this.addNoteToLine.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.addNoteToLine.Location = new System.Drawing.Point(131, 478);
-            this.addNoteToLine.Name = "addNoteToLine";
-            this.addNoteToLine.Size = new System.Drawing.Size(18, 17);
-            this.addNoteToLine.TabIndex = 2;
-            this.addNoteToLine.Text = "[]";
-            // 
             // showDeletedLines
             // 
             this.showDeletedLines.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.showDeletedLines.Appearance = System.Windows.Forms.Appearance.Button;
             this.showDeletedLines.AutoSize = true;
-            this.showDeletedLines.Location = new System.Drawing.Point(308, 652);
+            this.showDeletedLines.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.showDeletedLines.Location = new System.Drawing.Point(345, 477);
             this.showDeletedLines.Name = "showDeletedLines";
-            this.showDeletedLines.Size = new System.Drawing.Size(127, 21);
+            this.showDeletedLines.Size = new System.Drawing.Size(84, 23);
             this.showDeletedLines.TabIndex = 3;
-            this.showDeletedLines.Text = "Show Del Notes";
+            this.showDeletedLines.Text = "Show Deleted";
             this.showDeletedLines.UseVisualStyleBackColor = true;
             this.showDeletedLines.CheckedChanged += new System.EventHandler(this.showDeletedLines_CheckedChanged);
             // 
@@ -166,35 +154,6 @@
             this.selectColor.UseVisualStyleBackColor = true;
             this.selectColor.Click += new System.EventHandler(this.selectColor_Click);
             // 
-            // sortByTime
-            // 
-            this.sortByTime.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.sortByTime.Appearance = System.Windows.Forms.Appearance.Button;
-            this.sortByTime.AutoSize = true;
-            this.sortByTime.Enabled = false;
-            this.sortByTime.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.sortByTime.Location = new System.Drawing.Point(283, 476);
-            this.sortByTime.Name = "sortByTime";
-            this.sortByTime.Size = new System.Drawing.Size(74, 23);
-            this.sortByTime.TabIndex = 7;
-            this.sortByTime.Text = "Sort by Time";
-            this.sortByTime.UseVisualStyleBackColor = true;
-            // 
-            // sortByLine
-            // 
-            this.sortByLine.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.sortByLine.Appearance = System.Windows.Forms.Appearance.Button;
-            this.sortByLine.AutoSize = true;
-            this.sortByLine.Checked = true;
-            this.sortByLine.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.sortByLine.Location = new System.Drawing.Point(358, 476);
-            this.sortByLine.Name = "sortByLine";
-            this.sortByLine.Size = new System.Drawing.Size(73, 23);
-            this.sortByLine.TabIndex = 8;
-            this.sortByLine.TabStop = true;
-            this.sortByLine.Text = "Sort by Line";
-            this.sortByLine.UseVisualStyleBackColor = true;
-            // 
             // saveTimer
             // 
             this.saveTimer.Enabled = true;
@@ -205,13 +164,10 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
-            this.Controls.Add(this.sortByLine);
-            this.Controls.Add(this.sortByTime);
             this.Controls.Add(this.selectColor);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.curNote);
             this.Controls.Add(this.showDeletedLines);
-            this.Controls.Add(this.addNoteToLine);
             this.Controls.Add(this.addNoteToLineLabel);
             this.Controls.Add(this.notesCtrl);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -232,13 +188,10 @@
         private BrightIdeasSoftware.OLVColumn olvColumn2;
         private BrightIdeasSoftware.OLVColumn olvColumn3;
         private System.Windows.Forms.Label addNoteToLineLabel;
-        private System.Windows.Forms.Label addNoteToLine;
         private System.Windows.Forms.CheckBox showDeletedLines;
         private System.Windows.Forms.TextBox curNote;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Button selectColor;
-        private System.Windows.Forms.RadioButton sortByTime;
-        private System.Windows.Forms.RadioButton sortByLine;
         private System.Windows.Forms.Timer saveTimer;
     }
 }

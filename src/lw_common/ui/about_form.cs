@@ -89,24 +89,28 @@ namespace lw_common.ui {
             return friendly;
         }
 
-        private void jt2_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
-            try {
-                Process.Start("mailto:john.code@torjo.com");
-            } catch {}
-        }
-
         private void jt_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
             try {
-                Process.Start("mailto:john.code@torjo.com");
+                Process.Start("https://github.com/jtorjo");
             } catch {}
         }
 
+        private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
+            try {
+                Process.Start("https://github.com/habjoc");
+            } catch { }
+        }
+
+        private void linkLabel2_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
+            try {
+                Process.Start("https://github.com/stemaa14");
+            } catch { }
+        }
 
         private void link_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
             try {
-                Process.Start("https://github.com/jtorjo/logwizard/");
-            } catch {}
-            
+                Process.Start("https://github.com/habjoc/logwizard/");
+            } catch {}   
         }
 
         private void downloadStable64_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {

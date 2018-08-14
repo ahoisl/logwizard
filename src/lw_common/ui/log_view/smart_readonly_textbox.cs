@@ -422,6 +422,7 @@ namespace lw_common.ui {
 
             int pos = Text.ToLower().IndexOf(text_to_select);
             Debug.Assert(pos >= 0);
+            if (pos < 0) return;
 
             sel_start_ = pos;
             sel_len_ = text_to_select.Length;
@@ -566,16 +567,6 @@ namespace lw_common.ui {
                 update_selected_text();
             }
         }
-
-
-
-
-
-
-
-
-
-
 
         private string raw_sel_text() {
             if (cur_sel_is_forced)

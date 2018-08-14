@@ -188,7 +188,7 @@ namespace LogWizard
                     else if (open_cmd_line_file)
                         on_file_drop(Program.open_file_name);
                     else 
-                        set_status("Alternatively, you can <i>Actions >> Open Log</i>, or re-open an older log (<i>Actions >> Show History</i>)\r\n" +
+                        set_status("Alternatively, you can <i>File >> Open Log</i>, or re-open an older log (<i>File >> Open Recent</i>)\r\n" +
                                    "To open the Last Log, just do <i>Ctrl-H, Enter</i>");
                 }, 10);
             else 
@@ -3936,12 +3936,13 @@ namespace LogWizard
             toggleFilterPaneToolStripMenuItem.Checked = global_ui.show_filter;
             toggleNotesPaneToolStripMenuItem.Checked = global_ui.show_notes;
             toggleSourcePaneToolStripMenuItem.Checked = global_ui.show_source;
-            //topmostToolStripMenuItem.Checked = global_ui.topmost;
+            topmostToolStripMenuItem.Checked = global_ui.topmost;
             toggleDetailsToolStripMenuItem.Checked = global_ui.show_details;
 
             var lv = selected_view();
             bool on_full_log = is_focus_on_full_log();
             showAllLinesToolStripMenuItem.Enabled = !on_full_log;
+            showAllLinesToolStripMenuItem.Checked = lv.show_full_log;
         }
 
         private void openHelpToolStripMenuItem_Click(object sender, EventArgs e) {
@@ -3950,6 +3951,12 @@ namespace LogWizard
 
         private void aboutToolStripMenuItem2_Click(object sender, EventArgs e) {
             new about_form(this, new_releases_, cur_release_).Show(this);
+        }
+
+        private void topmostToolStripMenuItem_Click(object sender, EventArgs e) {
+            TopMost = !TopMost;
+            global_ui.topmost = TopMost;
+            update_topmost_image();
         }
 
         private void defaultSampleToolStripMenuItem_Click(object sender, EventArgs e) {

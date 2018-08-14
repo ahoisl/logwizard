@@ -2,7 +2,7 @@
 
  [![GitHub issues](https://img.shields.io/github/issues/habjoc/logwizard.svg)](https://github.com/habjoc/logwizard/issues)
 
-![LogWizard](https://github.com/jtorjo/logwizard/blob/master/src/images/lw_demo.gif)
+![LogWizard](https://github.com/habjoc/logwizard/blob/master/src/images/lw_demo.gif)
 
 This fork of the tool [LogWizard](https://github.com/jtorjo/logwizard) was created as part of a summer internship at Ranorex. It improves on the tool in various ways, also fixing and implementing some of the original repository's issues.
 

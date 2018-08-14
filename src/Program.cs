@@ -91,17 +91,6 @@ namespace LogWizard
                 }
             }
 
-            if (args.Length > 0 && args[0] == "showsample") {
-                try {
-                    Process.Start( Assembly.GetExecutingAssembly().Location, new FileInfo(util.personal_dir() + "LogWizard\\samples\\LogWizardSetup.sample.log").FullName);
-                    // associate ourselves with .logwizard extension
-                    Process.Start(util.lw_associations_full_app_name());
-                } catch(Exception e) {
-                    MessageBox.Show("Exception " + e.Message);
-                }
-                return;
-            }
-
             if ( args.Length > 0 && File.Exists(args[0]))
                 open_file_name_ = args[0];
 

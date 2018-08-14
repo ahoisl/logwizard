@@ -501,7 +501,11 @@ namespace LogWizard
                 contexts_.Add(ctx);
             }
             // 1.1.25 - at application start - remove empty contexts (like, the user may have dragged a file, not what he wanted, dragged another)
-            contexts_ = contexts_.Where(x => x.has_not_empty_views || x.name == "Default").ToList();
+            var temp = contexts_.Where(x => x.has_not_empty_views || x.name == "Default").ToList();
+            // Make sure this hasn't removed all contexts
+            if(temp.Count > 0) {
+                contexts_ = temp;
+            }
         }
 
         private void save_contexts() {

@@ -565,10 +565,12 @@ namespace lw_common {
         }
 
         public static DateTime str_to_normalized_datetime(string date_str, string time_str) {
-            bool ignore;
-            var date = str_to_normalized_date(date_str, out ignore);
-            var time = str_to_normalized_time(time_str);
-            return date + time.TimeOfDay;
+            if(DateTime.TryParse(date_str, out var date) && DateTime.TryParse(time_str.Replace(',', '.'), out var time)) {
+                var dt = new DateTime(date.Year, date.Month, date.Day, time.Hour, time.Minute, time.Second, time.Millisecond);
+                return dt;
+            } else {
+                return DateTime.Now;
+            }
         }
 
         public static DateTime str_to_normalized_datetime(string datetime_str) {

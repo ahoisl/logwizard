@@ -44,34 +44,33 @@ namespace lw_common.ui {
         public match_item(BitArray matches, font_info font, line line, int line_idx, log_view parent) : base(matches, font, line, line_idx) {
         }
 
-        public new int line { get { return base.line_idx + 1; }}
-        public string date { get { return base.line.part(info_type.date); }}
-        public string time { get { return base.line.part(info_type.time); }}
-        public string level { get { return base.line.part(info_type.level); }}
-        public string msg { get { return base.line.part(info_type.msg); }}
+        public new int line => base.line_idx + 1;
+        public string date => base.line.part(info_type.date);
+        public string time => base.line.part(info_type.time);
+        public string level => base.line.part(info_type.level);
+        public string msg => base.line.part(info_type.msg);
 
-        public string file { get { return base.line.part(info_type.file); }}
-        public string func { get { return base.line.part(info_type.func); }}
-        public string class_ { get { return base.line.part(info_type.class_); }}
-        public string ctx1 { get { return base.line.part(info_type.ctx1); }}
-        public string ctx2 { get { return base.line.part(info_type.ctx2); }}
-        public string ctx3 { get { return base.line.part(info_type.ctx3); }}
+        public string file => base.line.part(info_type.file);
+        public string func => base.line.part(info_type.func);
+        public string class_ => base.line.part(info_type.class_);
+        public string ctx1 => base.line.part(info_type.ctx1);
+        public string ctx2 => base.line.part(info_type.ctx2);
+        public string ctx3 => base.line.part(info_type.ctx3);
+        public string ctx4 => base.line.part(info_type.ctx4);
+        public string ctx5 => base.line.part(info_type.ctx5);
+        public string ctx6 => base.line.part(info_type.ctx6);
+        public string ctx7 => base.line.part(info_type.ctx7);
+        public string ctx8 => base.line.part(info_type.ctx8);
+        public string ctx9 => base.line.part(info_type.ctx9);
+        public string ctx10 => base.line.part(info_type.ctx10);
+        public string ctx11 => base.line.part(info_type.ctx11);
+        public string ctx12 => base.line.part(info_type.ctx12);
+        public string ctx13 => base.line.part(info_type.ctx13);
+        public string ctx14 => base.line.part(info_type.ctx14);
+        public string ctx15 => base.line.part(info_type.ctx15);
+        public string thread => base.line.part(info_type.thread);
 
-        public string ctx4 { get { return base.line.part(info_type.ctx4); }}
-        public string ctx5 { get { return base.line.part(info_type.ctx5); }}
-        public string ctx6 { get { return base.line.part(info_type.ctx6); }}
-        public string ctx7 { get { return base.line.part(info_type.ctx7); }}
-        public string ctx8 { get { return base.line.part(info_type.ctx8); }}
-        public string ctx9 { get { return base.line.part(info_type.ctx9); }}
-        public string ctx10 { get { return base.line.part(info_type.ctx10); }}
-        public string ctx11 { get { return base.line.part(info_type.ctx11); }}
-        public string ctx12 { get { return base.line.part(info_type.ctx12); }}
-        public string ctx13 { get { return base.line.part(info_type.ctx13); }}
-        public string ctx14 { get { return base.line.part(info_type.ctx14); }}
-        public string ctx15 { get { return base.line.part(info_type.ctx15); }}
-        public string thread { get { return base.line.part(info_type.thread); }}
-
-        public virtual string view { get { return ""; }}
+        public virtual string view => "";
 
 #if old_code
         public Color sel_bg(log_view parent) {
@@ -128,7 +127,7 @@ namespace lw_common.ui {
 
             // 1.6.6 - if user has searched for something only visible in description pane, show it a bit darker, so the user knows it's a match on this line
             if (result == util.transparent) 
-                if (parent.is_searching()) {
+                if (parent.is_searching) {
                     var view_visible = parent.view_visible_column_types();
                     bool search_matches_view = search_matches_any_column(parent, view_visible);
                     if (!search_matches_view) {

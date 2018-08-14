@@ -35,9 +35,7 @@ namespace lw_common {
 
         private static app inst_= new app();
 
-        public static app inst {
-            get { return inst_; }
-        }
+        public static app inst => inst_;
 
         private settings_file sett_ = null;
 
@@ -69,8 +67,8 @@ namespace lw_common {
                                                     "regex.format=lighter\r\n" +
                                                     "regex2.expr=\"(?:\\\\.|[^\"\\\\])*?\"|'(?:\\\\.|[^'\\\\])*?'\r\n" + // strings
                                                     "regex2.format=darkviolet\r\n" +
-                                                    @"regex3.expr=(?:[a-zA-Z]\:|\\\\[\w\.]+\\[\w.$]+)\\(?:[\w]+\\)*[\w \.]+" + "\r\n" + // files
-                                                    "regex3.format=darkviolet\r\n" +
+                                                    @"regex3.expr=(?:[a-zA-Z]\:|\\\\[\w\.]+\\[\w.$]+)\\(?:[\w\\\(\) \.]+\\)*[\w\.]*" + "\r\n" + // files
+                                                    "regex3.format=darkgreen\r\n" +
                                                     "multiline.multi=0\r\n" +
                                                     "multiline.alternate_format=lighter\r\n" +
                                                     "multiline.separator=|\r\n" +

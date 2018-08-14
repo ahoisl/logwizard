@@ -987,41 +987,41 @@ edit_search_after=1
 edit_search_all_columns=0
 edit_search_before=1
 default_column_format=[line]
-    cell
-    format=courier new/#800000/#F0F0F0
-    align=right
-
-    [all]
-    format
-    time.format=courier new/blue/bold
-    # Custom date/time format, a' la C#
-    time.format_time=MM/dd HH:mm:ss,fff
-    time.light=#adc7e8
-    alternate.row_count=1
-    alternate.color=#f5f5f5
-
-    [msg]
-    format
-    number.color=darkred
-    regex.expr=\[.*?\]|\(.*?\)|\{.*?\}
-    regex.format=lighter
-    regex2.expr="(?:\\.|[^"\\])*?"|'(?:\\.|[^'\\])*?'
-    regex2.format=darkviolet
-    regex3.expr=(?:[a-zA-Z]\:|\\\\[\w\.]+\\[\w.$]+)\\(?:[\w]+\\)*[\w \.]
-    regex3.format=darkviolet
-    multiline.multi=0
-    multiline.alternate_format=lighter
-    multiline.separator=|
-    multiline.separator_format=blue
-
-    [level]
-    picture
-    pic=info->icons\level\info.png
-    pic2=error->icons\level\error.png
-    pic3=fatal->icons\level\fatal.png
-    pic4=debug->icons\level\debug.png
-    pic5=warn->icons\level\warn.png
-    align=center
+	cell
+	format=courier new/#800000/#F0F0F0
+	align=right
+	
+	[all]
+	format
+	time.format=courier new/blue/bold
+	# Custom date/time format, a' la C#
+	time.format_time=MM/dd HH:mm:ss,fff
+	time.light=#adc7e8
+	alternate.row_count=1
+	alternate.color=#f5f5f5
+	
+	[msg]
+	format
+	number.color=darkred
+	regex.expr=\[.*?\]|\(.*?\)|\{.*?\}
+	regex.format=lighter
+	regex2.expr="(?:\\.|[^"\\])*?"|'(?:\\.|[^'\\])*?'
+	regex2.format=darkviolet
+	regex3.expr=(?:[a-zA-Z]\:|\\\\[\w\.]+\\[\w.$]+)\\(?:[\w\\\(\) \.]+\\)*[\w\.]*
+	regex3.format=darkgreen
+	multiline.multi=0
+	multiline.alternate_format=lighter
+	multiline.separator=|
+	multiline.separator_format=blue
+	
+	[level]
+	picture
+	pic=info->icons\level\info.png
+	pic2=error->icons\level\error.png
+	pic3=fatal->icons\level\fatal.png
+	pic4=debug->icons\level\debug.png
+	pic5=warn->icons\level\warn.png
+	align=center
 
 file_to_context.0.key=HM2 Version: 2.
 file_to_context.0.value=HM2

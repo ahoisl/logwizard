@@ -46,17 +46,45 @@ namespace lw_common.ui.format {
             public string syntax = "";
             public column_formatter_base the_formatter = null;
 
-            public bool ok {
-                get { return name != "";  }
-            }
+            public bool ok => name != "";
         }
 
         private List<formatter> formatters_ = new List<formatter>();
         private string syntax_ = "";
 
-        public string syntax {
-            get { return syntax_; }
+        public int get_time_length() {
+            int res = 0;
+            foreach (var formatter in formatters_) {
+                if (formatter.column_type == "all") {
+                    foreach (var line in formatter.syntax.Split('\n')) {
+                        if (line.StartsWith("time.format_time")) {
+                            string format = line.Split('=')[1];
+                            res = DateTime.Now.ToString(format).Length;
+                        }
+                    }
+                    break;
+                }
+            }
+            return res;
         }
+
+        public bool is_level_icon(string level) {
+            bool res = false;
+            foreach (var formatter in formatters_) {
+                if (formatter.column_type == "level") {
+                    foreach (var line in formatter.syntax.Split('\n')) {
+                        if (line.StartsWith("pic") && line.Contains("=") && line.ToLower().Contains(level.Trim().ToLower())) {
+                            res = true;
+                            break;
+                        }
+                    }
+                    break;
+                }
+            }
+            return res;
+        }
+
+        public string syntax => syntax_;
 
         public void load(string syntax) {
             string errors = "";
@@ -119,9 +147,9 @@ namespace lw_common.ui.format {
             if (format.column_type == "all")
                 return true;
 
-            var aliases = cell.parent.filter.log.aliases;
-            var cell_type = aliases.to_info_type(format.column_type);
-            if (cell_type != info_type.max)
+            var aliases = cell.parent.filter.log?.aliases;
+            var cell_type = aliases?.to_info_type(format.column_type);
+            if (cell_type != null && cell_type != info_type.max)
                 return cell.col_type == cell_type;
 
             // in this case, we don't know what column the formater is to be applied to

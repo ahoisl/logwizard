@@ -3219,7 +3219,6 @@ namespace LogWizard
             // remember position - if Visible
             save_location();
             selected_view().refresh();
-            selected_view().resize_cols();
         }
 
         private void log_wizard_LocationChanged(object sender, EventArgs e) {

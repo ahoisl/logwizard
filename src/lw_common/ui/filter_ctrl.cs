@@ -451,6 +451,9 @@ namespace lw_common.ui {
             }
 
             on_save();
+            ui_to_view(view_idx_);
+            on_rerun_view(view_idx_);
+            do_refresh();
         }
 
         private void viewToClipboard_Click(object sender, EventArgs e) {

@@ -20,26 +20,18 @@
  *
  * **** Get Latest version at https://github.com/jtorjo/logwizard **** 
 */
+using BrightIdeasSoftware;
+using lw_common.ui.format;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
 using System.Data;
 using System.Diagnostics;
-using System.Drawing.Drawing2D;
-using System.Globalization;
+using System.Drawing;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Runtime.InteropServices;
-using System.Runtime.InteropServices.ComTypes;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using BrightIdeasSoftware;
-using lw_common;
-using lw_common.ui.format;
-using LogWizard;
 
 namespace lw_common.ui {
     public partial class log_view : UserControl, IDisposable {
@@ -100,7 +92,6 @@ namespace lw_common.ui {
 
         private int ignore_change_ = 0;
 
-        private bool is_changing_column_width_ = false;
 
         private bool needs_scroll_ = false;
 
@@ -121,15 +112,14 @@ namespace lw_common.ui {
         private log_view_quick_filter quick_filter_ = null;
 
         // for resizing columns
-        private int mouseIsDown = 0;
-        private bool clientResize = false;
+        private bool has_changed_column_width = false;
+        private Dictionary<int, int> user_widths = new Dictionary<int, int>();
 
         public log_view(Form parent, string name) {
             Debug.Assert(parent is log_view_parent);
 
             logger.Debug("new log view " + name);
-            filter_ = new filter(this.create_match_object);
-            filter_.on_change = on_change;
+            filter_ = new filter(this.create_match_object) { on_change = on_change };
 
             InitializeComponent();
             this.parent = parent;
@@ -158,18 +148,21 @@ namespace lw_common.ui {
             edit.init(this);
             edit.BringToFront();
 
+
             list.ColumnRightClick += list_ColumnRightClick;
             list.ColumnWidthChanged += List_on_column_width_changed;
             list.ColumnWidthChanging += List_on_column_width_changing;
             msgCol.FillsFreeSpace = !app.inst.show_horizontal_scrollbar;
             lv_parent.description_pane().on_internal_resize += on_description_pane_resized;
+
+            resize_cols();
         }
 
         private void List_on_column_width_changing(object sender, ColumnWidthChangingEventArgs e) {
             if (e.ColumnIndex == msgCol.Index)
                 return;
             edit.Visible = false;
-            is_changing_column_width_ = true;
+            has_changed_column_width = true;
         }
 
         // if the current column just got hidden, go to the closest to it
@@ -194,7 +187,15 @@ namespace lw_common.ui {
         }
 
         private void List_on_column_width_changed(object sender, ColumnWidthChangedEventArgs e) {
-
+            if (has_changed_column_width) {
+                has_changed_column_width = false;
+                // User has manually changed the column width, save it
+                if (!user_widths.ContainsKey(e.ColumnIndex)) {
+                    user_widths.Add(e.ColumnIndex, list.Columns[e.ColumnIndex].Width);
+                } else {
+                    user_widths[e.ColumnIndex] = list.Columns[e.ColumnIndex].Width;
+                }
+            }
         }
 
         private void list_ColumnRightClick(object sender, ColumnClickEventArgs e) {
@@ -408,20 +409,18 @@ namespace lw_common.ui {
                 .Select(x => (info_type)int.Parse(x)).ToList() : new List<info_type>();
             }
             internal set {
-                if (log_ != null) {
-                    log_.write_settings.available_columns.set(util.concatenate(value.Select(x => (int)x), ","));
-                    lv_parent.on_available_columns_known();
-                }
+                if (log_ == null) return;
+                log_.write_settings.available_columns.set(util.concatenate(value.Select(x => (int)x), ","));
+                lv_parent.on_available_columns_known();
             }
         }
 
         internal bool apply_column_settings_only_to_me {
-            get { return log_ != null && log_.settings.apply_column_positions_to_me.get(name); }
+            get => log_ != null && log_.settings.apply_column_positions_to_me.get(name);
             set {
-                if (log_ != null) {
-                    log_.write_settings.apply_column_positions_to_me.set(name, value);
-                    save_column_positions(column_positions);
-                }
+                if (log_ == null) return;
+                log_.write_settings.apply_column_positions_to_me.set(name, value);
+                save_column_positions(column_positions);
             }
         }
 
@@ -441,20 +440,12 @@ namespace lw_common.ui {
             }
         }
 
-        internal log_view_parent lv_parent {
-            get {
-                return parent as log_view_parent;
-            }
-        }
+        internal log_view_parent lv_parent => parent as log_view_parent;
 
-        internal filter filter {
-            get { return filter_; }
-        }
+        internal filter filter => filter_;
 
         // lines that are bookmarks (sorted by index)
-        private List<int> bookmarks {
-            get { return lv_parent.bookmarks(); }
-        }
+        private List<int> bookmarks => lv_parent.bookmarks();
 
         private string last_search_status_ = "";
         public string search_status {
@@ -500,9 +491,8 @@ namespace lw_common.ui {
                 return;
         }
 
-        public bool is_filter_set {
-            get { return filter_.row_count > 0; }
-        }
+        public bool is_filter_set => filter_.row_count > 0;
+
         public bool is_filter_up_to_date {
             get {
                 if (!is_filter_set)
@@ -564,13 +554,9 @@ namespace lw_common.ui {
         }
 
 
-        public int top_row_idx {
-            get { return visible_row_indexes().Item1; }
-        }
+        public int top_row_idx => visible_row_indexes().Item1;
 
-        internal int cur_col_idx {
-            get { return cur_col_; }
-        }
+        internal int cur_col_idx => cur_col_;
 
         // to be called only from the UI thread!!!
         internal List<int> multi_sel_idx_ui_thread {
@@ -622,12 +608,8 @@ namespace lw_common.ui {
             }
         }
 
-        internal int sel_col_idx {
-            get { return cur_col_; }
-        }
-        internal int search_found_col_idx {
-            get { return search_found_col_; }
-        }
+        internal int sel_col_idx => cur_col_;
+        internal int search_found_col_idx => search_found_col_;
 
         internal string sel_subitem_text {
             get {
@@ -650,9 +632,7 @@ namespace lw_common.ui {
         }
 
         // returns the text the user has selected via the smart edit
-        public string smart_edit_sel_text {
-            get { return edit.sel_text; }
-        }
+        public string smart_edit_sel_text => edit.sel_text;
 
         public string sel_line_text {
             get {
@@ -681,8 +661,7 @@ namespace lw_common.ui {
 
         private bool is_current_view {
             get {
-                var parent = Parent as TabPage;
-                if (parent != null) {
+                if (Parent is TabPage parent) {
                     var tab = parent.Parent as TabControl;
                     bool is_ = tab.SelectedTab == parent;
                     return is_;
@@ -691,11 +670,8 @@ namespace lw_common.ui {
             }
         }
 
-        private TabPage tab_parent {
-            get {
-                return Parent as TabPage;
-            }
-        }
+        private TabPage tab_parent => Parent as TabPage;
+
         private TabControl tab_control {
             get {
                 Debug.Assert(tab_parent != null);
@@ -712,13 +688,9 @@ namespace lw_common.ui {
             }
         }
 
-        public bool filter_view {
-            get { return model_.filter_view; }
-        }
+        public bool filter_view => model_.filter_view;
 
-        public bool show_full_log {
-            get { return model_.show_full_log; }
-        }
+        public bool show_full_log => model_.show_full_log;
 
         public void set_filter(bool filter_view, bool show_full_log) {
             if (is_full_log)
@@ -831,9 +803,7 @@ namespace lw_common.ui {
             return string_search.matches(item.match, cur_search_);
         }
 
-        public int item_count {
-            get { return model_.item_count; }
-        }
+        public int item_count => model_.item_count;
 
         public string filter_friendly_name {
             get {
@@ -852,18 +822,12 @@ namespace lw_common.ui {
         }
 
 
-        internal log_view_right_click right_click {
-            get { return right_click_; }
-        }
+        internal log_view_right_click right_click => right_click_;
 
 #if old_code
-        internal Color bookmark_fg {
-            get { return app.inst.bookmark_fg; }
-        }
+        internal Color bookmark_fg => app.inst.bookmark_fg;
 
-        internal Color bookmark_bg {
-            get { return app.inst.bookmark_bg; }
-        }
+        internal Color bookmark_bg => app.inst.bookmark_bg;
 #endif
 
 
@@ -872,13 +836,12 @@ namespace lw_common.ui {
         private bool turn_off_has_anying_changed_ = true;
 
         public bool turn_off_has_anying_changed {
-            get { return turn_off_has_anying_changed_; }
+            get => turn_off_has_anying_changed_;
             set {
                 turn_off_has_anying_changed_ = value;
-                if (!turn_off_has_anying_changed_) {
-                    last_item_count_while_current_view_ = filter_.match_count;
-                    update_x_of_y();
-                }
+                if (turn_off_has_anying_changed_) return;
+                last_item_count_while_current_view_ = filter_.match_count;
+                update_x_of_y();
             }
         }
 
@@ -890,13 +853,7 @@ namespace lw_common.ui {
             }
         }
 
-        internal bool is_full_log {
-            get {
-                // 1.2.19+ - when opening a new file for the first time (thus, no views/filters at all), we don't want to mistakengly think it's the full-log
-                //return filter_ != null ? filter_.row_count < 1 : true;
-                return viewName != null ? name == FULLLOG_NAME : true;
-            }
-        }
+        internal bool is_full_log => viewName == null || name == FULLLOG_NAME;
 
 
         public void set_filter(List<raw_filter_row> filter) {
@@ -1449,8 +1406,7 @@ namespace lw_common.ui {
         }
 
         private void list_FormatRow_1(object sender, FormatRowEventArgs e) {
-            match_item i = e.Item.RowObject as match_item;
-            if (i != null) {
+            if (e.Item.RowObject is match_item i) {
                 e.Item.BackColor = i.bg(this);
                 e.Item.ForeColor = i.fg(this);
             }
@@ -1631,26 +1587,21 @@ namespace lw_common.ui {
             go_to_closest_line(line_idx, select_type.notify_parent);
         }
 
-        public int line_count {
-            get { return item_count; }
-        }
+        public int line_count => item_count;
 
-        public int filter_row_count {
-            get { return filter_.row_count; }
-        }
+        public int filter_row_count => filter_.row_count;
 
         public bool pad_name_on_left {
-            get { return pad_name_on_left_; }
+            get => pad_name_on_left_;
             set {
-                if (pad_name_on_left_ != value) {
-                    pad_name_on_left_ = value;
-                    update_x_of_y();
-                }
+                if (pad_name_on_left_ == value) return;
+                pad_name_on_left_ = value;
+                update_x_of_y();
             }
         }
 
         public bool show_name_in_header {
-            get { return show_name_in_header_; }
+            get => show_name_in_header_;
             set {
                 show_name_in_header_ = value;
                 update_x_of_y();
@@ -1658,7 +1609,7 @@ namespace lw_common.ui {
         }
 
         public bool show_header {
-            get { return show_header_; }
+            get => show_header_;
             set {
                 bool old_show_header = show_name_ || show_header_;
                 show_header_ = value;
@@ -1669,7 +1620,7 @@ namespace lw_common.ui {
         }
 
         public bool show_name {
-            get { return show_name_; }
+            get => show_name_;
             set {
                 bool old_show_header = show_name_ || show_header_;
 
@@ -1905,9 +1856,7 @@ namespace lw_common.ui {
             return false;
         }
 
-        internal bool is_searching() {
-            return (cur_search_ != null || edit.sel_text != "");
-        }
+        internal bool is_searching => cur_search_ != null || edit.sel_text != "";
 
         private void search_for_text_next() {
             int count = item_count;
@@ -2332,20 +2281,14 @@ namespace lw_common.ui {
             }
         }
 
-        internal search_for cur_search {
-            get { return cur_search_; }
-        }
+        internal search_for cur_search => cur_search_;
 
-        internal log_view_render render {
-            get { return render_; }
-        }
+        internal log_view_render render => render_;
 
-        internal bool needs_scroll {
-            get { return needs_scroll_; }
-        }
+        internal bool needs_scroll => needs_scroll_;
 
         public column_formatter_array formatter {
-            get { return formatter_; }
+            get => formatter_;
             set {
                 formatter_ = value;
                 render_.clear_format_cache("new formatter");
@@ -2666,60 +2609,93 @@ namespace lw_common.ui {
         private void list_Scroll(object sender, ScrollEventArgs e) {
             scrolling_time_ = DateTime.Now;
             hide_edit_while_scrolling();
-            resize_cols();
+            resize_cols(e.ScrollOrientation);
         }
 
-        public void resize_cols() {
+        /// <summary>
+        /// Resizes the columns of the table in the view, should be called on every scroll,
+        /// Window resize or init
+        /// </summary>
+        public void resize_cols(ScrollOrientation o = ScrollOrientation.HorizontalScroll) {
+            // Not using AutoResize because it is wobbly
             var longest_shown = new Dictionary<string, int>();
-            foreach (var visibleItem in get_visible_items(list)) {
+            foreach (var visibleItem in get_visible_items(list, (int)o * 3)) {
                 for (int i = 0; i < visibleItem.SubItems.Count; i++) {
                     var sItem = visibleItem.SubItems[i];
                     var col = list.Columns[i].Text;
+                    var len = sItem.Text.Length;
+                    if (col == "Time") {
+                        len = formatter.get_time_length();
+                    } else if (col == "Level") {
+                        len = formatter.is_level_icon(sItem.Text) ? 2 : len;
+                    }
+
                     if (!longest_shown.ContainsKey(col)) {
-                        longest_shown.Add(col, sItem.Text.Length);
+                        longest_shown.Add(col, len);
                         continue;
                     }
 
-                    if (sItem.Text.Length > longest_shown[col]) {
-                        longest_shown[col] = sItem.Text.Length;
+                    if (len > longest_shown[col]) {
+                        longest_shown[col] = len;
                     }
                 }
             }
             if (longest_shown.Count < list.Columns.Count) return;
+            var size = app.inst.font_size;
             foreach (ColumnHeader col in list.Columns) {
                 int new_width = -1;
-                // TODO? Replace ints with setting values
-                if (longest_shown.ContainsKey(col.Text)) {
-                    var used_space = longest_shown[col.Text] * 8;
-                    if (col.Width > used_space) {
+
+                var used_space = longest_shown[col.Text] * (size - 2) + 10;
+                
+                bool wastes_space() => col.Width >= used_space;
+                bool got_user_width() => user_widths.ContainsKey(col.Index);
+
+                // Size columns depending on the horizontal scrollbar
+                if (app.inst.show_horizontal_scrollbar) {
+                    if (!got_user_width() || wastes_space()) {
                         new_width = used_space;
+                    } else {
+                        new_width = user_widths[col.Index];
+                    }
+                } else {
+                    if (wastes_space()) {
+                        new_width = used_space;
+                    } else if(got_user_width()) {
+                        new_width = user_widths[col.Index]; 
                     }
                 }
 
+                // Always size line number and logging level
                 if (col.Text == "Line") {
-                    app.inst.sett.get("");
-                    new_width = longest_shown["Line"] * 8 + 5;
+                    new_width = longest_shown["Line"] * size + 5;
                 } else if (col.Text == "Level") {
-                    new_width = longest_shown["Level"] * 8;
+                    new_width = longest_shown["Level"] * size;
                 }
 
+                // If there is no text don't show the column
                 if (longest_shown[col.Text] == 0) {
                     new_width = 0;
                 }
 
                 if (new_width >= 0) {
+                    // Only size down to 1 pixel so snoop filter can still be applied/removed
                     col.Width = Math.Max(new_width, 1);
                 }
             }
         }
 
-        private List<ListViewItem> get_visible_items(ListView list) {
+        /// <summary>
+        /// Evaluates all ListViewItems which are currently visible in the ListView
+        /// </summary>
+        /// <param name="list">The ListView</param>
+        /// <param name="plus">How many Items that are not visible (top and bottom) should be returned</param>
+        /// <returns>A List of ListViewItems which are currently visible in the ListView</returns>
+        private List<ListViewItem> get_visible_items(ListView list, int plus) {
             var res = new List<ListViewItem>();
             var top = list.TopItem;
             if (top == null) return res;
-            // -3 & +6 because of scrollwheel velocity
-            ListViewItem next = list.Items[Math.Max(0, top.Index - 3)];
-            int count = list.Height / next.Bounds.Height - 1 + 6;
+            ListViewItem next = list.Items[Math.Max(0, top.Index - plus)];
+            int count = list.Height / next.Bounds.Height - 1 + plus * 2;
             for (int i = 1; i <= count; i++) {
                 res.Add(next);
                 if (next.Index + 1 >= list.Items.Count) {
@@ -2752,12 +2728,10 @@ namespace lw_common.ui {
         }
 
         private void list_MouseUp(object sender, MouseEventArgs e) {
-            --mouseIsDown;
             edit.on_mouse_up();
         }
 
         private void list_MouseDown(object sender, MouseEventArgs e) {
-            ++mouseIsDown;
             if ((e.Button & MouseButtons.Right) == MouseButtons.Right)
                 right_click_.right_click();
             if ((e.Button & MouseButtons.Left) == MouseButtons.Left)

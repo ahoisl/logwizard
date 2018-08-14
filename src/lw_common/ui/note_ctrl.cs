@@ -1341,17 +1341,14 @@ namespace lw_common.ui {
             ++ignore_change_;
             // note: the only time when sel < 0 is possible only when the user hasn't selected any line yet
             //       (thus, even cur_line is pointing nowhere)
-            addNoteToLine.Visible = sel >= 0;
             addNoteToLineLabel.Visible = sel >= 0;
 
-            addNoteToLine.Text = "";
             if (sel >= 0) {
                 var i = notesCtrl.GetItem(sel).RowObject as note_item;
                 if (i.the_note != null)
-                    addNoteToLineLabel.Text = i.the_note.author_name == author_name_ ? "Edit Note to Line" : "Reply to " + i.the_note.author_initials;
+                    addNoteToLineLabel.Text = i.the_note.author_name == author_name_ ? "Edit Note to Line " + (lines_[i.line_id].idx + 1) : "Reply to " + i.the_note.author_initials;
                 else
-                    addNoteToLineLabel.Text = "Add Note to Line";
-                addNoteToLine.Text = "[" + (lines_[i.line_id].idx + 1) + "]";
+                    addNoteToLineLabel.Text = "Add Note to Line " + (lines_[i.line_id].idx + 1);
                 curNote.Text = i.the_note != null ? i.the_note.note_text : "";
                 curNote.Enabled = true;
                 selectColor.Visible = i.the_note != null && i.the_note.author_name == author_name_ && i.the_note.note_text.Trim() != "";

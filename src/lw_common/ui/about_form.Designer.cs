@@ -28,8 +28,6 @@
             this.label2 = new System.Windows.Forms.Label();
             this.jt = new System.Windows.Forms.LinkLabel();
             this.link = new System.Windows.Forms.LinkLabel();
-            this.label3 = new System.Windows.Forms.Label();
-            this.jt2 = new System.Windows.Forms.LinkLabel();
             this.stableGroup = new System.Windows.Forms.GroupBox();
             this.downloadStable32 = new System.Windows.Forms.LinkLabel();
             this.downloadStable64 = new System.Windows.Forms.LinkLabel();
@@ -42,6 +40,9 @@
             this.currentGroup = new System.Windows.Forms.GroupBox();
             this.current = new System.Windows.Forms.TextBox();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.label3 = new System.Windows.Forms.Label();
+            this.linkLabel1 = new System.Windows.Forms.LinkLabel();
+            this.linkLabel2 = new System.Windows.Forms.LinkLabel();
             this.stableGroup.SuspendLayout();
             this.betaGroup.SuspendLayout();
             this.currentGroup.SuspendLayout();
@@ -55,15 +56,15 @@
             this.label1.Location = new System.Drawing.Point(103, 11);
             this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(51, 16);
+            this.label1.Size = new System.Drawing.Size(99, 16);
             this.label1.TabIndex = 0;
-            this.label1.Text = "Author:";
+            this.label1.Text = "Original Author:";
             // 
             // label2
             // 
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(101, 32);
+            this.label2.Location = new System.Drawing.Point(103, 65);
             this.label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(92, 16);
@@ -86,34 +87,13 @@
             // 
             this.link.AutoSize = true;
             this.link.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.link.Location = new System.Drawing.Point(251, 32);
+            this.link.Location = new System.Drawing.Point(251, 65);
             this.link.Name = "link";
-            this.link.Size = new System.Drawing.Size(210, 16);
+            this.link.Size = new System.Drawing.Size(217, 16);
             this.link.TabIndex = 3;
             this.link.TabStop = true;
-            this.link.Text = "https://github.com/jtorjo/logwizard";
+            this.link.Text = "https://github.com/habjoc/logwizard";
             this.link.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.link_LinkClicked);
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.Location = new System.Drawing.Point(102, 58);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(216, 16);
-            this.label3.TabIndex = 4;
-            this.label3.Text = "Got suggestions? Drop       an email!";
-            // 
-            // jt2
-            // 
-            this.jt2.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.jt2.Location = new System.Drawing.Point(234, 58);
-            this.jt2.Name = "jt2";
-            this.jt2.Size = new System.Drawing.Size(26, 16);
-            this.jt2.TabIndex = 5;
-            this.jt2.TabStop = true;
-            this.jt2.Text = "me";
-            this.jt2.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.jt2_LinkClicked);
             // 
             // stableGroup
             // 
@@ -275,18 +255,54 @@
             this.pictureBox1.TabIndex = 10;
             this.pictureBox1.TabStop = false;
             // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label3.Location = new System.Drawing.Point(103, 36);
+            this.label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(77, 16);
+            this.label3.TabIndex = 11;
+            this.label3.Text = "Updated By:";
+            // 
+            // linkLabel1
+            // 
+            this.linkLabel1.AutoSize = true;
+            this.linkLabel1.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.linkLabel1.Location = new System.Drawing.Point(251, 36);
+            this.linkLabel1.Name = "linkLabel1";
+            this.linkLabel1.Size = new System.Drawing.Size(114, 16);
+            this.linkLabel1.TabIndex = 12;
+            this.linkLabel1.TabStop = true;
+            this.linkLabel1.Text = "Jonathan Haberl";
+            this.linkLabel1.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel1_LinkClicked);
+            // 
+            // linkLabel2
+            // 
+            this.linkLabel2.AutoSize = true;
+            this.linkLabel2.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.linkLabel2.Location = new System.Drawing.Point(371, 36);
+            this.linkLabel2.Name = "linkLabel2";
+            this.linkLabel2.Size = new System.Drawing.Size(90, 16);
+            this.linkLabel2.TabIndex = 13;
+            this.linkLabel2.TabStop = true;
+            this.linkLabel2.Text = "Max Stebner";
+            this.linkLabel2.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel2_LinkClicked);
+            // 
             // about_form
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.ClientSize = new System.Drawing.Size(575, 574);
+            this.Controls.Add(this.linkLabel2);
+            this.Controls.Add(this.linkLabel1);
+            this.Controls.Add(this.label3);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.currentGroup);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.betaGroup);
             this.Controls.Add(this.stableGroup);
-            this.Controls.Add(this.jt2);
-            this.Controls.Add(this.label3);
             this.Controls.Add(this.link);
             this.Controls.Add(this.jt);
             this.Controls.Add(this.label2);
@@ -315,8 +331,6 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.LinkLabel jt;
         private System.Windows.Forms.LinkLabel link;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.LinkLabel jt2;
         private System.Windows.Forms.GroupBox stableGroup;
         private System.Windows.Forms.GroupBox betaGroup;
         private System.Windows.Forms.Label label4;
@@ -329,5 +343,8 @@
         private System.Windows.Forms.LinkLabel downloadStable32;
         private System.Windows.Forms.LinkLabel downloadBeta32;
         private System.Windows.Forms.PictureBox pictureBox1;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.LinkLabel linkLabel1;
+        private System.Windows.Forms.LinkLabel linkLabel2;
     }
 }

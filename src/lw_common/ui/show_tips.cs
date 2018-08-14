@@ -8,53 +8,43 @@ namespace lw_common.ui {
         private status_ctrl status_;
 
         private string[] tips_ = new[] {
-            "LogWizard can be even faster! Here's how to use <a https://github.com/jtorjo/logwizard/wiki/Hotkeys>Hotkeys</a>.",
-            "Wanna edit filters? <a https://github.com/jtorjo/logwizard/wiki/Filters>Here's a bit more info about it</a>.",
-            "Want to optimize the LogWizard space? Here's how to use <a https://github.com/jtorjo/logwizard/wiki/Toggles>Toggles</a>",
+            "LogWizard can be even faster! Here's how to use <a https://github.com/habjoc/logwizard/wiki/Hotkeys>Hotkeys</a>.",
+            "Wanna edit filters? <a https://github.com/habjoc/logwizard/wiki/Filters>Here's a bit more info about it</a>.",
             "You can resize/move the columns around to suit your needs. Just right click on any column header!",
             "To open the Last Log, just do <b>Ctrl-H, Enter</b>",
 
             "Do you have columns that are multi-line? Just toggle the 'Details' pane on! <b>(Ctrl-D)</b>.\r\n." +
             "You can also edit which columns you want in the 'Details' pane - just right click it.",
             "Wanna open the Last Log? Do <b>Ctrl-H, Enter</b>!",
-            "Want Pretty Formatting? Right click on Any column header, and select 'Edit Column Formatting'. Here's a bit of <a https://github.com/jtorjo/logwizard/wiki/Formatters>help</a>",
-            "Want to take Formatting to the next level? Try <a https://github.com/jtorjo/logwizard/wiki/Categories>Categories</a>!",
+            "Want Pretty Formatting? Right click on Any column header, and select 'Edit Column Formatting'. Here's a bit of <a https://github.com/habjoc/logwizard/wiki/Formatters>help</a>",
         };
 
         private string[] tips_beginner_ = new[] {
             // 1.5.5 - at this time, we can't handle several links in one line
-            "Got a <i>burning question?</i> <b>Ask away!</b>   <a http://www.codeproject.com/Articles/1023815/LogWizard-a-Log-Viewer-that-is-easy-and-fun-to-use>Here (General)</a>\r\n" +
-            "Got a <i>burning question?</i> <b>Ask away!</b>   <a http://www.codeproject.com/Articles/1045528/LogWizard-Filter-your-Logs-Inside-out>Here (Filters/Views)</a>\r\n" +
-            "Got a <i>burning question?</i> <b>Ask away!</b>   <a http://www.codeproject.com/Articles/1039389/LogWizard-Talk-About-your-Logs>Here (Notes)</a>",
-
             "Drag and drop a file in order to view it in LogWizard. It's that easy :)",
             "Want to turn tips off? Go to Preferences -> top/right.",
-            "Have a suggestion? <a http://www.codeproject.com/Articles/1023815/LogWizard-a-Log-Viewer-that-is-easy-and-fun-to-use>Let me know!</a>",
             "Want to know more about the features implemented in the latest versions? Check out 'What's up' >> About page.",
             "You can toggle the Status pane on/off - just use Alt-S. However, at the beginning, I recommend you leave it on :P",
-            "You can add notes to lines, and share them with your colleagues. <a http://www.codeproject.com/Articles/1039389/LogWizard-Talk-About-your-Logs>Here's how</a>.",
+            "You can add notes to lines, and share them with your colleagues. <a http://www.github.com/habjoc/logwizard/Notes>Here's how</a>.",
 
-            "Creating filters is a bliss. Select some text, and right click! More details <a http://www.codeproject.com/Articles/1045528/LogWizard-Filter-your-Logs-Inside-out>here</a>",
+            "Creating filters is a bliss. Select some text, and right click! More details <a http://www.github.com/habjoc/logwizard/Filters>here</a>",
             "You can easily view Windows Event Log(s)! Just hit Ctrl-O, and select 'Windows Event Log'...",
 
             "You can tweak your Description Pane to show <b>just what you want, the way you want it</b>. Right click on top-left, and select 'Edit Description Layout'.",
 
-            "Want to filter in/out? Easy peasy! Select some text, and right click! More details <a http://www.codeproject.com/Articles/1045528/LogWizard-Filter-your-Logs-Inside-out>here</a>",
+            "Want to filter in/out? Easy peasy! Select some text, and right click! More details <a http://www.github.com/habjoc/logwizard/Filters>here</a>",
             "Want to add a new view? Hover the top header - where 'Message X of Y' is written, and you'll see the '+' and '-' buttons, to add/remove views.",
 
             "Do you have columns that are multi-line? Just toggle the 'Details' pane on! <b>(Ctrl-D)</b>.\r\n." +
             "You can also edit which columns you want in the 'Details' pane - just right click it.",
 
-            "You can just drop a file in order to view it in LogWizard. Or, you can <i>Actions >> Open Log</i>, if you want to tweak the Log Settings...",
+            "You can just drop a file in order to view it in LogWizard. Or, you can <i>File >> Open Log</i>, if you want to tweak the Log Settings...",
             "You can at any time tweak the current Log Settings. Right click the top header (where Columns are shown), and select <i>Edit Log Settings</i>",
-            "Want to easily see/go to the Logs you opened before? Go to <i>Actions >> Show History</i> or use <b>Ctrl-H</b>.",
 
             "Want to have several Logs open at the same time?\r\n" +
-            "You can open a new LogWizard window at any time by doing <i>Actions >> New LogWizard Window</i> or <b>Ctrl-N</b>.\r\n" +
+            "You can open a new LogWizard window at any time by doing <i>File >> New LogWizard Window</i> or <b>Ctrl-N</b>.\r\n" +
             "Just open any Log in the newly opened Window. You can even access the History (Ctrl-H), as you normally would.",
-            "Don't know what to do? Try some samples! (<i>Actions >> Open Log Samples</i>)",
-            "Want Pretty Formatting? Right click on Any column header, and select 'Edit Column Formatting'. Here's a bit of <a https://github.com/jtorjo/logwizard/wiki/Formatters>help</a>",
-            "Want to take Formatting to the next level? Try <a https://github.com/jtorjo/logwizard/wiki/Categories>Categories</a>!",
+            "Want Pretty Formatting? Right click on Any column header, and select 'Edit Column Formatting'. Here's a bit of <a https://github.com/habjoc/logwizard/wiki/Formatters>help</a>",
         };
 
         private const int MAX_BEGINNER_TIPS = 20;

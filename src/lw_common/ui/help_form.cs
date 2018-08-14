@@ -135,5 +135,19 @@ namespace lw_common.ui {
             return sb.ToString();
         }
 
+        private void helpViewer_Navigating(object sender, WebBrowserNavigatingEventArgs e) {
+            string target = e.Url.ToString();
+
+            if (target == "about:blank") {
+                // Allow this
+            } else if (target.Contains(hrefText)) {
+                e.Cancel = true;
+                target = target.Substring(target.IndexOf("/wiki") + "/wiki".Length);
+                if (target.StartsWith("/")) target = target.Substring(1);
+                open_wiki(target);
+            } else {
+                e.Cancel = true;
+            }
+        }
     }
 }

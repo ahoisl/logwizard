@@ -104,6 +104,7 @@
             this.toggleSourcePaneToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toggleDetailsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem10 = new System.Windows.Forms.ToolStripSeparator();
+            this.topmostToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.showAllLinesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openHelpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -160,7 +161,7 @@
             // 
             this.newFilteredView.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.newFilteredView.Font = new System.Drawing.Font("Segoe UI", 7F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.newFilteredView.Location = new System.Drawing.Point(364, 29);
+            this.newFilteredView.Location = new System.Drawing.Point(358, 29);
             this.newFilteredView.Name = "newFilteredView";
             this.newFilteredView.Size = new System.Drawing.Size(18, 20);
             this.newFilteredView.TabIndex = 1;
@@ -172,7 +173,7 @@
             // 
             this.delFilteredView.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.delFilteredView.Font = new System.Drawing.Font("Segoe UI", 7F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.delFilteredView.Location = new System.Drawing.Point(382, 29);
+            this.delFilteredView.Location = new System.Drawing.Point(376, 29);
             this.delFilteredView.Name = "delFilteredView";
             this.delFilteredView.Size = new System.Drawing.Size(18, 20);
             this.delFilteredView.TabIndex = 2;
@@ -233,7 +234,7 @@
             this.synchronizedWithFullLog.Checked = true;
             this.synchronizedWithFullLog.CheckState = System.Windows.Forms.CheckState.Checked;
             this.synchronizedWithFullLog.Font = new System.Drawing.Font("Segoe UI", 7F);
-            this.synchronizedWithFullLog.Location = new System.Drawing.Point(256, 29);
+            this.synchronizedWithFullLog.Location = new System.Drawing.Point(250, 29);
             this.synchronizedWithFullLog.Name = "synchronizedWithFullLog";
             this.synchronizedWithFullLog.Size = new System.Drawing.Size(46, 20);
             this.synchronizedWithFullLog.TabIndex = 1;
@@ -249,7 +250,7 @@
             this.synchronizeWithExistingLogs.Checked = true;
             this.synchronizeWithExistingLogs.CheckState = System.Windows.Forms.CheckState.Checked;
             this.synchronizeWithExistingLogs.Font = new System.Drawing.Font("Segoe UI", 7F);
-            this.synchronizeWithExistingLogs.Location = new System.Drawing.Point(210, 29);
+            this.synchronizeWithExistingLogs.Location = new System.Drawing.Point(204, 29);
             this.synchronizeWithExistingLogs.Name = "synchronizeWithExistingLogs";
             this.synchronizeWithExistingLogs.Size = new System.Drawing.Size(46, 20);
             this.synchronizeWithExistingLogs.TabIndex = 3;
@@ -365,10 +366,10 @@
             // tabPage3
             // 
             this.tabPage3.Controls.Add(this.categories);
-            this.tabPage3.Location = new System.Drawing.Point(4, 24);
+            this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage3.Size = new System.Drawing.Size(269, 459);
+            this.tabPage3.Size = new System.Drawing.Size(192, 74);
             this.tabPage3.TabIndex = 1;
             this.tabPage3.Text = "By Threads / By Context";
             this.tabPage3.UseVisualStyleBackColor = true;
@@ -383,16 +384,16 @@
             this.categories.Location = new System.Drawing.Point(0, 0);
             this.categories.Margin = new System.Windows.Forms.Padding(4);
             this.categories.Name = "categories";
-            this.categories.Size = new System.Drawing.Size(269, 463);
+            this.categories.Size = new System.Drawing.Size(192, 78);
             this.categories.TabIndex = 0;
             // 
             // tabPage4
             // 
             this.tabPage4.Controls.Add(this.notes);
-            this.tabPage4.Location = new System.Drawing.Point(4, 24);
+            this.tabPage4.Location = new System.Drawing.Point(4, 22);
             this.tabPage4.Name = "tabPage4";
             this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage4.Size = new System.Drawing.Size(269, 459);
+            this.tabPage4.Size = new System.Drawing.Size(192, 74);
             this.tabPage4.TabIndex = 2;
             this.tabPage4.Text = "Notes / Bookmarks";
             this.tabPage4.UseVisualStyleBackColor = true;
@@ -406,7 +407,7 @@
             this.notes.Location = new System.Drawing.Point(4, 3);
             this.notes.Margin = new System.Windows.Forms.Padding(4);
             this.notes.Name = "notes";
-            this.notes.Size = new System.Drawing.Size(258, 449);
+            this.notes.Size = new System.Drawing.Size(181, 64);
             this.notes.TabIndex = 1;
             // 
             // sourceUp
@@ -464,7 +465,7 @@
             this.splitDescription.Panel2.Controls.Add(this.description);
             this.splitDescription.Panel2MinSize = 100;
             this.splitDescription.Size = new System.Drawing.Size(952, 450);
-            this.splitDescription.SplitterDistance = 300;
+            this.splitDescription.SplitterDistance = 294;
             this.splitDescription.SplitterWidth = 6;
             this.splitDescription.TabIndex = 18;
             this.splitDescription.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.splitDescription_SplitterMoved);
@@ -485,8 +486,8 @@
             this.filteredLeft.Panel1.Controls.Add(this.viewsTab);
             this.filteredLeft.Panel1MinSize = 100;
             this.filteredLeft.Panel2MinSize = 100;
-            this.filteredLeft.Size = new System.Drawing.Size(952, 300);
-            this.filteredLeft.SplitterDistance = 439;
+            this.filteredLeft.Size = new System.Drawing.Size(952, 294);
+            this.filteredLeft.SplitterDistance = 433;
             this.filteredLeft.SplitterWidth = 6;
             this.filteredLeft.TabIndex = 0;
             this.filteredLeft.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.filteredLeft_SplitterMoved);
@@ -502,7 +503,7 @@
             this.viewsTab.Location = new System.Drawing.Point(0, 3);
             this.viewsTab.Name = "viewsTab";
             this.viewsTab.SelectedIndex = 0;
-            this.viewsTab.Size = new System.Drawing.Size(434, 298);
+            this.viewsTab.Size = new System.Drawing.Size(428, 292);
             this.viewsTab.TabIndex = 0;
             this.viewsTab.SelectedIndexChanged += new System.EventHandler(this.viewsTab_SelectedIndexChanged);
             this.viewsTab.DragDrop += new System.Windows.Forms.DragEventHandler(this.filteredViews_DragDrop);
@@ -514,7 +515,7 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 24);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(426, 270);
+            this.tabPage1.Size = new System.Drawing.Size(420, 264);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "View";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -529,7 +530,7 @@
             this.dropHere.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             this.dropHere.Location = new System.Drawing.Point(5, 3);
             this.dropHere.Name = "dropHere";
-            this.dropHere.Size = new System.Drawing.Size(415, 270);
+            this.dropHere.Size = new System.Drawing.Size(409, 264);
             this.dropHere.TabIndex = 0;
             this.dropHere.Text = "Drop a Log file here\r\n to open";
             this.dropHere.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -542,7 +543,7 @@
             this.description.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.description.Location = new System.Drawing.Point(0, 0);
             this.description.Name = "description";
-            this.description.Size = new System.Drawing.Size(952, 144);
+            this.description.Size = new System.Drawing.Size(952, 150);
             this.description.TabIndex = 0;
             // 
             // refresh
@@ -817,6 +818,7 @@
             this.toggleSourcePaneToolStripMenuItem,
             this.toggleDetailsToolStripMenuItem,
             this.toolStripMenuItem10,
+            this.topmostToolStripMenuItem,
             this.showAllLinesToolStripMenuItem});
             this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
             this.viewToolStripMenuItem.ShortcutKeyDisplayString = "Alt+N";
@@ -906,6 +908,13 @@
             // 
             this.toolStripMenuItem10.Name = "toolStripMenuItem10";
             this.toolStripMenuItem10.Size = new System.Drawing.Size(218, 6);
+            // 
+            // topmostToolStripMenuItem
+            // 
+            this.topmostToolStripMenuItem.Name = "topmostToolStripMenuItem";
+            this.topmostToolStripMenuItem.Size = new System.Drawing.Size(221, 22);
+            this.topmostToolStripMenuItem.Text = "Topmost";
+            this.topmostToolStripMenuItem.Click += new System.EventHandler(this.topmostToolStripMenuItem_Click);
             // 
             // showAllLinesToolStripMenuItem
             // 
@@ -1070,6 +1079,7 @@
         private System.Windows.Forms.ToolStripMenuItem fromScratchToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem cloneCurrentToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem refreshToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem topmostToolStripMenuItem;
     }
 }
 

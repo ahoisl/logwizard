@@ -30,7 +30,6 @@
             // 
             // helpViewer
             // 
-            this.helpViewer.AllowNavigation = false;
             this.helpViewer.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
@@ -39,6 +38,7 @@
             this.helpViewer.Name = "helpViewer";
             this.helpViewer.Size = new System.Drawing.Size(852, 596);
             this.helpViewer.TabIndex = 0;
+            this.helpViewer.Navigating += new System.Windows.Forms.WebBrowserNavigatingEventHandler(this.helpViewer_Navigating);
             // 
             // helpPicker
             // 

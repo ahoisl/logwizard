@@ -90,11 +90,11 @@ namespace SyntaxDetector {
             foreach(var part in parts) {
                 if (part.type == Type.Message) msgs++;
             }
-            var ctx = 0;
+            var ctx = 1;
             for(var i = 0; i < parts.Count; i++) {
                 var part = parts[i];
                 var nextPart = i < parts.Count - 1 ? parts[i + 1] : null;
-                sb.Append(part.GetSyntaxString(nextPart != null ? nextPart.startSequence : "1", ctx == msgs - 1 ? 0 : ctx));
+                sb.Append(part.GetSyntaxString(nextPart != null ? nextPart.startSequence : "1", ctx == msgs ? 0 : ctx));
                 if (part.type == Type.Message) ctx++;
                 if(i < parts.Count - 1) sb.Append(" ");
             }

@@ -272,7 +272,7 @@ namespace LogWizard
             if (util.is_debug)
                 return;
 
-            var info = new read_github_release("jtorjo", "logwizard");
+            var info = new read_github_release("habjoc", "logwizard");
             info.is_stable = is_stable;
             new_releases_ = util.is_debug ? info.beta_releases("1.1") : info.beta_releases();
             cur_release_ = info.release_before();

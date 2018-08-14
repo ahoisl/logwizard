@@ -52,7 +52,7 @@ namespace SyntaxDetector {
                         }
                         if(found) foundCount++;
                     }
-                    if (((float) foundCount / allSyntax.Count) < 0.8f) allSyntax[0].RemoveAt(i);
+                    if (((float) foundCount / allSyntax.Count) < 0.9f) allSyntax[0].RemoveAt(i);
                 }
                 masterSyntax = allSyntax[0];
             }

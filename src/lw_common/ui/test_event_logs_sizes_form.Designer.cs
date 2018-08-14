@@ -24,6 +24,7 @@
         /// </summary>
         private void InitializeComponent() {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(test_event_logs_sizes_form));
             this.close = new System.Windows.Forms.Button();
             this.readStatus = new System.Windows.Forms.TextBox();
             this.refresh = new System.Windows.Forms.Timer(this.components);
@@ -70,6 +71,7 @@
             this.ClientSize = new System.Drawing.Size(450, 261);
             this.Controls.Add(this.readStatus);
             this.Controls.Add(this.close);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "test_event_logs_sizes_form";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Do Event Logs contain any events?";

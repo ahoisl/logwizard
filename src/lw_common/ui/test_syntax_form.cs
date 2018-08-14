@@ -151,7 +151,7 @@ namespace lw_common.ui {
         }
 
         private void help_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
-            Process.Start("https://github.com/habjoc/logwizard/wiki/Syntax");
+            new help_form("syntax").Show(this);
         }
 
         private void use_lines(string lines_str, string guessed_syntax) {

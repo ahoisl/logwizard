@@ -402,7 +402,7 @@ namespace lw_common.ui {
         }
 
         private void syntaxLink_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
-            Process.Start("https://github.com/habjoc/logwizard/wiki/Syntax");
+            new help_form("syntax").Show(this);
         }
 
         private void update_event_log_list() {

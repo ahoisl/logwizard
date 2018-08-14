@@ -14,7 +14,10 @@ namespace SyntaxDetector {
         public string DetectSyntax(string[] lines) {
             var masterSyntax = new List<Syntax>();
             var allSyntax = new List<List<Syntax>>();
-            foreach(var line in lines) {
+
+            var sum = 0f;
+            var count = 0;
+            foreach (var line in lines) {
                 if (line.StartsWith(" ") || line.StartsWith("\t") || line.Trim().Length == 0) continue;
 
                 var tree = new Detection(line);
@@ -27,13 +30,32 @@ namespace SyntaxDetector {
                         }
                     }
                     syntax[i].Clean();
+                    sum += syntax[i].GetMinimalistConfidence();
+                    count++;
                     var downgrade = syntax[i].GetDowngrade();
                     if (downgrade != null) {
+                        count++;
+                        sum += downgrade.GetMinimalistConfidence();
                         syntax.Add(downgrade);
                     }
                 }
 
                 allSyntax.Add(syntax);
+            }
+
+            // Remove syntax for lines that are likely not to adhere to syntax
+            float avgConfidence = (float)sum / count;
+            for(var i = allSyntax.Count - 1; i >= 0; i--) {
+                var sSum = 0f;
+                var sCount = 0;
+                foreach(var syntax in allSyntax[i]) {
+                    sSum += syntax.GetMinimalistConfidence();
+                    sCount++;
+                }
+                float confidence = (float)sSum / sCount;
+                if (confidence < avgConfidence * .5f) {
+                    allSyntax.RemoveAt(i);
+                }
             }
 
             // Merge for all lines

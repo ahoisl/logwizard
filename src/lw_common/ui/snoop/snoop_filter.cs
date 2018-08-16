@@ -69,15 +69,6 @@ namespace lw_common {
 
         internal snoop_filter(log_view view) {
             view_ = view;
-            // add the most of possible snoops
-            foreach ( info_type type in Enum.GetValues(typeof(info_type))) {
-                if (info_type_io.is_snoopable(type)) {
-                    var form = new snoop_around_form();
-                    form.on_apply = on_apply;
-                    form.on_snoop = on_snoop;
-                    unused_.Add(new snoop_form_info { form = form });
-                }
-            }
         }
 
         public bool aliases_set {
@@ -140,7 +131,7 @@ namespace lw_common {
                     values.Add(cur_value, 0);
                 ++values[cur_value];
 
-                if (++snoop_idx % snoop_update_ui_step == 0)
+                if (snoop_update_ui_step != 0 && ++snoop_idx % snoop_update_ui_step == 0)
                     if (keep_running) 
                         // ... set to a copy, since we're modifying this one
                         self.set_values(values.ToDictionary(x => x.Key, x => x.Value), false, false);
@@ -229,10 +220,17 @@ namespace lw_common {
             Debug.Assert(info_type_io.is_snoopable(type));
             lock (this) {
                 if (!snoops_.ContainsKey(type)) {
-                    var use_now = unused_[0];
-                    unused_.RemoveAt(0);
-                    use_now.clear();
-                    snoops_.Add(type, use_now);
+                    if(unused_.Count > 0) {
+                        var use_now = unused_[0];
+                        unused_.RemoveAt(0);
+                        use_now.clear();
+                        snoops_.Add(type, use_now);
+                    } else {
+                        var form = new snoop_around_form();
+                        form.on_apply = on_apply;
+                        form.on_snoop = on_snoop;
+                        snoops_.Add(type, new snoop_form_info { form = form });
+                    }
                 }
                 return snoops_[type].form;
             }

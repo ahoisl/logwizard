@@ -2061,7 +2061,7 @@ namespace LogWizard
             if (ignore_change_ > 0)
                 return;
 
-            on_log_listory_changed();
+            on_log_history_changed();
 
             util.postpone(() => {
                 if (global_ui.show_current_view)
@@ -2101,10 +2101,10 @@ namespace LogWizard
                 return;
             if (logHistory.DroppedDown)
                 return;
-            on_log_listory_changed();
+            on_log_history_changed();
         }
 
-        private void on_log_listory_changed() {
+        private void on_log_history_changed() {
             if (logHistory.SelectedIndex < 0)
                 return;
             global_ui.last_log_guid = cur_history().guid;
@@ -2395,7 +2395,7 @@ namespace LogWizard
             case "end":
             case "space":
             case "return":
-                if (key_code == "space" && filtCtrl.can_handle_toggle_enable_dimmed_now)
+                if (key_code == "space" && filtCtrl.can_handle_toggle_enable_now)
                     break;
 
                 if (allow_arrow_to_function_normally())

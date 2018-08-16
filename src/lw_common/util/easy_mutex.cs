@@ -82,7 +82,6 @@ namespace lw_common {
 
                 if (!received)
                     logger.Fatal("[log] " + friendly_name + " - could not reaquire lock ");
-                return ;
             } catch (AbandonedMutexException ame) {
                 // this should never happen - we are the acquire thread!!!
                 logger.Fatal("[log] " + friendly_name + " - abandoned on releaseandacquire " + ame);
@@ -92,7 +91,6 @@ namespace lw_common {
                 logger.Fatal("[log] " + friendly_name + " - exception on easy mutex " + e);
                 abandoned_ = true;
             }
-            return ;
         }
 
         // returns true if event was received
@@ -114,11 +112,8 @@ namespace lw_common {
                 }
 
             try {
-                bool wait_event = mutex_ != null;
-                bool new_lines = false;
-                if (wait_event) {
-                    new_lines = mutex_.WaitOne(wait_ms);
-                    if (new_lines) {
+                if (mutex_ != null) {
+                    if (mutex_.WaitOne(wait_ms)) {
                         lock (this)
                             signaled_ = false;
                         mutex_.ReleaseMutex();

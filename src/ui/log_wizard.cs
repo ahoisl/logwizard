@@ -2384,7 +2384,7 @@ namespace LogWizard {
                 case "end":
                 case "space":
                 case "return":
-                    if (key_code == "space" && filtCtrl.can_handle_toggle_enable_dimmed_now)
+                    if (key_code == "space" && filtCtrl.can_handle_toggle_enable_now)
                         break;
 
                     if (allow_arrow_to_function_normally())

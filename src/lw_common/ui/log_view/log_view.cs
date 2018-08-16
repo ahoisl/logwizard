@@ -483,6 +483,7 @@ namespace lw_common.ui {
 
         private void load_font() {
             list.Font = app.inst.font;
+            resize_cols();
         }
 
 
@@ -2100,6 +2101,7 @@ namespace lw_common.ui {
             int new_size = font_size_ + size;
             if (new_size >= 6 && new_size < 20) {
                 font_size_ = new_size;
+                app.inst.font_size = font_size_;
                 load_font();
             }
         }

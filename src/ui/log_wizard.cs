@@ -44,10 +44,8 @@ using lw_common.ui.format;
 using LogWizard.context;
 using LogWizard.Properties;
 
-namespace LogWizard
-{
-    partial class log_wizard : Form, log_view_parent
-    {
+namespace LogWizard {
+    partial class log_wizard : Form, log_view_parent {
         private static log4net.ILog logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         private static List<log_wizard> forms_ = new List<log_wizard>();
@@ -80,7 +78,7 @@ namespace LogWizard
 
         private int toggled_to_custom_ui_ = -1;
         private static ui_info default_ui_ = new ui_info();
-        private static ui_info[] custom_ui_ = new ui_info[] { 
+        private static ui_info[] custom_ui_ = new ui_info[] {
             new ui_info(), new ui_info(), new ui_info(), new ui_info(), new ui_info(), new ui_info(), new ui_info(), new ui_info(), new ui_info(), new ui_info()
         };
 
@@ -104,8 +102,7 @@ namespace LogWizard
 
         private show_tips show_tips_;
 
-        public log_wizard()
-        {
+        public log_wizard() {
             InitializeComponent();
             show_tips_ = new show_tips(status);
             toggled_to_custom_ui_ = first_available_toggle_custom_ui();
@@ -115,17 +112,17 @@ namespace LogWizard
             if (first_time) {
                 load_contexts(sett_);
                 load_global_settings();
-                notes_keeper.inst.init( util.is_debug ? "notes" : util.local_dir() + "\\notes", app.inst.identify_notes_files);
-                new Thread(load_release_info_thread) {IsBackground = true}.Start();
+                notes_keeper.inst.init(util.is_debug ? "notes" : util.local_dir() + "\\notes", app.inst.identify_notes_files);
+                new Thread(load_release_info_thread) { IsBackground = true }.Start();
             }
-            notes.set_author( app.inst.notes_author_name, app.inst.notes_initials, app.inst.notes_color);
+            notes.set_author(app.inst.notes_author_name, app.inst.notes_initials, app.inst.notes_color);
             notes.on_note_selected = on_note_selected;
 
             description.on_description_changed += on_description_template_changed;
 
             ++ignore_change_;
 
-            full_log_ctrl_ = new log_view( this, log_view.FULLLOG_NAME);
+            full_log_ctrl_ = new log_view(this, log_view.FULLLOG_NAME);
             full_log_ctrl_.Dock = DockStyle.Fill;
             filteredLeft.Panel2.Controls.Add(full_log_ctrl_);
             full_log_ctrl_.show_name = false;
@@ -180,18 +177,18 @@ namespace LogWizard
             //            and we would end up positioning them wrong
             bool is_first_form = forms_.Count == 1;
             // 1.5.20+ note: if more than one form -> for the new forms, don't select anything
-            if ( is_first_form)
+            if (is_first_form)
                 util.postpone(() => {
                     bool open_cmd_line_file = forms_.Count == 1 && Program.open_file_name != null;
                     if (history_.Count > 0 && !open_cmd_line_file && app.inst.auto_open_last_log)
                         logHistory.SelectedIndex = history_.Count - 1;
                     else if (open_cmd_line_file)
                         on_file_drop(Program.open_file_name);
-                    else 
+                    else
                         set_status("Alternatively, you can <i>File >> Open Log</i>, or re-open an older log (<i>File >> Open Recent</i>)\r\n" +
                                    "To open the Last Log, just do <i>Ctrl-H, Enter</i>");
                 }, 10);
-            else 
+            else
                 set_status("To open the Last Log, just do <i>Ctrl-H, Enter</i>");
 
             if (util.is_debug) {
@@ -201,7 +198,7 @@ namespace LogWizard
         }
 
         private void On_running_changed(bool running) {
-            foreach ( var view in all_log_views_and_full_log())
+            foreach (var view in all_log_views_and_full_log())
                 view.set_category_running(running);
 
             if (running)
@@ -211,7 +208,7 @@ namespace LogWizard
         private void On_change_category_type(string category_type) {
             category_format_settings new_ = category_format();
             new_.default_category_type = category_type;
-            category_format( new_);
+            category_format(new_);
             var col_type = log_parser_.aliases.to_info_type(category_type);
 
             // at this point, i need to load all available categories for this type
@@ -226,7 +223,7 @@ namespace LogWizard
                 else {
                     var colors = category_format().get_colors(col_type, values);
                     categories.set_categories(colors);
-                    foreach ( var view in all_log_views_and_full_log())
+                    foreach (var view in all_log_views_and_full_log())
                         view.set_category_colors(colors, col_type);
                 }
             });
@@ -235,9 +232,9 @@ namespace LogWizard
         private void On_category_colors_change(List<category_colors> colors) {
             category_format_settings new_ = category_format();
             var category_type = log_parser_.aliases.to_info_type(new_.default_category_type);
-            new_.set_colors( category_type, colors );
-            category_format( new_);
-            foreach ( var view in all_log_views_and_full_log())
+            new_.set_colors(category_type, colors);
+            category_format(new_);
+            foreach (var view in all_log_views_and_full_log())
                 view.set_category_colors(colors, category_type);
         }
 
@@ -276,17 +273,17 @@ namespace LogWizard
             info.is_stable = is_stable;
             new_releases_ = util.is_debug ? info.beta_releases("1.1") : info.beta_releases();
             cur_release_ = info.release_before();
-            if ( info.error)
+            if (info.error)
                 logger.Error("can't load latest release info: " + info.error_msg);
 
             // show only stable & beta versions
             var last = new_releases_.FirstOrDefault(x => x.is_stable || (x.is_beta && app.inst.show_beta_releases));
             if (last != null) {
-                string version_prefix = " <a " + last.friendly_url + ">New Version</a>: "   ;
+                string version_prefix = " <a " + last.friendly_url + ">New Version</a>: ";
                 this.async_call(() =>
-                    util.postpone(() =>                    
-                        set_status(version_prefix + last.version + " - " + last.short_description + "\r\n" 
-                            + util.concatenate(last.features.Select(x => version_prefix + "* " + x), "\r\n"), status_ctrl.status_type.msg, 
+                    util.postpone(() =>
+                        set_status(version_prefix + last.version + " - " + last.short_description + "\r\n"
+                            + util.concatenate(last.features.Select(x => version_prefix + "* " + x), "\r\n"), status_ctrl.status_type.msg,
                             30000), util.is_debug ? 1 : 15000));
             }
         }
@@ -302,12 +299,12 @@ namespace LogWizard
                 // we don't have the default position - just use it now
                 return -1;
 
-            for ( int idx = 0; idx < custom_ui_.Length; ++idx)
+            for (int idx = 0; idx < custom_ui_.Length; ++idx)
                 if (!used.Contains(idx)) {
                     if (!custom_ui_[idx].was_set_at_least_once) {
                         // use the last form's UI
                         int last_ui = forms.Last().toggled_to_custom_ui_;
-                        custom_ui_[idx].copy_from( last_ui >= 0 ? custom_ui_[last_ui] : default_ui_);
+                        custom_ui_[idx].copy_from(last_ui >= 0 ? custom_ui_[last_ui] : default_ui_);
                         // just a bit lower than the last UI - so that both are visible
                         custom_ui_[idx].left += 50;
                         custom_ui_[idx].top += 50;
@@ -322,11 +319,11 @@ namespace LogWizard
 
         private void recreate_contexts_combo() {
             ++ignore_change_;
-            
+
             int old_sel = curContextCtrl.SelectedIndex;
             string old_name = old_sel >= 0 ? curContextCtrl.Items[old_sel].ToString() : "";
             curContextCtrl.Items.Clear();
-            foreach ( ui_context ctx in contexts_)
+            foreach (ui_context ctx in contexts_)
                 curContextCtrl.Items.Add(ctx.name);
 
             if (old_sel < 0)
@@ -341,7 +338,7 @@ namespace LogWizard
                         found = true;
                     }
                 }
-                if ( !found)
+                if (!found)
                     // probably the former selection was erased - just select something
                     curContextCtrl.SelectedIndex = 0;
             }
@@ -350,7 +347,7 @@ namespace LogWizard
         }
 
         private void update_contexts_combos_in_all_forms() {
-            foreach(var f in forms)
+            foreach (var f in forms)
                 f.recreate_contexts_combo();
         }
 
@@ -391,27 +388,26 @@ namespace LogWizard
                     Debug.Assert(lv_idx >= 0);
                     viewsTab.SelectedIndex = lv_idx;
                     lv.go_to_closest_line(line_idx, log_view.select_type.do_not_notify_parent);
-                }
-                else if (full_log_ctrl_ != null) {
+                } else if (full_log_ctrl_ != null) {
                     // in this case, we don't have that view - go to the full log
-                    if ( !global_ui.show_fulllog)
+                    if (!global_ui.show_fulllog)
                         show_full_log(show_full_log_type.both);
                     full_log_ctrl_.go_to_closest_line(line_idx, log_view.select_type.do_not_notify_parent);
-                } 
+                }
 
                 --ignore_change_;
             }
         }
 
         private log_view log_view_by_name(string view_name) {
-            foreach ( log_view lv in all_log_views())
+            foreach (log_view lv in all_log_views())
                 if (lv.name == view_name)
                     return lv;
             return null;
         }
 
         private Brush views_brush_ = new SolidBrush(Color.Black), views_something_changed_brush_ = new SolidBrush(Color.DarkRed);
-        private void ViewsTabOnDrawItem(object sender, DrawItemEventArgs e) {            
+        private void ViewsTabOnDrawItem(object sender, DrawItemEventArgs e) {
             Graphics g = e.Graphics;
 
             // Get the item from the collection.
@@ -452,7 +448,7 @@ namespace LogWizard
 
         private ui_info global_ui {
             get {
-                Debug.Assert( toggled_to_custom_ui_ >= -1 && toggled_to_custom_ui_ < custom_ui_.Length);
+                Debug.Assert(toggled_to_custom_ui_ >= -1 && toggled_to_custom_ui_ < custom_ui_.Length);
                 return toggled_to_custom_ui_ < 0 ? default_ui_ : custom_ui_[toggled_to_custom_ui_];
             }
         }
@@ -469,7 +465,7 @@ namespace LogWizard
             if (show) {
                 if (!visible_now) {
                     tab.Top += extra;
-                    tab.Height -= extra;                    
+                    tab.Height -= extra;
                 }
             } else {
                 if (visible_now) {
@@ -479,8 +475,8 @@ namespace LogWizard
             }
         }
 
-        private ui_context cur_context() { 
-            return contexts_[ curContextCtrl.SelectedIndex];
+        private ui_context cur_context() {
+            return contexts_[curContextCtrl.SelectedIndex];
         }
 
         public static string version() {
@@ -494,8 +490,8 @@ namespace LogWizard
             logger.Debug("loading contexts");
             history_list_.load();
 
-            int count = int.Parse( sett.get("context_count", "1"));
-            for ( int i = 0; i < count ; ++i) {
+            int count = int.Parse(sett.get("context_count", "1"));
+            for (int i = 0; i < count; ++i) {
                 ui_context ctx = new ui_context();
                 ctx.load("context." + i);
                 contexts_.Add(ctx);
@@ -503,7 +499,7 @@ namespace LogWizard
             // 1.1.25 - at application start - remove empty contexts (like, the user may have dragged a file, not what he wanted, dragged another)
             var temp = contexts_.Where(x => x.has_not_empty_views || x.name == "Default").ToList();
             // Make sure this hasn't removed all contexts
-            if(temp.Count > 0) {
+            if (temp.Count > 0) {
                 contexts_ = temp;
             }
         }
@@ -512,7 +508,7 @@ namespace LogWizard
             history_list_.save();
 
             sett_.set("context_count", "" + contexts_.Count);
-            for ( int i = 0; i < contexts_.Count; ++i) {
+            for (int i = 0; i < contexts_.Count; ++i) {
                 contexts_[i].save("context." + i);
             }
         }
@@ -525,11 +521,10 @@ namespace LogWizard
                 return;
 
             ++ignore_change_;
-            if ( show) {
+            if (show) {
                 main.Panel1Collapsed = false;
                 main.Panel1.Show();
-            }
-            else {
+            } else {
                 main.Panel1Collapsed = true;
                 main.Panel1.Hide();
             }
@@ -541,11 +536,10 @@ namespace LogWizard
             if (show == shown)
                 return;
 
-            if ( show) {
+            if (show) {
                 sourceUp.Panel1Collapsed = false;
                 sourceUp.Panel1.Show();
-            }
-            else {
+            } else {
                 sourceUp.Panel1Collapsed = true;
                 sourceUp.Panel1.Hide();
             }
@@ -579,30 +573,30 @@ namespace LogWizard
         private void show_full_log(show_full_log_type show) {
             Control to_focus = null;
             switch (show) {
-            case show_full_log_type.both:
-                show_filteredleft_pane1(true);
-                show_filteredleft_pane2(true);
-                global_ui.show_fulllog = true;
-                global_ui.show_current_view = true;
-                to_focus = log_view_for_tab(viewsTab.SelectedIndex);
-                break;
-            case show_full_log_type.just_view:
-                show_filteredleft_pane1(true);
-                show_filteredleft_pane2(false);
-                global_ui.show_fulllog = false;
-                global_ui.show_current_view = true;
-                to_focus = log_view_for_tab(viewsTab.SelectedIndex);
-                break;
-            case show_full_log_type.just_full_log:
-                show_filteredleft_pane1(false);
-                show_filteredleft_pane2(true);
-                global_ui.show_fulllog = true;
-                global_ui.show_current_view = false;
-                to_focus = full_log_ctrl_;
-                break;
-            default:
-                Debug.Assert(false);
-                break;
+                case show_full_log_type.both:
+                    show_filteredleft_pane1(true);
+                    show_filteredleft_pane2(true);
+                    global_ui.show_fulllog = true;
+                    global_ui.show_current_view = true;
+                    to_focus = log_view_for_tab(viewsTab.SelectedIndex);
+                    break;
+                case show_full_log_type.just_view:
+                    show_filteredleft_pane1(true);
+                    show_filteredleft_pane2(false);
+                    global_ui.show_fulllog = false;
+                    global_ui.show_current_view = true;
+                    to_focus = log_view_for_tab(viewsTab.SelectedIndex);
+                    break;
+                case show_full_log_type.just_full_log:
+                    show_filteredleft_pane1(false);
+                    show_filteredleft_pane2(true);
+                    global_ui.show_fulllog = true;
+                    global_ui.show_current_view = false;
+                    to_focus = full_log_ctrl_;
+                    break;
+                default:
+                    Debug.Assert(false);
+                    break;
             }
 
             if (!global_ui.show_current_view)
@@ -610,10 +604,10 @@ namespace LogWizard
                 active_pane_ = full_log_ctrl_;
 
             // can't focus now, it would sometimes get the hotkey ('L') to be sent twice, and we'd end up toggling twice with a single press
-            if ( to_focus != null)
+            if (to_focus != null)
                 util.postpone(() => {
                     var lv = to_focus as log_view;
-                    if ( lv != null)
+                    if (lv != null)
                         lv.set_focus();
                     else
                         to_focus.Focus();
@@ -625,20 +619,23 @@ namespace LogWizard
                 return show_full_log_type.both;
             return global_ui.show_current_view ? show_full_log_type.just_view : show_full_log_type.just_full_log;
         }
-        
+
         private void toggle_full_log() {
             show_full_log_type now = shown_full_log_now();
             show_full_log_type next = now;
             switch (now) {
-            case show_full_log_type.both: next = show_full_log_type.just_full_log; 
-                break;
-            case show_full_log_type.just_view: next = show_full_log_type.both;
-                break;
-            case show_full_log_type.just_full_log: next = show_full_log_type.just_view;
-                break;
-            default:
-                Debug.Assert(false);
-                break;
+                case show_full_log_type.both:
+                    next = show_full_log_type.just_full_log;
+                    break;
+                case show_full_log_type.just_view:
+                    next = show_full_log_type.both;
+                    break;
+                case show_full_log_type.just_full_log:
+                    next = show_full_log_type.just_view;
+                    break;
+                default:
+                    Debug.Assert(false);
+                    break;
             }
             show_full_log(next);
 
@@ -646,19 +643,17 @@ namespace LogWizard
             update_msg_details(true);
         }
 
-        private void filteredViews_DragEnter(object sender, DragEventArgs e)
-        {
-            if ( e.Data.GetDataPresent( DataFormats.FileDrop))
+        private void filteredViews_DragEnter(object sender, DragEventArgs e) {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
                 e.Effect = e.AllowedEffect;
             else
                 e.Effect = DragDropEffects.None;
         }
 
-        private void filteredViews_DragDrop(object sender, DragEventArgs e)
-        {
-            if ( e.Data.GetDataPresent( DataFormats.FileDrop)) {
+        private void filteredViews_DragDrop(object sender, DragEventArgs e) {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop)) {
                 string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
-                if ( files.Length == 1)
+                if (files.Length == 1)
                     on_file_drop(files[0]);
             }
         }
@@ -669,12 +664,12 @@ namespace LogWizard
                 var existing = contexts_.FirstOrDefault(x => x.name == context_name);
                 if (existing != null)
                     // 1.5.6+ - we now keep the context in the settings 
-                    return existing;                
+                    return existing;
             }
 
             // old way of forcing file to have a context (pre 1.5.6)
             string file = log_settings.type == log_type.file ? log_settings.name : "";
-            if ( file != "" && app.inst.forced_file_to_context.ContainsKey(file)) {
+            if (file != "" && app.inst.forced_file_to_context.ContainsKey(file)) {
                 string forced = app.inst.forced_file_to_context[file];
                 var context_from_forced = contexts_.FirstOrDefault(x => x.name == forced);
                 if (context_from_forced != null)
@@ -719,21 +714,18 @@ namespace LogWizard
             if (parse_config.is_config_file(file)) {
                 util.postpone(() => on_config_file_drop(file), 1);
                 return;
-            }
-            else if (ext == ".zip") {
+            } else if (ext == ".zip") {
                 // allow the drag/drop operation to finish - thus the program we got this from can be responsive
                 util.postpone(() => on_zip_drop(file), 1);
                 return;
-            }
-            else if (ext == ".logwizard") {
+            } else if (ext == ".logwizard") {
                 // allow the drag/drop operation to finish - thus the program we got this from can be responsive
                 util.postpone(() => import_notes(file), 1);
                 return;
-            }
-            else if (ext.StartsWith(".db") && db_util.sqlite_db_tables(file).Count > 0) {
+            } else if (ext.StartsWith(".db") && db_util.sqlite_db_tables(file).Count > 0) {
                 // allow the drag/drop operation to finish - thus the program we got this from can be responsive
                 util.postpone(() => on_sqlite_file_drop(file), 1);
-                return;                
+                return;
             }
 
             on_new_file_log(file, friendly_name);
@@ -748,22 +740,21 @@ namespace LogWizard
                 return;
 
             ++ignore_change_;
-            if ( show) {
+            if (show) {
                 splitDescription.Panel2Collapsed = false;
                 splitDescription.Panel2.Show();
-            }
-            else {
+            } else {
                 splitDescription.Panel2Collapsed = true;
                 splitDescription.Panel2.Hide();
             }
-            if ( msg_details_ != null)
+            if (msg_details_ != null)
                 msg_details_.force_hide = show;
             --ignore_change_;
         }
 
         private void toggle_details() {
             bool show = !global_ui.show_details;
-            show_details( show);
+            show_details(show);
             global_ui.show_details = show;
             save();
         }
@@ -796,7 +787,7 @@ namespace LogWizard
         }
 
         private category_format_settings category_format() {
-            return new category_format_settings( text_.settings.category_format);
+            return new category_format_settings(text_.settings.category_format);
         }
 
         private void category_format(category_format_settings sett) {
@@ -805,22 +796,22 @@ namespace LogWizard
 
         private void toggle_categories() {
             global_ui.show_categories = !global_ui.show_categories;
-            show_left_pane( global_ui.show_left_pane);
+            show_left_pane(global_ui.show_left_pane);
 
-            if (global_ui.show_categories) 
+            if (global_ui.show_categories)
                 update_categories_list();
 
             save();
-            update_msg_details(true);            
+            update_msg_details(true);
         }
 
         private void update_categories_list() {
-            if ( log_parser_ != null && log_parser_.up_to_date ) {
-                var available_categories = full_log.available_columns.Where(info_type_io.can_be_category). Select(x => log_parser_.aliases.friendly_name(x) ).ToList();
+            if (log_parser_ != null && log_parser_.up_to_date) {
+                var available_categories = full_log.available_columns.Where(info_type_io.can_be_category).Select(x => log_parser_.aliases.friendly_name(x)).ToList();
                 categories.set_category_types(available_categories, category_format().default_category_type);
             } else {
                 categories.set_category_types(new List<string>(), "");
-                categories.set_error("Please wait until Log is fully loaded" + util.ellipsis_suffix() );
+                categories.set_error("Please wait until Log is fully loaded" + util.ellipsis_suffix());
                 util.postpone(update_categories_list, 250);
             }
         }
@@ -877,14 +868,14 @@ namespace LogWizard
                 int header_height = log_view_for_tab(0).header_height;
                 newFilteredView.Top += show ? header_height : -header_height;
                 delFilteredView.Top += show ? header_height : -header_height;
-                synchronizeWithExistingLogs.Top  += show ? header_height : -header_height;
-                synchronizedWithFullLog.Top  += show ? header_height : -header_height;
+                synchronizeWithExistingLogs.Top += show ? header_height : -header_height;
+                synchronizedWithFullLog.Top += show ? header_height : -header_height;
             }
         }
 
         private void toggle_view_header() {
             bool show = !all_log_views()[0].show_header;
-            show_header( show);
+            show_header(show);
             global_ui.show_header = show;
             save();
         }
@@ -894,7 +885,7 @@ namespace LogWizard
             toggleTopmost.Visible = show_toggle_topmost;
             var first_tab = viewsTab.TabCount >= 0 ? log_view_for_tab(0) : null;
             if (first_tab != null)
-                first_tab.pad_name_on_left = show_toggle_topmost;            
+                first_tab.pad_name_on_left = show_toggle_topmost;
             update_msg_details(true);
         }
 
@@ -903,37 +894,35 @@ namespace LogWizard
         }
 
         private void toggle_notes() {
-            global_ui.show_notes = !global_ui.show_notes;            
-            show_left_pane( global_ui.show_left_pane);
+            global_ui.show_notes = !global_ui.show_notes;
+            show_left_pane(global_ui.show_left_pane);
 
             save();
-            update_msg_details(true);            
+            update_msg_details(true);
         }
 
         private void toggle_filters() {
-            global_ui.show_filter = !global_ui.show_filter;            
-            show_left_pane( global_ui.show_left_pane);
+            global_ui.show_filter = !global_ui.show_filter;
+            show_left_pane(global_ui.show_left_pane);
 
             save();
             update_msg_details(true);
         }
         private void toggle_source() {
             global_ui.show_source = !global_ui.show_source;
-            show_source( global_ui.show_source);
+            show_source(global_ui.show_source);
             save();
             update_msg_details(true);
         }
 
-        private void toggleFullLog_Click(object sender, EventArgs e)
-        {
+        private void toggleFullLog_Click(object sender, EventArgs e) {
             toggle_full_log();
         }
 
 
-        private void LogNinja_FormClosed(object sender, FormClosedEventArgs e)
-        {
+        private void LogNinja_FormClosed(object sender, FormClosedEventArgs e) {
             forms_.Remove(this);
-            if ( forms_.Count == 0)
+            if (forms_.Count == 0)
                 Application.Exit();
         }
 
@@ -949,35 +938,35 @@ namespace LogWizard
 
             ui_context cur = cur_context();
             int cur_view = viewsTab.SelectedIndex;
-            if (cur_view < cur.views.Count) 
-                filtCtrl.view_to_ui( cur.views[cur_view], cur_view);
+            if (cur_view < cur.views.Count)
+                filtCtrl.view_to_ui(cur.views[cur_view], cur_view);
         }
 
         private log_view log_view_for_tab(int idx) {
             TabPage tab = viewsTab.TabPages[idx];
-            foreach ( Control c in tab.Controls)
-                if ( c is log_view)
+            foreach (Control c in tab.Controls)
+                if (c is log_view)
                     return (log_view)c; // we have it
             return null;
         }
 
         private log_view ensure_we_have_log_view_for_tab(int idx) {
             TabPage tab = viewsTab.TabPages[idx];
-            foreach ( Control c in tab.Controls)
-                if ( c is log_view)
+            foreach (Control c in tab.Controls)
+                if (c is log_view)
                     return c as log_view; // we have it
 
-            foreach ( Control c in tab.Controls)
+            foreach (Control c in tab.Controls)
                 c.Visible = false;
 
-            Debug.Assert( idx < cur_context().views.Count );
+            Debug.Assert(idx < cur_context().views.Count);
             string name = cur_context().views[idx].name;
-            log_view new_ = new log_view( this, name );
+            log_view new_ = new log_view(this, name);
             new_.Dock = DockStyle.Fill;
             tab.Controls.Add(new_);
             new_.show_name = false;
-            if ( log_parser_ != null)
-                new_.set_log( new log_reader(log_parser_));
+            if (log_parser_ != null)
+                new_.set_log(new log_reader(log_parser_));
             return new_;
         }
 
@@ -986,7 +975,7 @@ namespace LogWizard
             for (int idx = 0; idx < viewsTab.TabCount; ++idx) {
                 var other = log_view_for_tab(idx);
                 // 1.5.8+ it can be null when switching from one log to another
-                if ( other != null)
+                if (other != null)
                     other_logs.Add(other);
             }
             return other_logs;
@@ -994,7 +983,7 @@ namespace LogWizard
 
         private List<log_view> all_log_views_and_full_log() {
             var all = all_log_views();
-            if ( full_log_ctrl_ != null)
+            if (full_log_ctrl_ != null)
                 all.Add(full_log_ctrl_);
             return all;
         }
@@ -1018,7 +1007,7 @@ namespace LogWizard
             other_views.Remove(view);
             var other_view_names = other_views.Select(x => x.name);
             string new_name = util.unique_name(other_view_names, name);
-            if (new_name != name) 
+            if (new_name != name)
                 // in this case, another view already had that name - we want names to be unique
                 view.name = name = new_name;
 
@@ -1055,89 +1044,89 @@ namespace LogWizard
             get {
                 if (filtCtrl.is_editing_any_filter || filtCtrl.is_focus_on_filter_list)
                     return filtCtrl.sel;
-                return -1;                
+                return -1;
             }
         }
 
         public void simple_action(log_view_right_click.simple_action simple) {
             // - Adding a filter/changing a filter + Edit -> need to figure out if it's existing or not, to know what filter to select for later editing!
             switch (simple) {
-            case log_view_right_click.simple_action.none:
-                Debug.Assert(false);
-                break;
-            case log_view_right_click.simple_action.view_to_left:
-                Debug.Assert(false);
-                break;
-            case log_view_right_click.simple_action.view_to_right:
-                Debug.Assert(false);
-                break;
+                case log_view_right_click.simple_action.none:
+                    Debug.Assert(false);
+                    break;
+                case log_view_right_click.simple_action.view_to_left:
+                    Debug.Assert(false);
+                    break;
+                case log_view_right_click.simple_action.view_to_right:
+                    Debug.Assert(false);
+                    break;
 
-            case log_view_right_click.simple_action.view_add_copy:
-                copyToolStripMenuItem_Click(null,null);
-                break;
-            case log_view_right_click.simple_action.view_add_new:
-                fromScratchToolStripMenuItem_Click(null,null);
-                break;
-            case log_view_right_click.simple_action.view_delete:
-                delView_Click(null,null);
-                break;
+                case log_view_right_click.simple_action.view_add_copy:
+                    copyToolStripMenuItem_Click(null, null);
+                    break;
+                case log_view_right_click.simple_action.view_add_new:
+                    fromScratchToolStripMenuItem_Click(null, null);
+                    break;
+                case log_view_right_click.simple_action.view_delete:
+                    delView_Click(null, null);
+                    break;
 
-            case log_view_right_click.simple_action.button_preferences:
-                preferencesToolStripMenuItem_Click(null,null);
-                break;
-            case log_view_right_click.simple_action.button_refresh:
-                refreshToolStripMenuItem1_Click(null,null);
-                break;
+                case log_view_right_click.simple_action.button_preferences:
+                    preferencesToolStripMenuItem_Click(null, null);
+                    break;
+                case log_view_right_click.simple_action.button_refresh:
+                    refreshToolStripMenuItem1_Click(null, null);
+                    break;
 
-            case log_view_right_click.simple_action.export_log_and_notes:
-                export_notes_to_logwizard_file();
-                break;
-            case log_view_right_click.simple_action.export_view:
-                exportCurrentViewtxthtmlToolStripMenuItem_Click(null,null);
-                break;
-            case log_view_right_click.simple_action.export_notes:
-                exportNotestxthtmlToolStripMenuItem_Click(null,null);
-                break;
+                case log_view_right_click.simple_action.export_log_and_notes:
+                    export_notes_to_logwizard_file();
+                    break;
+                case log_view_right_click.simple_action.export_view:
+                    exportCurrentViewtxthtmlToolStripMenuItem_Click(null, null);
+                    break;
+                case log_view_right_click.simple_action.export_notes:
+                    exportNotestxthtmlToolStripMenuItem_Click(null, null);
+                    break;
 
-            case log_view_right_click.simple_action.find_find:
-                handle_action(action_type.search);
-                break;
-            case log_view_right_click.simple_action.find_find_next:
-                handle_action(action_type.search_next);
-                break;
-            case log_view_right_click.simple_action.find_find_prev:
-                handle_action(action_type.search_prev);
-                break;
+                case log_view_right_click.simple_action.find_find:
+                    handle_action(action_type.search);
+                    break;
+                case log_view_right_click.simple_action.find_find_next:
+                    handle_action(action_type.search_next);
+                    break;
+                case log_view_right_click.simple_action.find_find_prev:
+                    handle_action(action_type.search_prev);
+                    break;
 
-            case log_view_right_click.simple_action.copy_msg:
-                handle_action(action_type.copy_to_clipboard);
-                break;
-            case log_view_right_click.simple_action.copy_full_line:
-                handle_action(action_type.copy_full_line_to_clipboard);
-                break;
+                case log_view_right_click.simple_action.copy_msg:
+                    handle_action(action_type.copy_to_clipboard);
+                    break;
+                case log_view_right_click.simple_action.copy_full_line:
+                    handle_action(action_type.copy_full_line_to_clipboard);
+                    break;
 
-            case log_view_right_click.simple_action.note_create_note:
-                if (!global_ui.show_notes) {
-                    global_ui.show_notes = true;
-                    show_left_pane(global_ui.show_left_pane);
-                }
-                notes.focus_to_edit();
-                break;
-            case log_view_right_click.simple_action.note_show_notes:
-                handle_action(action_type.toggle_notes);
-                break;
+                case log_view_right_click.simple_action.note_create_note:
+                    if (!global_ui.show_notes) {
+                        global_ui.show_notes = true;
+                        show_left_pane(global_ui.show_left_pane);
+                    }
+                    notes.focus_to_edit();
+                    break;
+                case log_view_right_click.simple_action.note_show_notes:
+                    handle_action(action_type.toggle_notes);
+                    break;
 
-            case log_view_right_click.simple_action.edit_last_filter:
-                if (!global_ui.show_filter) {
-                    global_ui.show_filter = true;
-                    show_left_pane(global_ui.show_left_pane);
-                }
-                filtCtrl.edit_filter_row_by_filter_id(last_edited_filter_id_);
-                break;
+                case log_view_right_click.simple_action.edit_last_filter:
+                    if (!global_ui.show_filter) {
+                        global_ui.show_filter = true;
+                        show_left_pane(global_ui.show_left_pane);
+                    }
+                    filtCtrl.edit_filter_row_by_filter_id(last_edited_filter_id_);
+                    break;
 
-            default:
-                Debug.Assert(false);
-                break;
+                default:
+                    Debug.Assert(false);
+                    break;
             }
         }
 
@@ -1169,9 +1158,9 @@ namespace LogWizard
             filtCtrl.edit_filter_row(filter_row_idx);
         }
 
-        public List<Tuple<string, int>> other_views_containing_this_line(int row_idx) {            
-            Debug.Assert( !is_focus_on_full_log());
-            List<Tuple<string,int>> other = new List<Tuple<string, int>>();
+        public List<Tuple<string, int>> other_views_containing_this_line(int row_idx) {
+            Debug.Assert(!is_focus_on_full_log());
+            List<Tuple<string, int>> other = new List<Tuple<string, int>>();
             if (!is_focus_on_full_log()) {
                 var lv = selected_view();
                 // at this time - only for the selection
@@ -1179,9 +1168,9 @@ namespace LogWizard
                 int line_idx = lv.sel_line_idx;
                 int view_idx = 0;
                 foreach (var other_view in all_log_views()) {
-                    if ( other_view != lv)
-                        if ( other_view.contains_line(line_idx))
-                            other.Add( new Tuple<string, int>(other_view.name, view_idx));
+                    if (other_view != lv)
+                        if (other_view.contains_line(line_idx))
+                            other.Add(new Tuple<string, int>(other_view.name, view_idx));
                     ++view_idx;
                 }
             }
@@ -1203,8 +1192,8 @@ namespace LogWizard
             int row_idx = full_log.line_to_row(line_idx);
             if (row_idx < 0)
                 // this can happen when on a line not from our curent filter
-                return new Tuple<Color, Color>( font_info.full_log_gray.fg, font_info.full_log_gray.bg );
-            return full_log. update_colors_for_line(row_idx, all_log_views(), sel);
+                return new Tuple<Color, Color>(font_info.full_log_gray.fg, font_info.full_log_gray.bg);
+            return full_log.update_colors_for_line(row_idx, all_log_views(), sel);
         }
 
         public void after_set_filter_update() {
@@ -1229,7 +1218,7 @@ namespace LogWizard
 
             // never allow "no view" whatsoever
             if (cur.views.Count < 1)
-                cur.views.Add(new ui_view() {name = "View_1", is_default_name = true});
+                cur.views.Add(new ui_view() { name = "View_1", is_default_name = true });
 
             for (int idx = 0; idx < cur.views.Count; ++idx)
                 if (viewsTab.TabCount < idx + 1)
@@ -1240,7 +1229,7 @@ namespace LogWizard
                 ensure_we_have_log_view_for_tab(idx);
             }
 
-            while (viewsTab.TabCount > cur.views.Count) 
+            while (viewsTab.TabCount > cur.views.Count)
                 remove_log_view_tab(cur.views.Count);
 
             if (!cur.has_views) {
@@ -1332,9 +1321,9 @@ namespace LogWizard
 
         private void update_list_view_edit() {
             var lv = log_view_for_tab(viewsTab.SelectedIndex);
-            if (lv.is_filter_up_to_date) 
+            if (lv.is_filter_up_to_date)
                 lv.update_edit();
-            else 
+            else
                 util.postpone(update_list_view_edit, 250);
         }
 
@@ -1352,7 +1341,7 @@ namespace LogWizard
             // 1.3.11d+ - right now, we're showing this as soon as we have enough rows
             foreach (var lv in all_log_views_and_full_log()) {
                 var view = global_ui.view(lv.name);
-                lv.set_filter( false, view.show_full_log );
+                lv.set_filter(false, view.show_full_log);
             }
         }
 
@@ -1379,7 +1368,7 @@ namespace LogWizard
             remove_log_view_from_tab_page(idx);
 
             var page = viewsTab.TabPages[idx];
-            viewsTab.TabPages.Remove(page);            
+            viewsTab.TabPages.Remove(page);
         }
 
         private void remove_all_log_views() {
@@ -1459,13 +1448,13 @@ namespace LogWizard
             } catch (Exception e) {
                 exception_keeper.inst.add_error();
                 // 1.8.23+ - don't clog the log file
-                if ( !exception_keeper.inst.too_many_errors ) 
+                if (!exception_keeper.inst.too_many_errors)
                     logger.Error("Refresh error: " + e.Message);
             }
 
-            if ( exception_keeper.inst.is_fatal || exception_keeper.inst.too_many_errors ) {
-                if ( !status.is_showing_error)
-                    set_status( (exception_keeper.inst.is_fatal ? "A <b>Fatal</b> error occured" : "Too many errors happened lately") + ". Please open " +
+            if (exception_keeper.inst.is_fatal || exception_keeper.inst.too_many_errors) {
+                if (!status.is_showing_error)
+                    set_status((exception_keeper.inst.is_fatal ? "A <b>Fatal</b> error occured" : "Too many errors happened lately") + ". Please open " +
                                        "an issue on <a https://github.com/jtorjo/logwizard/issues>github</a>.", status_ctrl.status_type.err);
             }
         }
@@ -1526,7 +1515,7 @@ namespace LogWizard
                     var warnings = text_.errors.Where(x => x.Item2 == error_list_keeper.level_type.warning).Select(x => x.Item1).ToList();
                     if (errors.Any())
                         set_status(errors[0], status_ctrl.status_type.err, 15000);
-                    else if ( warnings.Any())
+                    else if (warnings.Any())
                         set_status(warnings[0], status_ctrl.status_type.warn);
                 }
             } else if (!text_.fully_read_once && text_.progress != "")
@@ -1570,7 +1559,7 @@ namespace LogWizard
                         top_offset += any_lv.list.HeaderControl.ClientRectangle.Height;
                 }
                 int bottom_offset = ClientRectangle.Height - lower.Top;
-                msg_details_.update(selected_view(), top_offset, bottom_offset, force_update);                
+                msg_details_.update(selected_view(), top_offset, bottom_offset, force_update);
             }
         }
 
@@ -1582,7 +1571,7 @@ namespace LogWizard
             ui_context ctx = cur_context();
             List<raw_filter_row> lvf = new List<raw_filter_row>();
             foreach (ui_filter filt in ctx.views[idx].filters) {
-                var row = new raw_filter_row(filt.text, filt.apply_to_existing_lines) {enabled = filt.enabled};
+                var row = new raw_filter_row(filt.text, filt.apply_to_existing_lines) { enabled = filt.enabled };
                 if (row.is_valid)
                     lvf.Add(row);
             }
@@ -1633,9 +1622,9 @@ namespace LogWizard
             var sel = selected_view();
             update_notes_current_line();
 
-            if (sel == full_log_ctrl_)                 
+            if (sel == full_log_ctrl_)
                 return;
-            
+
             on_log_changed_line_do_sync(sel.sel_line_idx, sel);
             global_ui.selected_row_idx = sel.sel_row_idx;
         }
@@ -1643,9 +1632,9 @@ namespace LogWizard
         private void update_notes_current_line() {
             var sel = selected_view();
             if (sel.sel_line_idx >= 0)
-                notes.set_current_line(new note_ctrl.line {idx = sel.sel_line_idx, msg = sel.sel_line_text, view_name = sel.name});
+                notes.set_current_line(new note_ctrl.line { idx = sel.sel_line_idx, msg = sel.sel_line_text, view_name = sel.name });
             else
-                notes.set_current_line(new note_ctrl.line {idx = -1, msg = "", view_name = ""});
+                notes.set_current_line(new note_ctrl.line { idx = -1, msg = "", view_name = "" });
         }
 
         public void on_sel_line(log_view lv, int line_idx) {
@@ -1663,8 +1652,8 @@ namespace LogWizard
                 log_parser_.aliases = form.new_aliases;
                 logger.Debug("changed aliases, resolving= " + form.new_aliases.dump_resolve_names());
                 save();
-                if ( form.needs_restart) 
-                    if ( MessageBox.Show("Would you like to restart LogWizard now?", "LogWizard", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                if (form.needs_restart)
+                    if (MessageBox.Show("Would you like to restart LogWizard now?", "LogWizard", MessageBoxButtons.YesNo) == DialogResult.Yes)
                         util.restart_app();
             }
         }
@@ -1708,23 +1697,23 @@ namespace LogWizard
             contexts_.Add(new_ctx);
 
             switch (log_settings.type.get()) {
-            case log_type.file:
-                string file = log_settings.name;
-                Debug.Assert(file != "");
-                new_ctx.name = Path.GetFileNameWithoutExtension(new FileInfo(file).Name);
-                break;
-            case log_type.event_log:
-                new_ctx.name = least_unused_context_name("Event Log");
-                break;
-            case log_type.debug_print:
-                new_ctx.name = least_unused_context_name("Debug");
-                break;
-            case log_type.db:
-                new_ctx.name = least_unused_context_name("Database");
-                break;
-            default:
-                Debug.Assert(false);
-                return;
+                case log_type.file:
+                    string file = log_settings.name;
+                    Debug.Assert(file != "");
+                    new_ctx.name = Path.GetFileNameWithoutExtension(new FileInfo(file).Name);
+                    break;
+                case log_type.event_log:
+                    new_ctx.name = least_unused_context_name("Event Log");
+                    break;
+                case log_type.debug_print:
+                    new_ctx.name = least_unused_context_name("Debug");
+                    break;
+                case log_type.db:
+                    new_ctx.name = least_unused_context_name("Database");
+                    break;
+                default:
+                    Debug.Assert(false);
+                    return;
             }
 
             Debug.Assert(new_ctx.name != "");
@@ -1744,15 +1733,15 @@ namespace LogWizard
         }
 
         private void fill_file_default_log_settings(log_settings_string file_settings, string name, string friendly_name) {
-            file_settings.type.set( log_type.file);
+            file_settings.type.set(log_type.file);
             file_settings.name.set(name);
             file_settings.friendly_name.set(friendly_name);
-            file_settings.guid.set( Guid.NewGuid().ToString());            
+            file_settings.guid.set(Guid.NewGuid().ToString());
         }
 
         private void on_new_file_log(string name, string friendly_name) {
             string guid = sett_.get("file_to_guid." + name);
-            if (guid != "") 
+            if (guid != "")
                 create_text_reader(new log_settings_string(sett_.get("guid." + guid)));
             else {
                 // at this point, we know it's a ***new*** file
@@ -1785,22 +1774,21 @@ namespace LogWizard
             if (text_ != null)
                 text_.Dispose();
 
-            create_context_for_log( settings);
+            create_context_for_log(settings);
             text_ = factory.create_text_reader(settings);
             on_new_log();
-                
+
             if (log_parser_.needs_text_syntax) {
                 var file_settings = log_parser_.settings;
-                if ( file_settings.syntax == find_log_syntax.UNKNOWN_SYNTAX) {
+                if (file_settings.syntax == find_log_syntax.UNKNOWN_SYNTAX) {
                     set_status("We don't know the syntax of this Log File. We recommend you set it yourself. Press the 'Edit Log Settings' button on the top-right.",
                         status_ctrl.status_type.err);
                     show_source(true);
-                }
-                else if (!cur_context().has_not_empty_views)
+                } else if (!cur_context().has_not_empty_views)
                     set_status("Don't the columns look ok? Perpaps LogWizard did not correctly parse them... If so, Toggle the Source Pane ON (Alt-O), anc click on 'Test'.", status_ctrl.status_type.warn, 15000);
-                else if ( !cur_context().has_views)
+                else if (!cur_context().has_views)
                     set_status("Why so dull? <a http://www.codeproject.com/Articles/1045528/LogWizard-Filter-your-Logs-Inside-out>Add some colors!</a>");
-            } 
+            }
             force_initial_refresh_of_all_views();
         }
 
@@ -1813,8 +1801,8 @@ namespace LogWizard
         }
 
         private void on_description_template_changed(string name) {
-            text_.write_settings.description_template .set(name);
-            cur_context().merge_settings( factory.get_context_dependent_settings(text_, text_.settings), false);
+            text_.write_settings.description_template.set(name);
+            cur_context().merge_settings(factory.get_context_dependent_settings(text_, text_.settings), false);
             save();
         }
 
@@ -1825,36 +1813,36 @@ namespace LogWizard
 
             add_reader_to_history();
 
-            var reader_settings_copy = new log_settings_string( text_.settings.ToString() );
-            var context_settings_copy = new log_settings_string( settings_to_context(reader_settings_copy).default_settings.ToString());
+            var reader_settings_copy = new log_settings_string(text_.settings.ToString());
+            var context_settings_copy = new log_settings_string(settings_to_context(reader_settings_copy).default_settings.ToString());
             context_settings_copy.merge(reader_settings_copy.ToString());
             var file_text = text_ as file_text_reader;
-            if (file_text != null) 
-                if ( factory.guess_file_type(file_text.name) == file_log_type.line_by_line)
-                    if (reader_settings_copy.syntax == file_text_reader.UNKNOWN_SYNTAX ) {
+            if (file_text != null)
+                if (factory.guess_file_type(file_text.name) == file_log_type.line_by_line)
+                    if (reader_settings_copy.syntax == file_text_reader.UNKNOWN_SYNTAX) {
                         // file reader doesn't know syntax
                         // by default - try to find the syntax by reading the header info; otherwise, try to parse it
                         string file_to_syntax = log_to.file_to_syntax(text_.name);
-                        if (file_to_syntax != "") 
+                        if (file_to_syntax != "")
                             // note: file-to-syntax overrides the context syntax
-                            context_settings_copy.syntax .set(file_to_syntax);                        
+                            context_settings_copy.syntax.set(file_to_syntax);
                         // note: if the context already knows syntax, use that
                         else if (context_settings_copy.syntax == file_text_reader.UNKNOWN_SYNTAX) {
                             string found_syntax = file_text.try_to_find_log_syntax();
-                            if (found_syntax != "" && found_syntax != file_text_reader.UNKNOWN_SYNTAX) 
-                                context_settings_copy.syntax. set(found_syntax);
+                            if (found_syntax != "" && found_syntax != file_text_reader.UNKNOWN_SYNTAX)
+                                context_settings_copy.syntax.set(found_syntax);
                         }
                     }
 
-            text_.write_settings. merge( context_settings_copy);
+            text_.write_settings.merge(context_settings_copy);
 
             // note: we recreate the log, so that cached filters know to rebuild
             log_parser_ = new log_parser(text_);
             log_parser_.on_aliases_changed = on_aliases_changed;
-            if ( text_.settings.description_template != "")
-                description.set_layout( text_.settings.description_template);
+            if (text_.settings.description_template != "")
+                description.set_layout(text_.settings.description_template);
 
-            ui_context log_ctx = settings_to_context( text_.settings );
+            ui_context log_ctx = settings_to_context(text_.settings);
             bool same_context = log_ctx == cur_context();
             if (!same_context) {
                 ++ignore_change_;
@@ -1870,7 +1858,7 @@ namespace LogWizard
             on_new_log_parser();
             load();
 
-            if (log_parser_.has_multi_line_columns) 
+            if (log_parser_.has_multi_line_columns)
                 if (!app.inst.has_shown_details_pane) {
                     app.inst.has_shown_details_pane = true;
                     show_details(global_ui.show_details = true);
@@ -1895,7 +1883,7 @@ namespace LogWizard
         }
 
         private void check_are_settings_complete() {
-            if ( !text_.are_settings_complete)
+            if (!text_.are_settings_complete)
                 edit_log_settings();
         }
 
@@ -1977,7 +1965,7 @@ namespace LogWizard
             if (title != "")
                 title += " - ";
 
-            string prefix = toggled_to_custom_ui_ >= 0 ? "[" + (toggled_to_custom_ui_+1) + "] " : "";
+            string prefix = toggled_to_custom_ui_ >= 0 ? "[" + (toggled_to_custom_ui_ + 1) + "] " : "";
             return prefix + title + "Log Wizard " + version();
         }
 
@@ -1991,25 +1979,25 @@ namespace LogWizard
         }
 
         // checks if log is already in history - if so, updates its guid and returns true
-        private bool is_log_in_history(ref log_settings_string settings) {            
+        private bool is_log_in_history(ref log_settings_string settings) {
             switch (settings.type.get()) {
-            case log_type.file:
-                string name = settings.name;
-                var found = history_.FirstOrDefault(x => x.name == name);
-                if (found != null) {
-                    settings = found.write_settings;
-                    return true;
-                }
-                break;
-            case log_type.db:
-                var db_provider = settings.db_provider;
-                var db_conn = settings.db_connection_string;
-                var found_db = history_.FirstOrDefault(x => x.settings.db_provider == db_provider && x.settings.db_connection_string == db_conn);
-                if (found_db != null) {
-                    settings = found_db.write_settings;
-                    return true;
-                }
-                break;
+                case log_type.file:
+                    string name = settings.name;
+                    var found = history_.FirstOrDefault(x => x.name == name);
+                    if (found != null) {
+                        settings = found.write_settings;
+                        return true;
+                    }
+                    break;
+                case log_type.db:
+                    var db_provider = settings.db_provider;
+                    var db_conn = settings.db_connection_string;
+                    var found_db = history_.FirstOrDefault(x => x.settings.db_provider == db_provider && x.settings.db_connection_string == db_conn);
+                    if (found_db != null) {
+                        settings = found_db.write_settings;
+                        return true;
+                    }
+                    break;
             }
             return false;
         }
@@ -2037,13 +2025,12 @@ namespace LogWizard
                 new_.from_text_reader(text_);
                 history_list_.add_history(new_);
                 existing = new_;
-            } 
-            else 
+            } else
                 // 1.8.4
                 existing.from_text_reader(text_);
 
             // move to the end
-            global_ui.last_log_guid = existing.guid;            
+            global_ui.last_log_guid = existing.guid;
             recreate_history_combo();
 
             // select last item
@@ -2108,7 +2095,7 @@ namespace LogWizard
             if (logHistory.SelectedIndex < 0)
                 return;
             global_ui.last_log_guid = cur_history().guid;
-            create_text_reader( cur_history().write_settings );
+            create_text_reader(cur_history().write_settings);
         }
 
         private void LogWizard_FormClosing(object sender, FormClosingEventArgs e) {
@@ -2141,7 +2128,7 @@ namespace LogWizard
                 if (new_.basedOnExisting.Checked)
                     new_ctx.copy_from(cur_context());
                 // 1.3.33+ - we want unique context names!
-                new_ctx.name = util.unique_name( contexts_.Select(x => x.name), new_.name.Text);
+                new_ctx.name = util.unique_name(contexts_.Select(x => x.name), new_.name.Text);
                 contexts_.Add(new_ctx);
                 update_contexts_combos_in_all_forms();
                 curContextCtrl.SelectedIndex = curContextCtrl.Items.Count - 1;
@@ -2190,7 +2177,7 @@ namespace LogWizard
 
         private void dropHere_DragDrop(object sender, DragEventArgs e) {
             if (e.Data.GetDataPresent(DataFormats.FileDrop)) {
-                string[] files = (string[]) e.Data.GetData(DataFormats.FileDrop);
+                string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
                 if (files.Length == 1)
                     on_file_drop(files[0]);
             }
@@ -2203,13 +2190,9 @@ namespace LogWizard
                 e.Effect = DragDropEffects.None;
         }
 
-
         private void contextMatch_TextChanged(object sender, EventArgs e) {
             // not implemented yet
         }
-
-
-
 
         private int handled_key_idx_ = 0;
 
@@ -2244,6 +2227,12 @@ namespace LogWizard
                 handle_action(action_type.prev_view);
                 return true;
             }
+            if (keyData == (Keys.Control | Keys.T)) {
+                fromScratchToolStripMenuItem_Click(null, null);
+            }
+            if (keyData == (Keys.Control | Keys.W)) {
+                delView_Click(null, null);
+            }
 
             // 1.2.12 - tried, but doesn't work
 #if old_code
@@ -2258,12 +2247,12 @@ namespace LogWizard
         }
 
         public void edit_log_settings() {
-            editSettings_Click(null,null);
+            editSettings_Click(null, null);
         }
 
 
         public void after_column_positions_change() {
-            foreach ( var lv in all_log_views_and_full_log())
+            foreach (var lv in all_log_views_and_full_log())
                 lv.on_column_positions_change();
         }
 
@@ -2273,8 +2262,8 @@ namespace LogWizard
         }
 
         public void on_available_columns_known() {
-            if (global_ui.show_categories) 
-                 update_categories_list();
+            if (global_ui.show_categories)
+                update_categories_list();
         }
 
         private bool any_moving_key_still_down() {
@@ -2288,14 +2277,14 @@ namespace LogWizard
                     return;
 
                 switch (util.key_to_action(e)) {
-                case "up":
-                case "down":
-                case "pageup":
-                case "next":
-                case "home":
-                case "end":
-                    on_move_key_end();
-                    break;
+                    case "up":
+                    case "down":
+                    case "pageup":
+                    case "next":
+                    case "home":
+                    case "end":
+                        on_move_key_end();
+                        break;
                 }
             }
         }
@@ -2387,28 +2376,28 @@ namespace LogWizard
                     return action_type.none;
 
             switch (key_code) {
-            case "up":
-            case "down":
-            case "pageup":
-            case "next":
-            case "home":
-            case "end":
-            case "space":
-            case "return":
-                if (key_code == "space" && filtCtrl.can_handle_toggle_enable_dimmed_now)
+                case "up":
+                case "down":
+                case "pageup":
+                case "next":
+                case "home":
+                case "end":
+                case "space":
+                case "return":
+                    if (key_code == "space" && filtCtrl.can_handle_toggle_enable_dimmed_now)
+                        break;
+
+                    if (allow_arrow_to_function_normally())
+                        return action_type.none;
                     break;
+                case "ctrl-right":
+                case "ctrl-left":
 
-                if (allow_arrow_to_function_normally())
-                    return action_type.none;
-                break;
-            case "ctrl-right":
-            case "ctrl-left":
-
-            case "ctrl-c":
-            case "ctrl-shift-c":
-                if (is_focus_on_editable_box())
-                    return action_type.none;
-                break;
+                case "ctrl-c":
+                case "ctrl-shift-c":
+                    if (is_focus_on_editable_box())
+                        return action_type.none;
+                    break;
             }
 
             bool has_modifiers = key_code.Contains("ctrl-") || key_code.Contains("alt-") || key_code.Contains("shift-");
@@ -2417,148 +2406,141 @@ namespace LogWizard
                 return action_type.none;
 
             switch (key_code) {
-            case "f3":
-                return action_type.search_next;
-            case "shift-f3":
-                return action_type.search_prev;
-            case "escape":
-                return action_type.escape;
+                case "f3":
+                    return action_type.search_next;
+                case "shift-f3":
+                    return action_type.search_prev;
+                case "escape":
+                    return action_type.escape;
 
-            case "apps":
-                return action_type.right_click_via_key;
+                case "apps":
+                    return action_type.right_click_via_key;
 
-            case "ctrl-f":
-                return action_type.search;
-            case "ctrl-shift-f":
-                return action_type.default_search;
-            case "ctrl-f2":
-                return action_type.toggle_bookmark;
-            case "f2":
-                return action_type.next_bookmark;
-            case "shift-f2":
-                return action_type.prev_bookmark;
-            case "ctrl-shift-f2":
-                return action_type.clear_bookmarks;
+                case "ctrl-f":
+                    return action_type.search;
+                case "ctrl-shift-f":
+                    return action_type.default_search;
+                case "ctrl-f2":
+                    return action_type.toggle_bookmark;
+                case "f2":
+                    return action_type.next_bookmark;
+                case "shift-f2":
+                    return action_type.prev_bookmark;
+                case "ctrl-shift-f2":
+                    return action_type.clear_bookmarks;
 
-            case "ctrl-c":
-                return action_type.copy_full_line_to_clipboard;
-            case "ctrl-shift-c":
-                return action_type.copy_to_clipboard;
+                case "ctrl-c":
+                    return action_type.copy_to_clipboard;
+                case "ctrl-shift-c":
+                    return action_type.copy_full_line_to_clipboard;
 
-                /* 1.4.9+ use ctrl-tab, ctrl-shift-tab ; ctrl-left/right can be used for word moving inside smart edit
-            case "ctrl-right":
-                return action_type.next_view;
-            case "ctrl-left":
-                return action_type.prev_view;
-                */
-            case "home":
-                return action_type.home;
-            case "end":
-                return action_type.end;
-            case "pageup":
-                return action_type.pageup;
-            case "next":
-                return action_type.pagedown;
-            case "up":
-                return action_type.arrow_up;
-            case "down":
-                return action_type.arrow_down;
+                case "home":
+                    return action_type.home;
+                case "end":
+                    return action_type.end;
+                case "pageup":
+                    return action_type.pageup;
+                case "next":
+                    return action_type.pagedown;
+                case "up":
+                    return action_type.arrow_up;
+                case "down":
+                    return action_type.arrow_down;
 
-            case "shift-up":
-                return action_type.shift_arrow_up;
-            case "shift-down":
-                return action_type.shift_arrow_down;
+                case "shift-up":
+                    return action_type.shift_arrow_up;
+                case "shift-down":
+                    return action_type.shift_arrow_down;
 
-            case "tab":
-                return action_type.pane_next;
-            case "shift-tab":
-                return action_type.pane_prev;
+                case "tab":
+                    return action_type.pane_next;
+                case "shift-tab":
+                    return action_type.pane_prev;
 
-            case "add":
-                return action_type.increase_font;
-            case "subtract":
-                return action_type.decrease_font;
+                case "add":
+                    return action_type.increase_font;
+                case "subtract":
+                    return action_type.decrease_font;
 
-            case "ctrl-h":
-                return action_type.toggle_history_dropdown;
-            case "ctrl-n":
-                return action_type.new_log_wizard;
-            case "ctrl-p":
-                return action_type.show_preferences;
-            case "ctrl-up":
-                return action_type.scroll_up;
-            case "ctrl-down":
-                return action_type.scroll_down;
-            case "ctrl-g":
-                return action_type.go_to_line;
-            case "f5":
-                return action_type.refresh;
+                case "ctrl-h":
+                    return action_type.toggle_history_dropdown;
+                case "ctrl-n":
+                    return action_type.new_log_wizard;
+                case "ctrl-p":
+                    return action_type.show_preferences;
+                case "ctrl-up":
+                    return action_type.scroll_up;
+                case "ctrl-down":
+                    return action_type.scroll_down;
+                case "ctrl-g":
+                    return action_type.go_to_line;
+                case "f5":
+                    return action_type.refresh;
 
-            case "ctrl-o":
-                return action_type.open_log;
-            case "ctrl-shift-o":
-                return action_type.open_in_explorer;
+                case "ctrl-o":
+                    return action_type.open_log;
+                case "ctrl-shift-o":
+                    return action_type.open_in_explorer;
 
-            case "ctrl-1":
-                return action_type.goto_position_1;
-            case "ctrl-2":
-                return action_type.goto_position_2;
-            case "ctrl-3":
-                return action_type.goto_position_3;
-            case "ctrl-4":
-                return action_type.goto_position_4;
-            case "ctrl-5":
-                return action_type.goto_position_5;
+                case "ctrl-1":
+                    return action_type.goto_position_1;
+                case "ctrl-2":
+                    return action_type.goto_position_2;
+                case "ctrl-3":
+                    return action_type.goto_position_3;
+                case "ctrl-4":
+                    return action_type.goto_position_4;
+                case "ctrl-5":
+                    return action_type.goto_position_5;
 
-            case "ctrl-6":
-                return action_type.goto_position_6;
-            case "ctrl-7":
-                return action_type.goto_position_7;
-            case "ctrl-8":
-                return action_type.goto_position_8;
-            case "ctrl-9":
-                return action_type.goto_position_9;
+                case "ctrl-6":
+                    return action_type.goto_position_6;
+                case "ctrl-7":
+                    return action_type.goto_position_7;
+                case "ctrl-8":
+                    return action_type.goto_position_8;
+                case "ctrl-9":
+                    return action_type.goto_position_9;
 
 
-            case "ctrl-e":
-                return action_type.export_notes;
-            case "ctrl-z":
-                return action_type.undo;
+                case "ctrl-e":
+                    return action_type.export_notes;
+                case "ctrl-z":
+                    return action_type.undo;
 
-            ////////////////////////////////////////////////////////////////////////////////
-            // toggles via hotkey
-            case "alt-f":
-                return action_type.toggle_filters;
-            case "alt-n":
-                return action_type.toggle_notes;
-            case "alt-o":
-                return action_type.toggle_source;
-            case "alt-l":
-                return action_type.toggle_fulllog;
+                ////////////////////////////////////////////////////////////////////////////////
+                // toggles via hotkey
+                case "alt-f":
+                    return action_type.toggle_filters;
+                case "alt-n":
+                    return action_type.toggle_notes;
+                case "alt-o":
+                    return action_type.toggle_source;
+                case "alt-l":
+                    return action_type.toggle_fulllog;
 
-            case "alt-t":
-                return action_type.toggle_title;
-            case "alt-v":
-                return action_type.toggle_view_tabs;
-            case "alt-h":
-                return action_type.toggle_view_header;
-            case "alt-d":
-                return action_type.toggle_details;
-            case "alt-s":
-                return action_type.toggle_status;
-            case "alt-c":
-                return action_type.toggle_categories;
+                case "alt-t":
+                    return action_type.toggle_title;
+                case "alt-v":
+                    return action_type.toggle_view_tabs;
+                case "alt-h":
+                    return action_type.toggle_view_header;
+                case "alt-d":
+                    return action_type.toggle_details;
+                case "alt-s":
+                    return action_type.toggle_status;
+                case "alt-c":
+                    return action_type.toggle_categories;
 
-            case "ctrl-alt-f":
-                return action_type.toggle_filter_view;
-            case "ctrl-alt-l":
-                return action_type.toggle_show_full_log;
+                case "ctrl-alt-f":
+                    return action_type.toggle_filter_view;
+                case "ctrl-alt-l":
+                    return action_type.toggle_show_full_log;
 
-            case "ctrl-shift-b":
-                return action_type.toggle_number_base;
-            case "ctrl-shift-a":
-                return action_type.toggle_abbreviation;
-
+                case "ctrl-shift-b":
+                    return action_type.toggle_number_base;
+                case "ctrl-shift-a":
+                    return action_type.toggle_abbreviation;
             }
 
             return action_type.none;
@@ -2570,311 +2552,311 @@ namespace LogWizard
             Debug.Assert(lv != null);
 
             switch (action) {
-            case action_type.search:
-                if (lv.item_count < 1) {
-                    set_status("Can't search - nothing to search", status_ctrl.status_type.err);
+                case action_type.search:
+                    if (lv.item_count < 1) {
+                        set_status("Can't search - nothing to search", status_ctrl.status_type.err);
+                        break;
+                    }
+                    var searcher = new search_form(this, lv, lv.smart_edit_sel_text);
+                    if (searcher.ShowDialog() == DialogResult.OK) {
+                        // remove focus from the Filters tab, just in case (otherwise, search prev/next would end up working on that)
+                        unfocus_filter_panel();
+
+                        if (searcher.wants_to_filter) {
+                            var filt = searcher.search.to_filter();
+                            add_or_edit_filter(filt.text, filt.id, filt.apply_to_existing_lines);
+                        } else {
+                            lv.set_search_for_text(searcher.search);
+                            lv.search_for_text_first();
+                        }
+                    }
                     break;
-                }
-                var searcher = new search_form(this, lv, lv.smart_edit_sel_text);
-                if (searcher.ShowDialog() == DialogResult.OK) {
+
+                case action_type.default_search:
                     // remove focus from the Filters tab, just in case (otherwise, search prev/next would end up working on that)
                     unfocus_filter_panel();
-
-                    if (searcher.wants_to_filter) {
-                        var filt = searcher.search.to_filter();
-                        add_or_edit_filter(filt.text, filt.id, filt.apply_to_existing_lines);
-                    } else {
-                        lv.set_search_for_text(searcher.search);
-                        lv.search_for_text_first();
+                    var search = search_form.default_search;
+                    var sel_text = lv.smart_edit_sel_text;
+                    if (sel_text != "") {
+                        search.text = sel_text;
+                        search.type = 1; // text 
                     }
-                }
-                break;
+                    lv.set_search_for_text(search);
+                    lv.search_next();
+                    break;
 
-            case action_type.default_search:
-                // remove focus from the Filters tab, just in case (otherwise, search prev/next would end up working on that)
-                unfocus_filter_panel();
-                var search = search_form.default_search;
-                var sel_text = lv.smart_edit_sel_text;
-                if (sel_text != "") {
-                    search.text = sel_text;
-                    search.type = 1; // text 
-                }
-                lv.set_search_for_text(search);
-                lv.search_next();
-                break;
-
-            case action_type.search_prev:
-                lv.search_prev();
-                break;
-            case action_type.search_next:
-                lv.search_next();
-                break;
-            case action_type.escape:
-                if (logHistory.DroppedDown)
-                    close_history_dropdown();
-                else
-                    lv.escape();
-                break;
-
-            case action_type.right_click_via_key:
-                lv.do_right_click_via_key();
-                break;
-
-            case action_type.next_view: {
-                int prev_idx = viewsTab.SelectedIndex;
-                int next_idx = viewsTab.TabCount > 0 ? (sel + 1) % viewsTab.TabCount : -1;
-                if (next_idx >= 0) {
-                    viewsTab.SelectedIndex = next_idx;
-                    log_view_for_tab(next_idx).on_selected();
-                }
-                if (prev_idx >= 0)
-                    log_view_for_tab(prev_idx).update_x_of_y();
-            }
-                break;
-            case action_type.prev_view: {
-                int prev_idx = viewsTab.SelectedIndex;
-                int next_idx = viewsTab.TabCount > 0 ? (sel + viewsTab.TabCount - 1) % viewsTab.TabCount : -1;
-                if (next_idx >= 0) {
-                    viewsTab.SelectedIndex = next_idx;
-                    log_view_for_tab(next_idx).on_selected();
-                }
-                if (prev_idx >= 0)
-                    log_view_for_tab(prev_idx).update_x_of_y();
-            }
-                break;
-
-            case action_type.home:
-            case action_type.end:
-            case action_type.pageup:
-            case action_type.pagedown:
-            case action_type.arrow_up:
-            case action_type.arrow_down:
-            case action_type.shift_arrow_down:
-            case action_type.shift_arrow_up:
-                lv.on_action(action);
-                break;
-
-            case action_type.toggle_filters:
-                toggle_filters();
-                break;
-            case action_type.toggle_notes:
-                toggle_notes();
-                break;
-            case action_type.toggle_fulllog:
-                toggle_full_log();
-                break;
-            case action_type.toggle_source:
-                toggle_source();
-                break;
-
-            case action_type.copy_to_clipboard:
-                lv.copy_to_clipboard();
-                set_status("Lines copied to Clipboard, as text and html");
-                break;
-            case action_type.copy_full_line_to_clipboard:
-                lv.copy_full_line_to_clipboard();
-                set_status("Full Lines copied to Clipboard, as text and html");
-                break;
-
-            case action_type.toggle_bookmark:
-                int line_idx = lv.sel_line_idx;
-                if (line_idx >= 0) {
-                    if (bookmarks_.Contains(line_idx))
-                        bookmarks_.Remove(line_idx);
+                case action_type.search_prev:
+                    lv.search_prev();
+                    break;
+                case action_type.search_next:
+                    lv.search_next();
+                    break;
+                case action_type.escape:
+                    if (logHistory.DroppedDown)
+                        close_history_dropdown();
                     else
-                        bookmarks_.Add(line_idx);
-                    bookmarks_.Sort();
+                        lv.escape();
+                    break;
+
+                case action_type.right_click_via_key:
+                    lv.do_right_click_via_key();
+                    break;
+
+                case action_type.next_view: {
+                        int prev_idx = viewsTab.SelectedIndex;
+                        int next_idx = viewsTab.TabCount > 0 ? (sel + 1) % viewsTab.TabCount : -1;
+                        if (next_idx >= 0) {
+                            viewsTab.SelectedIndex = next_idx;
+                            log_view_for_tab(next_idx).on_selected();
+                        }
+                        if (prev_idx >= 0)
+                            log_view_for_tab(prev_idx).update_x_of_y();
+                    }
+                    break;
+                case action_type.prev_view: {
+                        int prev_idx = viewsTab.SelectedIndex;
+                        int next_idx = viewsTab.TabCount > 0 ? (sel + viewsTab.TabCount - 1) % viewsTab.TabCount : -1;
+                        if (next_idx >= 0) {
+                            viewsTab.SelectedIndex = next_idx;
+                            log_view_for_tab(next_idx).on_selected();
+                        }
+                        if (prev_idx >= 0)
+                            log_view_for_tab(prev_idx).update_x_of_y();
+                    }
+                    break;
+
+                case action_type.home:
+                case action_type.end:
+                case action_type.pageup:
+                case action_type.pagedown:
+                case action_type.arrow_up:
+                case action_type.arrow_down:
+                case action_type.shift_arrow_down:
+                case action_type.shift_arrow_up:
+                    lv.on_action(action);
+                    break;
+
+                case action_type.toggle_filters:
+                    toggle_filters();
+                    break;
+                case action_type.toggle_notes:
+                    toggle_notes();
+                    break;
+                case action_type.toggle_fulllog:
+                    toggle_full_log();
+                    break;
+                case action_type.toggle_source:
+                    toggle_source();
+                    break;
+
+                case action_type.copy_to_clipboard:
+                    lv.copy_to_clipboard();
+                    set_status("Lines copied to Clipboard, as text and html");
+                    break;
+                case action_type.copy_full_line_to_clipboard:
+                    lv.copy_full_line_to_clipboard();
+                    set_status("Full Lines copied to Clipboard, as text and html");
+                    break;
+
+                case action_type.toggle_bookmark:
+                    int line_idx = lv.sel_line_idx;
+                    if (line_idx >= 0) {
+                        if (bookmarks_.Contains(line_idx))
+                            bookmarks_.Remove(line_idx);
+                        else
+                            bookmarks_.Add(line_idx);
+                        bookmarks_.Sort();
+                        save_bookmarks();
+                        notify_views_of_bookmarks();
+                    }
+                    break;
+                case action_type.clear_bookmarks:
+                    bookmarks_.Clear();
                     save_bookmarks();
                     notify_views_of_bookmarks();
-                }
-                break;
-            case action_type.clear_bookmarks:
-                bookmarks_.Clear();
-                save_bookmarks();
-                notify_views_of_bookmarks();
-                break;
-            case action_type.next_bookmark:
-                lv.next_bookmark();
-                break;
-            case action_type.prev_bookmark:
-                lv.prev_bookmark();
-                break;
+                    break;
+                case action_type.next_bookmark:
+                    lv.next_bookmark();
+                    break;
+                case action_type.prev_bookmark:
+                    lv.prev_bookmark();
+                    break;
 
-            case action_type.pane_next:
-                switch_pane(true);
-                break;
-            case action_type.pane_prev:
-                switch_pane(false);
-                break;
+                case action_type.pane_next:
+                    switch_pane(true);
+                    break;
+                case action_type.pane_prev:
+                    switch_pane(false);
+                    break;
 
-            case action_type.toggle_history_dropdown:
-                if (logHistory.DroppedDown)
-                    close_history_dropdown();
-                else {
-                    logHistory.Visible = true;
-                    logHistory.Focus();
-                    logHistory.DroppedDown = true;
-                }
-                break;
-            case action_type.new_log_wizard:
-                new log_wizard( ).Show();
-                break;
-            case action_type.show_preferences:
-                preferencesToolStripMenuItem_Click(null, null);
-                break;
+                case action_type.toggle_history_dropdown:
+                    if (logHistory.DroppedDown)
+                        close_history_dropdown();
+                    else {
+                        logHistory.Visible = true;
+                        logHistory.Focus();
+                        logHistory.DroppedDown = true;
+                    }
+                    break;
+                case action_type.new_log_wizard:
+                    new log_wizard().Show();
+                    break;
+                case action_type.show_preferences:
+                    preferencesToolStripMenuItem_Click(null, null);
+                    break;
 
-            case action_type.increase_font:
-                foreach (log_view view in all_log_views_and_full_log())
-                    view.increase_font(1);
-                break;
-            case action_type.decrease_font:
-                foreach (log_view view in all_log_views_and_full_log())
-                    view.increase_font(-1);
-                break;
+                case action_type.increase_font:
+                    foreach (log_view view in all_log_views_and_full_log())
+                        view.increase_font(1);
+                    break;
+                case action_type.decrease_font:
+                    foreach (log_view view in all_log_views_and_full_log())
+                        view.increase_font(-1);
+                    break;
 
-            case action_type.scroll_up:
-                lv.scroll_up();
-                break;
-            case action_type.scroll_down:
-                lv.scroll_down();
-                break;
+                case action_type.scroll_up:
+                    lv.scroll_up();
+                    break;
+                case action_type.scroll_down:
+                    lv.scroll_down();
+                    break;
 
-            case action_type.go_to_line:
-                var dlg = new go_to_line_time_form(this);
-                if (dlg.ShowDialog() == DialogResult.OK) {
-                    if (dlg.is_number()) {
-                        if (dlg.has_offset != '\0')
-                            lv.offset_closest_line(dlg.number, dlg.has_offset == '+');
+                case action_type.go_to_line:
+                    var dlg = new go_to_line_time_form(this);
+                    if (dlg.ShowDialog() == DialogResult.OK) {
+                        if (dlg.is_number()) {
+                            if (dlg.has_offset != '\0')
+                                lv.offset_closest_line(dlg.number, dlg.has_offset == '+');
+                            else
+                                lv.go_to_closest_line(dlg.number - 1, log_view.select_type.notify_parent);
+                        } else if (dlg.has_offset != '\0')
+                            lv.offset_closest_time(dlg.time_milliseconds, dlg.has_offset == '+');
                         else
-                            lv.go_to_closest_line(dlg.number - 1, log_view.select_type.notify_parent);
-                    } else if (dlg.has_offset != '\0')
-                        lv.offset_closest_time(dlg.time_milliseconds, dlg.has_offset == '+');
-                    else
-                        lv.go_to_closest_time(dlg.normalized_time);
-                }
-                break;
-            case action_type.refresh:
-                refreshToolStripMenuItem1_Click(null, null);
-                break;
-            case action_type.toggle_title:
-                toggle_title();
-                break;
-            case action_type.toggle_status:
-                toggle_status();
-                break;
+                            lv.go_to_closest_time(dlg.normalized_time);
+                    }
+                    break;
+                case action_type.refresh:
+                    refreshToolStripMenuItem1_Click(null, null);
+                    break;
+                case action_type.toggle_title:
+                    toggle_title();
+                    break;
+                case action_type.toggle_status:
+                    toggle_status();
+                    break;
 
-            case action_type.toggle_categories:
-                toggle_categories();
-                break;
+                case action_type.toggle_categories:
+                    toggle_categories();
+                    break;
 
-            case action_type.toggle_view_tabs:
-                toggle_view_tabs();
-                break;
-            case action_type.toggle_view_header:
-                toggle_view_header();
-                break;
-            case action_type.toggle_details:
-                toggle_details();
-                break;
+                case action_type.toggle_view_tabs:
+                    toggle_view_tabs();
+                    break;
+                case action_type.toggle_view_header:
+                    toggle_view_header();
+                    break;
+                case action_type.toggle_details:
+                    toggle_details();
+                    break;
 
-            case action_type.open_in_explorer:
-                if (text_ != null)
-                    util.open_in_explorer(text_.name);
-                break;
+                case action_type.open_in_explorer:
+                    if (text_ != null)
+                        util.open_in_explorer(text_.name);
+                    break;
 
-            case action_type.none:
-                break;
+                case action_type.none:
+                    break;
 
-            case action_type.goto_position_1:
-                toggle_custom_ui(0);
-                break;
-            case action_type.goto_position_2:
-                toggle_custom_ui(1);
-                break;
-            case action_type.goto_position_3:
-                toggle_custom_ui(2);
-                break;
-            case action_type.goto_position_4:
-                toggle_custom_ui(3);
-                break;
-            case action_type.goto_position_5:
-                toggle_custom_ui(4);
-                break;
+                case action_type.goto_position_1:
+                    toggle_custom_ui(0);
+                    break;
+                case action_type.goto_position_2:
+                    toggle_custom_ui(1);
+                    break;
+                case action_type.goto_position_3:
+                    toggle_custom_ui(2);
+                    break;
+                case action_type.goto_position_4:
+                    toggle_custom_ui(3);
+                    break;
+                case action_type.goto_position_5:
+                    toggle_custom_ui(4);
+                    break;
 
-            case action_type.goto_position_6:
-                toggle_custom_ui(5);
-                break;
-            case action_type.goto_position_7:
-                toggle_custom_ui(6);
-                break;
-            case action_type.goto_position_8:
-                toggle_custom_ui(7);
-                break;
-            case action_type.goto_position_9:
-                toggle_custom_ui(8);
-                break;
-            case action_type.goto_position_10:
-                toggle_custom_ui(9);
-                break;
+                case action_type.goto_position_6:
+                    toggle_custom_ui(5);
+                    break;
+                case action_type.goto_position_7:
+                    toggle_custom_ui(6);
+                    break;
+                case action_type.goto_position_8:
+                    toggle_custom_ui(7);
+                    break;
+                case action_type.goto_position_9:
+                    toggle_custom_ui(8);
+                    break;
+                case action_type.goto_position_10:
+                    toggle_custom_ui(9);
+                    break;
 
 
 
 
-            case action_type.toggle_enabled_dimmed:
-                filtCtrl.toggle_enabled();
-                break;
+                case action_type.toggle_enabled_dimmed:
+                    filtCtrl.toggle_enabled();
+                    break;
 
-            case action_type.export_notes:
-                export_notes_to_logwizard_file();
-                break;
+                case action_type.export_notes:
+                    export_notes_to_logwizard_file();
+                    break;
 
-            case action_type.undo:
-                if (global_ui.show_filter)
-                    filtCtrl.undo();
-                else if (global_ui.show_notes)
-                    notes.undo();
-                break;
+                case action_type.undo:
+                    if (global_ui.show_filter)
+                        filtCtrl.undo();
+                    else if (global_ui.show_notes)
+                        notes.undo();
+                    break;
 
-            case action_type.toggle_filter_view:
-                lv.set_filter( !lv.filter_view, lv.show_full_log);
-                break;
-            case action_type.toggle_show_full_log: {
-                lv.set_filter(lv.filter_view, !lv.show_full_log);
-                var old = global_ui.view(lv.name);
-                global_ui.view(lv.name, new ui_info.view_info(!old.show_full_log) );
-            }
-                break;
+                case action_type.toggle_filter_view:
+                    lv.set_filter(!lv.filter_view, lv.show_full_log);
+                    break;
+                case action_type.toggle_show_full_log: {
+                        lv.set_filter(lv.filter_view, !lv.show_full_log);
+                        var old = global_ui.view(lv.name);
+                        global_ui.view(lv.name, new ui_info.view_info(!old.show_full_log));
+                    }
+                    break;
 
-            case action_type.open_log:
-                openLogToolStripMenuItem_Click(null, null);
-                break;
+                case action_type.open_log:
+                    openLogToolStripMenuItem_Click(null, null);
+                    break;
 
-            case action_type.toggle_number_base:
-                toggle_number_base();
-                break;
-            case action_type.toggle_abbreviation:
-                toggle_abbreviation();
-                break;
+                case action_type.toggle_number_base:
+                    toggle_number_base();
+                    break;
+                case action_type.toggle_abbreviation:
+                    toggle_abbreviation();
+                    break;
 
-            default:
-                Debug.Assert(false);
-                break;
+                default:
+                    Debug.Assert(false);
+                    break;
             }
         }
 
         private void toggle_custom_ui(int idx) {
-            foreach ( var f in forms)
-                if ( f != this)
+            foreach (var f in forms)
+                if (f != this)
                     if (f.toggled_to_custom_ui_ == idx) {
                         // another form has this custom UI - just bring it to top
                         util.bring_to_top(f);
                         return;
                     }
-            if ( toggled_to_custom_ui_ == idx) 
+            if (toggled_to_custom_ui_ == idx)
                 // in this case, we're toggling off the custom UI for this form (moving to default location)
                 // however, first - check if we already have a form to the default location. If so, go to that
-                foreach ( var f in forms)
-                    if ( f != this)
+                foreach (var f in forms)
+                    if (f != this)
                         if (f.toggled_to_custom_ui_ == -1) {
                             // another form has this custom UI - just bring it to top
                             util.bring_to_top(f);
@@ -2900,7 +2882,7 @@ namespace LogWizard
         }
 
         private void update_status_prefix() {
-            status.set_prefix( toggled_to_custom_ui_ < 0 ? "" : "[Position " + (toggled_to_custom_ui_ + 1) + "]");
+            status.set_prefix(toggled_to_custom_ui_ < 0 ? "" : "[Position " + (toggled_to_custom_ui_ + 1) + "]");
         }
 
         private List<Control> panes() {
@@ -2952,7 +2934,7 @@ namespace LogWizard
                 // move to next control
                 idx = forward ? idx + 1 : idx + panes.Count - 1;
             else
-            // move to first / last
+                // move to first / last
                 idx = forward ? 0 : panes.Count - 1;
 
             var cur_pane = panes[idx % panes.Count];
@@ -3010,7 +2992,7 @@ namespace LogWizard
                 lw.stop_saving();
                 lw.Visible = false;
             }
-            util.restart_app();            
+            util.restart_app();
         }
 
         private log_view selected_view() {
@@ -3104,7 +3086,7 @@ namespace LogWizard
         private string ui_context_to_str(ui_context cur) {
             if (cur.views.Count < 1)
                 return ""; // no views
-            var formatter = new XmlSerializer(typeof (ui_context));
+            var formatter = new XmlSerializer(typeof(ui_context));
             string str = "";
             using (var stream = new MemoryStream()) {
                 formatter.Serialize(stream, cur);
@@ -3118,14 +3100,14 @@ namespace LogWizard
 
         private ui_context str_to_ui_context(string txt) {
             try {
-                var formatter = new XmlSerializer(typeof (ui_context));
+                var formatter = new XmlSerializer(typeof(ui_context));
                 using (var stream = new MemoryStream()) {
                     using (var writer = new StreamWriter(stream)) {
                         writer.Write(txt);
                         writer.Flush();
                         stream.Position = 0;
                         using (var reader = new StreamReader(stream)) {
-                            var new_ctx = (ui_context) formatter.Deserialize(reader);
+                            var new_ctx = (ui_context)formatter.Deserialize(reader);
                             // we don't care about the name, just the filters
                             foreach (var view in new_ctx.views)
                                 view.filters.ForEach(f => f.text = util.normalize_deserialized_enters(f.text));
@@ -3150,14 +3132,14 @@ namespace LogWizard
                 string txt = Clipboard.GetText();
                 ui_context cur = cur_context();
 
-                var formatter = new XmlSerializer(typeof (ui_context));
+                var formatter = new XmlSerializer(typeof(ui_context));
                 using (var stream = new MemoryStream()) {
                     using (var writer = new StreamWriter(stream)) {
                         writer.Write(txt);
                         writer.Flush();
                         stream.Position = 0;
                         using (var reader = new StreamReader(stream)) {
-                            var new_ctx = (ui_context) formatter.Deserialize(reader);
+                            var new_ctx = (ui_context)formatter.Deserialize(reader);
                             // we don't care about the name, just the filters
                             foreach (var view in new_ctx.views)
                                 view.filters.ForEach(f => f.text = util.normalize_deserialized_enters(f.text));
@@ -3310,7 +3292,7 @@ namespace LogWizard
                 import_notes_impl(file);
             } catch (Exception e) {
                 logger.Fatal("could not import file " + file + " : " + e.Message);
-                set_status("An internal error occured. Please contact the author.", status_ctrl. status_type.err);
+                set_status("An internal error occured. Please contact the author.", status_ctrl.status_type.err);
             }
         }
 
@@ -3354,7 +3336,7 @@ namespace LogWizard
                 // ...make it unique
                 string unique_name = name + "." + DateTime.Now.Ticks + ".txt";
                 string friendly_name = name + " (Imported)";
-                zip_util.try_extract_file_names_in_zip(file, import_dir, new Dictionary<string, string>() {{name, unique_name}});
+                zip_util.try_extract_file_names_in_zip(file, import_dir, new Dictionary<string, string>() { { name, unique_name } });
 
                 // creating the context
                 var imported_context_lines = File.ReadAllLines(dir + "\\" + log_wizard_zip_file_prefix + "context.txt").ToList();
@@ -3390,7 +3372,7 @@ namespace LogWizard
 
         protected override void WndProc(ref Message m) {
             if (m.Msg == win32.WM_COPYDATA) {
-                var st = (win32.COPYDATASTRUCT) Marshal.PtrToStructure(m.LParam, typeof (win32.COPYDATASTRUCT));
+                var st = (win32.COPYDATASTRUCT)Marshal.PtrToStructure(m.LParam, typeof(win32.COPYDATASTRUCT));
                 string open = st.lpData;
                 util.postpone(() => on_file_drop(open), 100);
             }
@@ -3463,7 +3445,7 @@ namespace LogWizard
             string friendly_name = sub_file_name + " From ZIP - " + util.friendly_size(fi.Length) + " (" + zip_file + ")";
             on_file_drop(zip_dir + "\\" + unique, friendly_name);
         }
-        
+
         // if copy_of_view is not null, we're creating a copy of that view
         private string new_view_name(ui_view copy_of_view = null) {
             if (copy_of_view != null)
@@ -3472,8 +3454,8 @@ namespace LogWizard
             // I want to visually show to the user that we're dealing with views
             ui_context cur = cur_context();
             string name = name = "View_" + (cur.views.Count + 1);
-            if (logHistory.SelectedIndex >= 0 && cur_history().type == log_type.file) 
-                name = Path.GetFileNameWithoutExtension(new FileInfo(selected_file_name()).Name) + "_View" + (cur.views.Count + 1);            
+            if (logHistory.SelectedIndex >= 0 && cur_history().type == log_type.file)
+                name = Path.GetFileNameWithoutExtension(new FileInfo(selected_file_name()).Name) + "_View" + (cur.views.Count + 1);
 
             return name;
         }
@@ -3523,7 +3505,7 @@ namespace LogWizard
 
 
         private void refreshAddViewButtons_Tick(object sender, EventArgs e) {
-            var button_rect= newFilteredView.RectangleToScreen(newFilteredView.ClientRectangle);
+            var button_rect = newFilteredView.RectangleToScreen(newFilteredView.ClientRectangle);
             var mouse = Cursor.Position;
             const int PAD = 20;
             bool visible = button_rect.Top - PAD <= mouse.Y && button_rect.Bottom >= mouse.Y;
@@ -3533,7 +3515,7 @@ namespace LogWizard
             synchronizeWithExistingLogs.Visible = visible;
             synchronizedWithFullLog.Visible = visible;
         }
-        
+
         private void do_open_log(string initial_settings_str, string config_file) {
             var add = new edit_log_settings_form(initial_settings_str, edit_log_settings_form.edit_type.add);
             if (config_file != "")
@@ -3550,7 +3532,7 @@ namespace LogWizard
                     create_text_reader(settings);
                     return;
                 }
-                
+
                 var new_ = new history();
                 new_.from_settings(settings);
                 history_list_.add_history(new_);
@@ -3559,7 +3541,7 @@ namespace LogWizard
                 Text = reader_title();
                 create_text_reader(new_.write_settings);
                 save();
-            }            
+            }
         }
 
         private void on_config_file_drop(string config_file) {
@@ -3568,9 +3550,9 @@ namespace LogWizard
 
         private void on_sqlite_file_drop(string sqlite_db) {
             log_settings_string sqlite_sett = new log_settings_string("");
-            sqlite_sett.type.set( log_type.db);
+            sqlite_sett.type.set(log_type.db);
             sqlite_sett.db_connection_string.set("Data Source=\"" + sqlite_db + "\";Version=3;new=False;datetimeformat=CurrentCulture");
-            
+
             // find the log table
             var tables = db_util.sqlite_db_tables(sqlite_db);
             string log_table = "logtable";
@@ -3582,18 +3564,18 @@ namespace LogWizard
                 log_table = first_starts_with_log;
             else if (first_contains_log != null)
                 log_table = first_contains_log;
-            sqlite_sett.db_table_name.set( log_table);
+            sqlite_sett.db_table_name.set(log_table);
 
             // get the log fields
             var fields = db_util.sqlite_db_table_fields(sqlite_db, log_table);
             if (fields.Count > 0) {
                 sqlite_sett.db_fields.set(util.concatenate(fields, "\r\n"));
-                var id_field = fields.FirstOrDefault(x => x.ToLower().EndsWith("id") || x.ToLower().EndsWith( "index"));
+                var id_field = fields.FirstOrDefault(x => x.ToLower().EndsWith("id") || x.ToLower().EndsWith("index"));
                 if (id_field != null)
-                    sqlite_sett.db_id_field.set( id_field);
+                    sqlite_sett.db_id_field.set(id_field);
             }
 
-            do_open_log( sqlite_sett.ToString(), "");
+            do_open_log(sqlite_sett.ToString(), "");
         }
 
         private void editSettings_Click(object sender, EventArgs e) {
@@ -3606,22 +3588,22 @@ namespace LogWizard
             if (edit.ShowDialog(this) == DialogResult.OK) {
                 bool friendly_name_changed = cur_history.friendly_name != edit.friendly_name;
                 // at this point, we've updated all settings
-                text_.write_settings .merge(new log_settings_string(edit.settings));
-                cur_context().merge_settings( factory.get_context_dependent_settings(text_, text_.settings), edit.edited_syntax_now);
+                text_.write_settings.merge(new log_settings_string(edit.settings));
+                cur_context().merge_settings(factory.get_context_dependent_settings(text_, text_.settings), edit.edited_syntax_now);
 
                 Text = reader_title();
 
-                if (friendly_name_changed) 
+                if (friendly_name_changed)
                     recreate_history_combo();
 
                 bool will_restart = false;
-                if ( edit.needs_restart)
+                if (edit.needs_restart)
                     if (MessageBox.Show("Changes will take effect only after restart.\r\nWould you like to restart LogWizard now?", "LogWizard", MessageBoxButtons.YesNo) == DialogResult.Yes)
                         will_restart = true;
 
-                var new_settings = cur_history.settings; 
+                var new_settings = cur_history.settings;
                 var new_syntax = new_settings.syntax;
-                if ( new_settings.type == log_type.file)
+                if (new_settings.type == log_type.file)
                     if (old_syntax != new_syntax && !will_restart) {
                         // in this case, the user has changed the syntax - need to reload everything
                         save();
@@ -3633,11 +3615,11 @@ namespace LogWizard
                         load();
                         on_file_drop(selected_file_name());
                         // we want to refresh it only after it's been loaded, so that it visually shows that
-                        util.postpone(() => full_log_ctrl_.force_refresh_visible_columns( all_log_views() ), 2000);
+                        util.postpone(() => full_log_ctrl_.force_refresh_visible_columns(all_log_views()), 2000);
                     }
                 save();
 
-                if ( will_restart)
+                if (will_restart)
                     restart_app();
             }
         }
@@ -3646,19 +3628,19 @@ namespace LogWizard
             var sett = this.cur_history().write_settings;
             var cur_view_name = selected_view().name;
             bool old_apply_to_me = sett.apply_column_formatting_to_me.get(cur_view_name);
-            var old_format = sett.column_formatting.get( old_apply_to_me ? cur_view_name : log_view.ALL_VIEWS );
+            var old_format = sett.column_formatting.get(old_apply_to_me ? cur_view_name : log_view.ALL_VIEWS);
             var form = new edit_column_formatters_form(selected_view(), old_format, old_apply_to_me);
             if (form.ShowDialog(this) == DialogResult.OK) {
                 bool new_apply_to_me = form.apply_only_to_me;
                 string new_format = form.format_syntax;
-                sett.column_formatting.set( new_apply_to_me ? cur_view_name : log_view.ALL_VIEWS, new_format);
-                sett.apply_column_formatting_to_me.set( cur_view_name, new_apply_to_me);
+                sett.column_formatting.set(new_apply_to_me ? cur_view_name : log_view.ALL_VIEWS, new_format);
+                sett.apply_column_formatting_to_me.set(cur_view_name, new_apply_to_me);
                 save();
                 var needs_refresh = all_log_views_and_full_log();
-                if ( new_apply_to_me)
+                if (new_apply_to_me)
                     needs_refresh = new List<log_view>() { selected_view() };
 
-                foreach ( var view in needs_refresh) {
+                foreach (var view in needs_refresh) {
                     // ignore those views with "apply only to me" 
                     bool view_has_apply_only_to_me = view != selected_view() && view.formatter_applies_only_to_me;
                     if (!view_has_apply_only_to_me) {
@@ -3673,21 +3655,21 @@ namespace LogWizard
 
         private void toggle_number_base() {
             var sel = selected_view();
-            if (sel.formatter_applies_only_to_me) 
+            if (sel.formatter_applies_only_to_me)
                 sel.toggle_number_base();
-            else 
+            else
                 foreach (var view in all_log_views_and_full_log())
-                    if ( !view.formatter_applies_only_to_me)
+                    if (!view.formatter_applies_only_to_me)
                         view.toggle_number_base();
         }
 
         private void toggle_abbreviation() {
             var sel = selected_view();
-            if (sel.formatter_applies_only_to_me) 
+            if (sel.formatter_applies_only_to_me)
                 sel.toggle_abbreviation();
-            else 
+            else
                 foreach (var view in all_log_views_and_full_log())
-                    if ( !view.formatter_applies_only_to_me)
+                    if (!view.formatter_applies_only_to_me)
                         view.toggle_abbreviation();
         }
 
@@ -3731,8 +3713,7 @@ namespace LogWizard
 
         private void exportCurrentViewcsvToolStripMenuItem_Click(object sender, EventArgs e) {
             var lv = selected_view();
-            try
-            {
+            try {
                 string prefix = util.local_dir() + "exported_views";
                 util.create_dir(prefix);
                 prefix += "\\View " + util.remove_disallowed_filename_chars(lv.name + " from " + cur_history().ui_short_friendly_name) + " (" + DateTime.Now.ToString("yyyy-MM-dd HH-mm") + ")";
@@ -3742,17 +3723,14 @@ namespace LogWizard
                 File.WriteAllText(prefix + ".csv", export.to_csv());
 
                 util.open_in_explorer(prefix + ".csv");
-            }
-            catch (Exception ex)
-            {
+            } catch (Exception ex) {
                 logger.Error("can't export notes to csv " + ex.Message);
             }
         }
 
         private void exportCurrentViewtxthtmlToolStripMenuItem_Click(object sender, EventArgs e) {
             var lv = selected_view();
-            try
-            {
+            try {
                 string prefix = util.local_dir() + "exported_views";
                 util.create_dir(prefix);
                 prefix += "\\View " + util.remove_disallowed_filename_chars(lv.name + " from " + cur_history().ui_short_friendly_name) + " (" + DateTime.Now.ToString("yyyy-MM-dd HH-mm") + ")";
@@ -3763,16 +3741,13 @@ namespace LogWizard
                 File.WriteAllText(prefix + ".html", export.to_html());
 
                 util.open_in_explorer(prefix + ".html");
-            }
-            catch (Exception ex)
-            {
+            } catch (Exception ex) {
                 logger.Error("can't export notes to txt/html " + ex.Message);
             }
         }
 
         private void exportNotestxthtmlToolStripMenuItem_Click(object sender, EventArgs e) {
-            try
-            {
+            try {
                 string prefix = util.local_dir() + "exported_notes";
                 util.create_dir(prefix);
                 prefix += "\\Notes on " + new FileInfo(selected_file_name()).Name + " (" + DateTime.Now.ToString("yyyy-MM-dd HH-mm") + ")";
@@ -3781,9 +3756,7 @@ namespace LogWizard
                 File.WriteAllText(prefix + ".html", export.to_html());
 
                 util.open_in_explorer(prefix + ".html");
-            }
-            catch (Exception ex)
-            {
+            } catch (Exception ex) {
                 logger.Error("can't export notes to txt/html " + ex.Message);
             }
         }
@@ -3854,8 +3827,7 @@ namespace LogWizard
         private void toggleCurrentViewToolStripMenuItem_Click(object sender, EventArgs e) {
             show_full_log_type now = shown_full_log_now();
             show_full_log_type next = now;
-            switch (now)
-            {
+            switch (now) {
                 case show_full_log_type.both:
                     next = show_full_log_type.just_full_log;
                     break;
@@ -3875,8 +3847,7 @@ namespace LogWizard
         private void toggleFullLogToolStripMenuItem_Click(object sender, EventArgs e) {
             show_full_log_type now = shown_full_log_now();
             show_full_log_type next = now;
-            switch (now)
-            {
+            switch (now) {
                 case show_full_log_type.both:
                     next = show_full_log_type.just_view;
                     break;

@@ -26,11 +26,15 @@ namespace lw_common.parse.parsers.file {
                         var obj = JsonConvert.DeserializeObject<Dictionary<string, dynamic>>(sb_.ToString());
                         var line = new log_entry_line();
 
-                        foreach(var entry in obj) {
-                            line.analyze_and_add(entry.Key, entry.Value.ToString());
+                        foreach (var entry in obj) {
+                            var value = entry.Value.ToString();
+                            if (entry.Value.GetType() == typeof(DateTime)) {
+                                value = ((DateTime)entry.Value).ToString("o");
+                            }
+                            line.analyze_and_add(entry.Key, value);
                         }
 
-                        lock(this) {
+                        lock (this) {
                             entries_.Add(line);
                             string_.add_preparsed_line(line.ToString());
                         }

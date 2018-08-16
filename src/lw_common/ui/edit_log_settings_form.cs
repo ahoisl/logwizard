@@ -26,11 +26,12 @@ namespace lw_common.ui {
         private bool needs_restart_ = false;
 
         private double_dictionary<log_type,int> type_to_index_ = new double_dictionary<log_type, int>( new Dictionary<log_type, int>() {
-            { log_type.file, 0 }, { log_type.event_log, 1 }, { log_type.debug_print, 2}, { log_type.db, 3}, {log_type.multi, 4}
+            { log_type.file, 0 }, { log_type.event_log, 1 }, { log_type.debug_print, 2}, { log_type.db, 3}
         });
 
         private double_dictionary<file_log_type, int> file_type_to_index_ = new double_dictionary<file_log_type, int>(new Dictionary<file_log_type, int>() {
-            { file_log_type.best_guess, 0}, { file_log_type.line_by_line, 1}, {file_log_type.part_to_line, 2}, { file_log_type.xml, 3}, { file_log_type.csv, 4}
+            { file_log_type.best_guess, 0}, { file_log_type.line_by_line, 1}, {file_log_type.part_to_line, 2}, { file_log_type.xml, 3}, { file_log_type.csv, 4},
+            { file_log_type.json, 5 }
         });
 
         public enum edit_type {
@@ -369,7 +370,7 @@ namespace lw_common.ui {
                 fileTypeTab.SelectedIndex = fileType.SelectedIndex - 1;
             else 
                 // best guess
-                fileTypeTab.SelectedIndex = file_type_to_index(factory.guess_file_type(fileName.Text)) - 1;            
+                fileTypeTab.SelectedIndex = file_type_to_index(factory.guess_file_type(fileName.Text)) - 1;
         }
 
         private void editSyntax_Click(object sender, EventArgs e) {
@@ -519,8 +520,9 @@ namespace lw_common.ui {
             if (ofd.ShowDialog(this) == DialogResult.OK) {
                 fileName.Text = ofd.FileName;
                 save_settings();
+
                 // best guess
-                fileType.SelectedIndex = 0;
+                fileTypeTab.SelectedIndex = file_type_to_index(factory.guess_file_type(fileName.Text)) - 1;
                 if (fileTypeTab.SelectedIndex == 0) {
                     // line-by-line , try to find syntax
                     string file_syntax = log_to.file_to_syntax(fileName.Text);

@@ -43,8 +43,14 @@
     <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
+    <Reference Include="fastjson, Version=2.1.0.0, Culture=neutral, PublicKeyToken=6b75a806b86095cd, processorArchitecture=MSIL">
+      <HintPath>..\packages\fastJSON.2.1.36.1\lib\net40\fastjson.dll</HintPath>
+    </Reference>
     <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <HintPath>..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
       <HintPath>..\packages\NLog.4.5.8\lib\net45\NLog.dll</HintPath>
@@ -101,6 +107,7 @@
     <Compile Include="parse\parsers\db\database_log_parser.cs" />
     <Compile Include="parse\parsers\file\csv_file.cs" />
     <Compile Include="parse\parsers\file\file_parser_base.cs" />
+    <Compile Include="parse\parsers\file\json_file.cs" />
     <Compile Include="parse\parsers\file\text_file_part_on_single_line.cs" />
     <Compile Include="parse\parsers\file\xml\string_builder_reader.cs" />
     <Compile Include="parse\parsers\file\xml_file.cs" />
@@ -456,10 +463,6 @@
     <ProjectReference Include="3rdparty\EncodingTools\EncodingTools.csproj">
       <Project>{ca19d4de-b232-491a-92bf-7bf3a2758694}</Project>
       <Name>EncodingTools</Name>
-    </ProjectReference>
-    <ProjectReference Include="3rdparty\fastJSON\fastJSON net35.csproj">
-      <Project>{fdaf5695-e651-4d4d-8e15-0bd9fbef5069}</Project>
-      <Name>fastJSON net35</Name>
     </ProjectReference>
     <ProjectReference Include="3rdparty\ObjectListView\ObjectListView2012.csproj">
       <Project>{18feda0c-d147-4286-b39a-01204808106a}</Project>

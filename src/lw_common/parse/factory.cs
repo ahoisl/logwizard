@@ -30,6 +30,7 @@ using lw_common.parse.parsers.db;
 using lw_common.parse.parsers.system;
 using lw_common.readers.entry;
 using LogWizard;
+using lw_common.parse.parsers.file;
 
 namespace lw_common.parse {
     public class factory {
@@ -106,10 +107,15 @@ namespace lw_common.parse {
                 return file_log_type.xml;
             if (file_name.EndsWith(".csv"))
                 return file_log_type.csv;
+            if (file_name.EndsWith(".json"))
+                return file_log_type.json;
 
             // 1.8.6
             if (util.read_beginning_of_file(file_name, 16).StartsWith("<?"))
                 return file_log_type.xml;
+
+            if (util.read_beginning_of_file(file_name, 16).StartsWith("{"))
+                return file_log_type.json;
 
             if (text_file_part_on_single_line.is_single_line(file_name, new log_settings_string("")))
                 return file_log_type.part_to_line;
@@ -149,6 +155,8 @@ namespace lw_common.parse {
                 return new xml_file(reader);
             case file_log_type.csv:
                 return new csv_file(reader);
+            case file_log_type.json:
+                return new json_file(reader);
             case file_log_type.best_guess:
                 // best guess
                 break;
@@ -161,6 +169,8 @@ namespace lw_common.parse {
                 return new xml_file(reader);
             if ( file_name.EndsWith(".csv"))
                 return new csv_file(reader);
+            if (file_name.EndsWith(".json"))
+                return new json_file(reader);
 
             string syntax = reader.settings.syntax;
             if ( syntax == "" || syntax == find_log_syntax.UNKNOWN_SYNTAX)

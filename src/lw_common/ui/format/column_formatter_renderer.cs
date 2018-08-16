@@ -81,7 +81,7 @@ namespace lw_common.ui.format {
 
         private int top_idx() {
             int PAD = 5;
-            var top = list_.GetItemAt(PAD, list_.HeaderControl.ClientRectangle.Height + PAD);
+            var top = list_.GetItemAt(PAD, list_.HeaderControl.GetItemRect(0).Height + PAD);
             if (top == null)
                 return 0;
 

@@ -70,13 +70,14 @@ namespace lw_common {
         internal snoop_filter(log_view view) {
             view_ = view;
             // add the most of possible snoops
-            foreach ( info_type type in Enum.GetValues(typeof(info_type)))
+            foreach ( info_type type in Enum.GetValues(typeof(info_type))) {
                 if (info_type_io.is_snoopable(type)) {
                     var form = new snoop_around_form();
                     form.on_apply = on_apply;
                     form.on_snoop = on_snoop;
-                    unused_.Add( new snoop_form_info { form = form } );
+                    unused_.Add(new snoop_form_info { form = form });
                 }
+            }
         }
 
         public bool aliases_set {

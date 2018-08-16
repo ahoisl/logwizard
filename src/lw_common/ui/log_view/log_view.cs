@@ -950,7 +950,7 @@ namespace lw_common.ui {
 
         public int header_height {
             get {
-                int height = list.HeaderControl.ClientRectangle.Height;
+                int height = list.HeaderControl.GetItemRect(0).Height;
                 Debug.Assert(height > 0);
                 return height;
             }
@@ -963,7 +963,7 @@ namespace lw_common.ui {
             viewName.Visible = show;
             labelName.Visible = show;
 
-            int height = list.HeaderControl.ClientRectangle.Height;
+            int height = list.HeaderControl.GetItemRect(0).Height;
             list.Top = !show ? list.Top - height : list.Top + height;
             list.Height = !show ? list.Height + height : list.Height - height;
         }
@@ -1015,7 +1015,7 @@ namespace lw_common.ui {
 
             var visible_rows = visible_row_indexes();
             int rows_per_page = visible_rows.Item2 - visible_rows.Item1;
-            int height = list.Height - list.HeaderControl.ClientRectangle.Height;
+            int height = list.Height - list.HeaderControl.GetItemRect(0).Height;
             switch (action) {
                 case action_type.home:
                     sel = 0;
@@ -1316,12 +1316,12 @@ namespace lw_common.ui {
         // returns the rows that are visible
         private Tuple<int, int> visible_row_indexes() {
             int PAD = 5;
-            var top = list.GetItemAt(PAD, list.HeaderControl.ClientRectangle.Height + PAD);
+            var top = list.GetItemAt(PAD, list.HeaderControl.GetItemRect(0).Height + PAD);
             if (top == null)
                 return new Tuple<int, int>(0, 0);
 
             int top_idx = top.Index;
-            int height = list.Height - list.HeaderControl.ClientRectangle.Height;
+            int height = list.Height - list.HeaderControl.GetItemRect(0).Height;
             int row_height = top.Bounds.Height;
             int rows_per_page = height / row_height;
 
@@ -1338,7 +1338,7 @@ namespace lw_common.ui {
                 return 0;
 
             const int PAD = 5;
-            var top = list.GetItemAt(PAD, list.HeaderControl.ClientRectangle.Height + PAD);
+            var top = list.GetItemAt(PAD, list.HeaderControl.GetItemRect(0).Height + PAD);
             int row_height = top.Bounds.Height;
 
             var row = list.GetItem(row_idx).Bounds;
@@ -2782,11 +2782,6 @@ namespace lw_common.ui {
             var focus = win32.focused_ctrl();
             bool here = focus == list || focus == edit;
             if (!here)
-                return;
-            // see if hovering header
-            var mouse = list.PointToClient(Cursor.Position);
-            bool hovers_header = show_header && list.HeaderControl.ClientRectangle.Contains(mouse);
-            if (hovers_header)
                 return;
 
             bool busy = is_searching_ > 0 || model_.is_running_filter;

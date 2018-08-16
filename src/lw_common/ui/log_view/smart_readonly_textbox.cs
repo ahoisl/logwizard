@@ -180,7 +180,7 @@ namespace lw_common.ui {
                 Visible = false;
                 return;
             }
-            int header_height = parent_.list.HeaderControl.ClientRectangle.Height;
+            int header_height = parent_.list.HeaderControl.GetItemRect(0).Height;
             if (location.Y < offset_y + header_height) {
                 // it was the first row when user is moving up (up arrow), we'll get notified again
                 last_force_invisible_ = DateTime.Now;
@@ -710,7 +710,7 @@ namespace lw_common.ui {
         }
 
         private void add_cur_text_to_positions() {
-            if (sel_len_ < 1)
+            if (sel_len_ < 1 || sel_start_ >= Text.Length)
                 return;
             string txt = Text.Substring(sel_start_, sel_len_).ToLower();
             if ( !last_positions_.ContainsKey(txt))

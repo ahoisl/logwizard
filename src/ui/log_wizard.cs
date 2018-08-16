@@ -1556,7 +1556,7 @@ namespace LogWizard {
                 if (any_lv != null) {
                     top_offset = any_lv.RectangleToScreen(any_lv.ClientRectangle).Top - RectangleToScreen(ClientRectangle).Top + 5;
                     if (global_ui.show_header)
-                        top_offset += any_lv.list.HeaderControl.ClientRectangle.Height;
+                        top_offset += any_lv.list.HeaderControl.GetItemRect(0).Height;
                 }
                 int bottom_offset = ClientRectangle.Height - lower.Top;
                 msg_details_.update(selected_view(), top_offset, bottom_offset, force_update);

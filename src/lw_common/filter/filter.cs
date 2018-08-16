@@ -251,9 +251,7 @@ namespace lw_common {
             return name_;
         }
 
-        public match_list matches {
-            get { return matches_; }
-        }
+        public match_list matches => matches_;
 
         public string name {
             get { return name_; }

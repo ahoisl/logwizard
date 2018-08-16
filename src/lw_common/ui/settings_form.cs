@@ -52,13 +52,9 @@ namespace lw_common.ui {
             TopMost = parent.TopMost;
         }
 
-        public bool wants_reset_settings {
-            get { return wants_reset_settings_; }
-        }
+        public bool wants_reset_settings => wants_reset_settings_;
 
-        public bool needs_restart {
-            get { return needs_restart_; }
-        }
+        public bool needs_restart => needs_restart_;
 
         private void load() {
             var font = app.inst.font;

@@ -357,16 +357,9 @@ namespace lw_common.ui {
             after_click_sel_col_ = -1;
         }
 
-        public string sel_text {
-            get {
-                return cached_sel_text_;
-            }
-        }
-        internal string currently_selected_text {
-            get {
-                return raw_sel_text();
-            }
-        }
+        public string sel_text => cached_sel_text_;
+
+        internal string currently_selected_text => raw_sel_text();
 
         public bool force_hide {
             get { return force_hide_; }

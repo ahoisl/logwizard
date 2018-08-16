@@ -207,31 +207,22 @@ namespace lw_common {
                 valid_ = false;
         }
 
-        public bool is_valid {
-            get { return valid_; }
-        } 
+        public bool is_valid => valid_;
 
         public class match {
             public font_info font = null;
         }
 
 
-        public List<addition> additions {
-            get { return additions_; }
-        }
+        public List<addition> additions => additions_;
 
-        public Color match_fg {
-            get { return font_.match_fg; }
-        }
-        public Color match_bg {
-            get { return font_.match_bg; }
-        }
-        public Color fg {
-            get { return font_.fg; }
-        }
-        public Color bg {
-            get { return font_.bg; }
-        }
+        public Color match_fg => font_.match_fg;
+
+        public Color match_bg => font_.match_bg;
+
+        public Color fg => font_.fg;
+
+        public Color bg => font_.bg;
 
         private font_info get_raw_font_info() {
             var result = new font_info();

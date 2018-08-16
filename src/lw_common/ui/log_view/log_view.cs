@@ -154,8 +154,6 @@ namespace lw_common.ui {
             list.ColumnWidthChanging += List_on_column_width_changing;
             msgCol.FillsFreeSpace = !app.inst.show_horizontal_scrollbar;
             lv_parent.description_pane().on_internal_resize += on_description_pane_resized;
-
-            resize_cols();
         }
 
         private void List_on_column_width_changing(object sender, ColumnWidthChangingEventArgs e) {
@@ -693,6 +691,11 @@ namespace lw_common.ui {
 
         public bool show_full_log => model_.show_full_log;
 
+        /// <summary>
+        /// Set (and run) filters on the view.
+        /// </summary>
+        /// <param name="filter_view">Whether the filter should be run or not</param>
+        /// <param name="show_full_log">Whether Show All Lines is checked or not</param>
         public void set_filter(bool filter_view, bool show_full_log) {
             if (is_full_log)
                 // on full log - don't allow any toggling (even though theoretically it could be possible)
@@ -729,9 +732,8 @@ namespace lw_common.ui {
                 else {
                     // search by current filter 
                     if (lv_parent.selected_filter_row_index >= 0) {
-                        // search by selected filter (we're focused on teh filters pane)
-                        List<int> filters = new List<int>();
-                        filters.Add(lv_parent.selected_filter_row_index);
+                        // search by selected filter (we're focused on the filters pane)
+                        var filters = new List<int> {lv_parent.selected_filter_row_index};
                         model_.item_filter = (i, a) => item_run_several_filters(i, filters);
                     } else {
                         // search by filters matching this line

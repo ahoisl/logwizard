@@ -161,7 +161,7 @@ namespace lw_common.ui {
 
         public bool is_focus_on_filter_list => win32.focused_ctrl() == filterCtrl;
 
-        public bool can_handle_toggle_enable_dimmed_now => is_focus_on_filter_list;
+        public bool can_handle_toggle_enable_now => is_focus_on_filter_list;
 
         public int sel => filterCtrl.SelectedIndex;
 
@@ -344,8 +344,9 @@ namespace lw_common.ui {
                 return;
 
 
+            var row = new raw_filter_row(filterBox.Text, applyToExistingLines.Checked);
             // Realtime text change to list object
-            if (filterCtrl.SelectedObject is filter_item sel) {
+            if (filterCtrl.SelectedObject is filter_item sel && row.is_valid) {
                 if (sel.text != filterBox.Text) {
                     sel.text = filterBox.Text;
                     filterCtrl.RefreshObject(sel);
@@ -361,7 +362,6 @@ namespace lw_common.ui {
             }
 
             // Set TextArea error color (bg)
-            var row = new raw_filter_row(filterBox.Text, applyToExistingLines.Checked);
             Color bg = filterBox.Text.Trim() == "" || row.is_valid ? Color.White : Color.LightPink;
             if (filterBox.BackColor.ToArgb() != bg.ToArgb())
                 filterBox.BackColor = bg;
@@ -895,12 +895,7 @@ namespace lw_common.ui {
                     return;
                 }
 
-                var line = variableBox.Text;
-                if (operatorBox.Text != "regex") {
-                    line += " " + operatorBox.Text;
-                }
-
-                line += " " + valueBox.Text;
+                var line = $"{variableBox.Text} {operatorBox.Text} {valueBox.Text}";
                 filterBox.AppendText(appendReturn + line + NL);
 
                 variableBox.ResetText();

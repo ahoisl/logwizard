@@ -7,16 +7,13 @@ using System.Threading.Tasks;
 namespace SyntaxDetector {
     class SyntaxPart : ICloneable {
 
-        public Type type;
-        public int startIndex, endIndex;
-        public string startSequence;
-        public float confidence;
+        public Type type = Type.Empty;
+        public string startSequence = "";
+        public float confidence = 0f;
 
         public object Clone() {
             return new SyntaxPart {
                 type = this.type,
-                startIndex = this.startIndex,
-                endIndex = this.endIndex,
                 startSequence = (string) this.startSequence.Clone(),
                 confidence = this.confidence
             };

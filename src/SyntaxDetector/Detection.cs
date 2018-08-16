@@ -207,8 +207,6 @@ namespace SyntaxDetector {
             }
             return new SyntaxPart {
                 type = this.type,
-                startIndex = this.startIndex,
-                endIndex = this.startIndex + content.Length,
                 startSequence = startChar.ToString(),
                 confidence = this.confidence
             };

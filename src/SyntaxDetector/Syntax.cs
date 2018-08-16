@@ -86,13 +86,23 @@ namespace SyntaxDetector {
 
         public override string ToString() {
             var sb = new StringBuilder();
+
             var msgs = 0;
             foreach(var part in parts) {
                 if (part.type == Type.Message) msgs++;
             }
             var ctx = 1;
+
+            var added = new List<Type>();
+
             for(var i = 0; i < parts.Count; i++) {
-                var part = parts[i];
+                var part = (SyntaxPart) parts[i].Clone();
+                if(part.type != Type.Message && added.Contains(part.type)) {
+                    part.type = Type.Message;
+                    msgs++;
+                } else {
+                    added.Add(part.type);
+                }
                 var nextPart = i < parts.Count - 1 ? parts[i + 1] : null;
                 sb.Append(part.GetSyntaxString(nextPart != null ? nextPart.startSequence : "1", ctx == msgs ? 0 : ctx));
                 if (part.type == Type.Message) ctx++;

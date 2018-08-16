@@ -149,7 +149,7 @@
             this.logHistory.FormattingEnabled = true;
             this.logHistory.Location = new System.Drawing.Point(285, 3);
             this.logHistory.Name = "logHistory";
-            this.logHistory.Size = new System.Drawing.Size(892, 23);
+            this.logHistory.Size = new System.Drawing.Size(886, 23);
             this.logHistory.TabIndex = 7;
             this.tip.SetToolTip(this.logHistory, "History - just select any of the previous logs, and they instantly load");
             this.logHistory.Visible = false;
@@ -301,11 +301,9 @@
             // 
             // main
             // 
-            this.main.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.main.Dock = System.Windows.Forms.DockStyle.Fill;
             this.main.FixedPanel = System.Windows.Forms.FixedPanel.Panel1;
-            this.main.Location = new System.Drawing.Point(2, 27);
+            this.main.Location = new System.Drawing.Point(0, 24);
             this.main.Name = "main";
             // 
             // main.Panel1
@@ -317,7 +315,7 @@
             // 
             this.main.Panel2.Controls.Add(this.sourceUp);
             this.main.Panel2MinSize = 300;
-            this.main.Size = new System.Drawing.Size(1253, 494);
+            this.main.Size = new System.Drawing.Size(1255, 471);
             this.main.SplitterDistance = 295;
             this.main.SplitterWidth = 6;
             this.main.TabIndex = 4;
@@ -335,7 +333,7 @@
             this.leftPane.MinimumSize = new System.Drawing.Size(275, 0);
             this.leftPane.Name = "leftPane";
             this.leftPane.SelectedIndex = 0;
-            this.leftPane.Size = new System.Drawing.Size(299, 487);
+            this.leftPane.Size = new System.Drawing.Size(299, 464);
             this.leftPane.TabIndex = 13;
             this.leftPane.SizeChanged += new System.EventHandler(this.leftPane_SizeChanged);
             // 
@@ -345,7 +343,7 @@
             this.filtersTab.Location = new System.Drawing.Point(4, 24);
             this.filtersTab.Name = "filtersTab";
             this.filtersTab.Padding = new System.Windows.Forms.Padding(3);
-            this.filtersTab.Size = new System.Drawing.Size(291, 459);
+            this.filtersTab.Size = new System.Drawing.Size(291, 436);
             this.filtersTab.TabIndex = 0;
             this.filtersTab.Text = "Filters";
             this.filtersTab.UseVisualStyleBackColor = true;
@@ -359,7 +357,7 @@
             this.filtCtrl.MinimumSize = new System.Drawing.Size(275, 0);
             this.filtCtrl.Name = "filtCtrl";
             this.filtCtrl.settings = null;
-            this.filtCtrl.Size = new System.Drawing.Size(285, 459);
+            this.filtCtrl.Size = new System.Drawing.Size(285, 436);
             this.filtCtrl.status = null;
             this.filtCtrl.TabIndex = 0;
             // 
@@ -432,7 +430,7 @@
             // sourceUp.Panel2
             // 
             this.sourceUp.Panel2.Controls.Add(this.splitDescription);
-            this.sourceUp.Size = new System.Drawing.Size(952, 494);
+            this.sourceUp.Size = new System.Drawing.Size(954, 471);
             this.sourceUp.SplitterDistance = 40;
             this.sourceUp.TabIndex = 0;
             // 
@@ -464,8 +462,8 @@
             // 
             this.splitDescription.Panel2.Controls.Add(this.description);
             this.splitDescription.Panel2MinSize = 100;
-            this.splitDescription.Size = new System.Drawing.Size(952, 450);
-            this.splitDescription.SplitterDistance = 292;
+            this.splitDescription.Size = new System.Drawing.Size(954, 427);
+            this.splitDescription.SplitterDistance = 267;
             this.splitDescription.SplitterWidth = 6;
             this.splitDescription.TabIndex = 18;
             this.splitDescription.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.splitDescription_SplitterMoved);
@@ -486,7 +484,7 @@
             this.filteredLeft.Panel1.Controls.Add(this.viewsTab);
             this.filteredLeft.Panel1MinSize = 100;
             this.filteredLeft.Panel2MinSize = 100;
-            this.filteredLeft.Size = new System.Drawing.Size(952, 292);
+            this.filteredLeft.Size = new System.Drawing.Size(954, 267);
             this.filteredLeft.SplitterDistance = 431;
             this.filteredLeft.SplitterWidth = 6;
             this.filteredLeft.TabIndex = 0;
@@ -503,7 +501,7 @@
             this.viewsTab.Location = new System.Drawing.Point(0, 3);
             this.viewsTab.Name = "viewsTab";
             this.viewsTab.SelectedIndex = 0;
-            this.viewsTab.Size = new System.Drawing.Size(426, 290);
+            this.viewsTab.Size = new System.Drawing.Size(426, 265);
             this.viewsTab.TabIndex = 0;
             this.viewsTab.SelectedIndexChanged += new System.EventHandler(this.viewsTab_SelectedIndexChanged);
             this.viewsTab.DragDrop += new System.Windows.Forms.DragEventHandler(this.filteredViews_DragDrop);
@@ -515,7 +513,7 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 24);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(418, 262);
+            this.tabPage1.Size = new System.Drawing.Size(418, 237);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "View";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -530,7 +528,7 @@
             this.dropHere.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             this.dropHere.Location = new System.Drawing.Point(5, 3);
             this.dropHere.Name = "dropHere";
-            this.dropHere.Size = new System.Drawing.Size(407, 262);
+            this.dropHere.Size = new System.Drawing.Size(407, 237);
             this.dropHere.TabIndex = 0;
             this.dropHere.Text = "Drop a Log file here\r\n to open";
             this.dropHere.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -543,7 +541,7 @@
             this.description.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.description.Location = new System.Drawing.Point(0, 0);
             this.description.Name = "description";
-            this.description.Size = new System.Drawing.Size(952, 152);
+            this.description.Size = new System.Drawing.Size(954, 154);
             this.description.TabIndex = 0;
             // 
             // refresh
@@ -554,13 +552,12 @@
             // 
             // lower
             // 
-            this.lower.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
             this.lower.Controls.Add(this.logHistory);
             this.lower.Controls.Add(this.status);
+            this.lower.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.lower.Location = new System.Drawing.Point(0, 495);
             this.lower.Name = "lower";
-            this.lower.Size = new System.Drawing.Size(1261, 27);
+            this.lower.Size = new System.Drawing.Size(1255, 27);
             this.lower.TabIndex = 15;
             // 
             // status
@@ -570,7 +567,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.status.Location = new System.Drawing.Point(3, 2);
             this.status.Name = "status";
-            this.status.Size = new System.Drawing.Size(1132, 24);
+            this.status.Size = new System.Drawing.Size(1126, 24);
             this.status.TabIndex = 18;
             // 
             // saveTimer
@@ -951,9 +948,9 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.BackColor = System.Drawing.Color.White;
             this.ClientSize = new System.Drawing.Size(1255, 522);
+            this.Controls.Add(this.main);
             this.Controls.Add(this.menuBar);
             this.Controls.Add(this.toggleTopmost);
-            this.Controls.Add(this.main);
             this.Controls.Add(this.lower);
             this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));

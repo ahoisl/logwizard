@@ -462,6 +462,11 @@ namespace lw_common.ui {
                 return was_seaching && status == "" ? " " : status;
             }
         }
+
+        public void rerun_filters() {
+            model_.reapply_quick_filter();
+        }
+
         private filter.match create_match_object(BitArray matches, font_info font, line line, int line_idx) {
             return is_full_log ? new full_log_match_item(matches, font, line, line_idx, this) : new match_item(matches, font, line, line_idx, this);
         }
@@ -526,13 +531,11 @@ namespace lw_common.ui {
                 if (sel >= 0)
                     return sel;
 
-                ListView.SelectedIndexCollection multi = null;
-                this.async_call_and_wait(() => multi = list.SelectedIndices);
-                if (multi != null)
-                    if (multi.Count > 0)
-                        return multi[0];
-
-                return -1;
+                int multi = -1;
+                this.async_call_and_wait(() => multi = list.SelectedIndices.Count);
+                if (multi > 0) 
+                    this.async_call_and_wait(() => sel = list.SelectedIndices[0]);
+                return sel;
             }
         }
 
@@ -733,7 +736,7 @@ namespace lw_common.ui {
                     // search by current filter 
                     if (lv_parent.selected_filter_row_index >= 0) {
                         // search by selected filter (we're focused on the filters pane)
-                        var filters = new List<int> {lv_parent.selected_filter_row_index};
+                        var filters = new List<int> { lv_parent.selected_filter_row_index };
                         model_.item_filter = (i, a) => item_run_several_filters(i, filters);
                     } else {
                         // search by filters matching this line
@@ -2650,7 +2653,7 @@ namespace lw_common.ui {
                 int new_width = -1;
 
                 var used_space = longest_shown[col.Text] * (size - 2) + 10;
-                
+
                 bool wastes_space() => col.Width >= used_space;
                 bool got_user_width() => user_widths.ContainsKey(col.Index);
 
@@ -2664,8 +2667,8 @@ namespace lw_common.ui {
                 } else {
                     if (wastes_space()) {
                         new_width = used_space;
-                    } else if(got_user_width()) {
-                        new_width = user_widths[col.Index]; 
+                    } else if (got_user_width()) {
+                        new_width = user_widths[col.Index];
                     }
                 }
 

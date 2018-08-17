@@ -134,6 +134,7 @@ namespace LogWizard {
             filtCtrl.ui_to_view = (view_idx) => log_view_for_tab(view_idx).set_filter(filtCtrl.to_filter_row_list());
             filtCtrl.on_rerun_view = (view_idx) => refreshToolStripMenuItem1_Click(null, null);
             filtCtrl.on_refresh_view = (view_idx) => {
+                log_view_for_tab(view_idx).rerun_filters();
                 log_view_for_tab(view_idx).Refresh();
                 full_log.list.Refresh();
             };

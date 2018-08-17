@@ -28,9 +28,9 @@ using System.Drawing;
 using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
+using lw_common.ui;
 
 namespace lw_common {
-
     class filter : IDisposable {
         private static log4net.ILog logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -46,21 +46,6 @@ namespace lw_common {
             // convention - if we can't find a specific line (match_at), we'll return a line with the index -1
             //              (so that we don't return null)
             public readonly int line_idx = 0;
-
-            // returns true if at least one "include" filter matches this (or, if we don't have any include filters)
-            public bool has_matches_via_include(filter f) {
-                if (!f.has_include_filters)
-                    // in this case, we match all
-                    return true;
-                if (matches.Count == 0)
-                    return false;
-                // it needs to match at least one include filter!
-                for (int idx = 0; idx < matches.Count; ++idx)
-                    if (matches[idx])
-                        if (f.is_include_filter(idx))
-                            return true;
-                return false;
-            }
 
             public match(BitArray matches, font_info font, line line, int line_idx) {
                 this.matches = matches;
@@ -106,7 +91,7 @@ namespace lw_common {
 
             // in case we're asking for an invalid line, just return something that is fully empty
             // next time, the log view will see that we've updated
-            public match match_at(int idx) {
+            private match match_at(int idx) {
                 lock (this) {
                     if (show_elements_in_reverse_order)
                         idx = matches_.Count - idx - 1;
@@ -201,6 +186,7 @@ namespace lw_common {
                 return result;
             }
 
+            public match this[int i] => match_at(i);
         }
 
 
@@ -235,8 +221,11 @@ namespace lw_common {
         public enum change_type {
             new_lines, changed_filter, file_rewritten
         }
+
         public delegate void on_change_func(change_type change);
+
         public on_change_func on_change;
+        public status_ctrl status;
 
         private bool file_rewritten_ = false;
 
@@ -281,23 +270,6 @@ namespace lw_common {
             }
         }
 
-        public bool has_include_filters {
-            get {
-                lock (this) {
-                    if (rows_.Count == 0)
-                        return false; // optimization
-
-                    var first = rows_.FirstOrDefault(x => !x.apply_to_existing_lines);
-                    return first != null;
-                }
-            }
-        }
-
-        public bool is_include_filter(int row_idx) {
-            lock (this)
-                return !rows_[row_idx].apply_to_existing_lines;
-        }
-
         public int row_count {
             get { lock (this) return rows_.Count; }
         }
@@ -306,14 +278,12 @@ namespace lw_common {
             get { lock (this) return rows_changed_; }
         }
 
-        public int match_count {
-            get { return matches_.count; }
-        }
+        public int match_count => matches_.count;
 
         public int full_count {
             get {
                 lock (this) {
-                    return new_log_ != null ? new_log_.line_count : 0;
+                    return new_log_?.line_count ?? 0;
                 }
             }
         }
@@ -329,7 +299,7 @@ namespace lw_common {
         // note: the only time this can return null is this: since we're refreshing on another thread,
         //       we might at some point get a match_count, and while we're retrieving the items, the matches array clears
         public match match_at(int idx) {
-            return matches_.match_at(idx);
+            return matches_[idx];
         }
 
         // this will return the log we last read the matches from
@@ -494,7 +464,7 @@ namespace lw_common {
                     continue;
                 }
 
-                // the reason I do this here - I need to let the main thread know htat the log was fully set (and the matches are from This log)
+                // the reason I do this here - I need to let the main thread know that the log was fully set (and the matches are from This log)
                 // ONLY after I have read from it at least once
                 lock (this)
                     old_log_ = new_;
@@ -507,8 +477,10 @@ namespace lw_common {
 
                     if (new_lines_found) {
                         bool raise_event = file_rewritten || (old_count != new_count);
-                        if (raise_event)
+                        if (raise_event) {
                             on_change(file_rewritten ? change_type.file_rewritten : change_type.new_lines);
+                            status?.set_status("Done!", status_ctrl.status_type.msg, 1000);
+                        }
                     } else if (needs_recompute && (old_count != 0 || new_count != 0))
                         on_change(change_type.changed_filter);
                 }
@@ -572,72 +544,38 @@ namespace lw_common {
                 row.compute_line_matches(new_log);
 
             if (has_new_lines) {
+                status?.set_status("Computing filters... This might take a moment", status_ctrl.status_type.msg, 10000);
                 bool is_full_log = row_count < 1;
                 int expected_capacity = is_full_log ? (new_log.line_count - old_line_count) : (new_log.line_count - old_line_count) / 5;
                 // the filter matches
-                memory_optimized_list<match> new_matches = new memory_optimized_list<match>() { min_capacity = expected_capacity, name = "temp_m " + name, increase_percentage = .7 };
+                memory_optimized_list<match> new_matches = new memory_optimized_list<match> { min_capacity = expected_capacity, name = "temp_m " + name, increase_percentage = .7 };
 
                 // from old_lines to log.line_count -> these need recomputing
                 int old_match_count = matches_.count;
-                BitArray matches = new BitArray(rows.Count);
+                bool[] row_matches_filter = new bool[rows.Count];
 
                 // handle the case where all the filters are disabled (thus, show all lines)
                 int run_filter_count = rows.Count(x => x.enabled);
 
                 for (int line_idx = old_line_count; line_idx < new_log.line_count; ++line_idx) {
                     bool any_match = false;
-                    bool any_non_apply_to_existing_lines_filters = false;
-                    // 1.0.69 added "apply to existing filters"
-                    for (int filter_idx = 0; filter_idx < matches.Length; ++filter_idx) {
+                    // Go through all filters
+                    for (int filter_idx = 0; filter_idx < row_matches_filter.Length; ++filter_idx) {
                         var row = rows[filter_idx];
-                        if (row.enabled && !row.apply_to_existing_lines) {
-                            matches[filter_idx] = row.line_matches.Contains(line_idx);
-                            any_non_apply_to_existing_lines_filters = true;
-                        } else
-                            matches[filter_idx] = false;
-                        if (matches[filter_idx])
+                        if (row.enabled && row.line_matches.Contains(line_idx)) {
+                            row_matches_filter[filter_idx] = true;
                             any_match = true;
-                    }
-                    if (!any_non_apply_to_existing_lines_filters)
-                        // in this case - all filters apply to existing lines - thus, by default, we show all the lines
-                        any_match = true;
-
-                    // 1.0.69 "apply to existing filters" is applied afterwards
-                    font_info existing_filter_font = null;
-                    if (any_match)
-                        for (int filter_idx = 0; filter_idx < matches.Length && any_match; ++filter_idx) {
-                            var row = rows[filter_idx];
-                            if (row.enabled && row.apply_to_existing_lines) {
-                                bool is_font_only = row.has_font_info;
-                                if (row.line_matches.Contains(line_idx)) {
-                                    if (existing_filter_font == null && is_font_only) {
-                                        // in this case, use the font from "apply to existing filters" - only if the user has specifically set it
-                                        existing_filter_font = row.get_match(line_idx).font;
-                                        matches[filter_idx] = true;
-                                    }
-                                } else if (!is_font_only)
-                                    // we're filtering this line out
-                                    any_match = false;
-                            }
                         }
+                    }
 
                     if (any_match) {
-                        font_info font = (existing_filter_font ?? font_info.default_font).copy();
+                        font_info font = font_info.default_font.copy();
+                        // 1.3.29g+ apply and merge all enabled filters
+                        for (int filter_idx = 0; filter_idx < row_matches_filter.Length; ++filter_idx)
+                            if (row_matches_filter[filter_idx])
+                                font.merge(rows[filter_idx].get_match(line_idx).font);
 
-                        int enabled_idx = -1;
-                        for (int filter_idx = 0; filter_idx < matches.Length && enabled_idx < 0; ++filter_idx)
-                            if (matches[filter_idx] && rows[filter_idx].enabled)
-                                enabled_idx = filter_idx;
-
-                        if (enabled_idx >= 0) {
-                            // 1.3.29g+ apply and merge all enabled filters
-                            for (int filter_idx = 0; filter_idx < matches.Length; ++filter_idx)
-                                if (matches[filter_idx] && rows[filter_idx].enabled)
-                                    font.merge(rows[filter_idx].get_match(line_idx).font);
-
-                        }
-
-                        new_matches.Add(new_match(new BitArray(matches), new_log.line_at(line_idx), line_idx, font));
+                        new_matches.Add(new_match(new BitArray(row_matches_filter), new_log.line_at(line_idx), line_idx, font));
                         continue;
                     }
 
@@ -670,6 +608,8 @@ namespace lw_common {
             bool is_up_to_date = new_log.up_to_date;
             lock (this)
                 is_up_to_date_ = is_up_to_date;
+
+
         }
 
 
@@ -690,7 +630,7 @@ namespace lw_common {
             Dictionary<int, Color> additions = new Dictionary<int, Color>();
             int new_match_count = matches_.count;
             for (int match_idx = old_match_count; match_idx < new_match_count; ++match_idx) {
-                int line_idx = matches_.match_at(match_idx).line_idx;
+                int line_idx = matches_[match_idx].line_idx;
                 var match = match_at(match_idx);
 
                 int matched_filter = -1;

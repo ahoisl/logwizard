@@ -55,7 +55,7 @@ namespace lw_common.ui {
 
         void simple_action(log_view_right_click.simple_action simple);
 
-        void add_or_edit_filter(string filter_str, string filter_id, bool apply_to_existing_lines);
+        void add_or_edit_filter(string filter_str, string filter_id);
 
         // called after we've searched to something (thus, changed the current line)
         void sel_changed(log_view_sel_change_type change);

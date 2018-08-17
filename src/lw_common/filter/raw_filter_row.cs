@@ -68,8 +68,7 @@ namespace lw_common {
         // if it is, we can keep the cached information (about line matches)
         public bool same(raw_filter_row other) {
             //return Enumerable.SequenceEqual(items_, other.items_) && Enumerable.SequenceEqual(additions_, other.additions_) && apply_to_existing_lines == other.apply_to_existing_lines;
-            return unique_id == other.unique_id && apply_to_existing_lines == other.apply_to_existing_lines &&
-                   font_ == other.font_;
+            return unique_id == other.unique_id && font_ == other.font_;
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -82,12 +81,6 @@ namespace lw_common {
         protected List<addition> additions_ = new List<addition>();
 
         protected readonly font_info font_ = null;
-
-        // if true, this is applied after the normal filters
-        //
-        // it can : filter out lines from what the normal filters yielded and/or
-        //          give a different color to the lines
-        public readonly bool apply_to_existing_lines = false;
 
         protected readonly string unique_id_;
 
@@ -141,8 +134,8 @@ namespace lw_common {
             // note : we don't care about apply-to-existing-lines - we know it's the same amongst old/new filter row
             //        what I care about is the colors (line color and merge color)
             bool apply_to_existing_lines = false;
-            var old_row = new raw_filter_row(old_text, apply_to_existing_lines);
-            var new_row = new raw_filter_row(new_text, apply_to_existing_lines);
+            var old_row = new raw_filter_row(old_text);
+            var new_row = new raw_filter_row(new_text);
 
             // old lines - not trimmed (so that we can insert them as they were - if needed); new lines -> trimmed
             var old_lines = old_row.lines_.Where(x => !filter_line.is_color_or_font_line(x) && !x.Trim().StartsWith("#") && x.Trim() != "" ).ToList();
@@ -167,7 +160,6 @@ namespace lw_common {
             items_ = other.items_.ToList();
             lines_ = other.lines_.ToArray();
             additions_ = other.additions.ToList();
-            apply_to_existing_lines = other.apply_to_existing_lines;
             unique_id_ = other.unique_id_;
             valid_ = other.valid_;
             enabled_ = other.enabled;
@@ -176,8 +168,7 @@ namespace lw_common {
             update_font();
         }
 
-        public raw_filter_row(string text, bool apply_to_existing_lines) {
-            this.apply_to_existing_lines = apply_to_existing_lines;
+        public raw_filter_row(string text) {
             List<filter_line> lines = new List<filter_line>();
             List<addition> additions = new List<addition>();
             lines_ = text.Split(new string[] {"\r\n"}, StringSplitOptions.RemoveEmptyEntries);
@@ -199,7 +190,6 @@ namespace lw_common {
                         valid_ = false;
                 }
             }
-            unique_id_ += "" + apply_to_existing_lines;
             font_ = font_info.default_font.copy();
             init(lines, additions);
 

@@ -122,10 +122,12 @@ namespace LogWizard {
 
             ++ignore_change_;
 
-            full_log_ctrl_ = new log_view(this, log_view.FULLLOG_NAME);
-            full_log_ctrl_.Dock = DockStyle.Fill;
+            full_log_ctrl_ = new log_view(this, log_view.FULLLOG_NAME) {
+                Dock = DockStyle.Fill,
+                show_name = false,
+                status = status
+            };
             filteredLeft.Panel2.Controls.Add(full_log_ctrl_);
-            full_log_ctrl_.show_name = false;
             full_log_ctrl_.show_view(true);
 
             filtCtrl.status = status;
@@ -134,9 +136,8 @@ namespace LogWizard {
             filtCtrl.ui_to_view = (view_idx) => log_view_for_tab(view_idx).set_filter(filtCtrl.to_filter_row_list());
             filtCtrl.on_rerun_view = (view_idx) => refreshToolStripMenuItem1_Click(null, null);
             filtCtrl.on_refresh_view = (view_idx) => {
-                log_view_for_tab(view_idx).rerun_filters();
-                log_view_for_tab(view_idx).Refresh();
-                full_log.list.Refresh();
+                log_view_for_tab(view_idx).refresh();
+                full_log.refresh();
             };
             filtCtrl.mark_match = (filter_idx) => {
                 var lv = log_view_for_tab(viewsTab.SelectedIndex);
@@ -1131,8 +1132,8 @@ namespace LogWizard {
             }
         }
 
-        public void add_or_edit_filter(string filter_str, string filter_id, bool apply_to_existing_lines) {
-            filtCtrl.update_filter_row(filter_id, filter_str, apply_to_existing_lines);
+        public void add_or_edit_filter(string filter_str, string filter_id) {
+            filtCtrl.update_filter_row(filter_id, filter_str);
             last_edited_filter_id_ = filter_id;
             selected_view().clear_edit();
             selected_view().update_edit();
@@ -1572,7 +1573,7 @@ namespace LogWizard {
             ui_context ctx = cur_context();
             List<raw_filter_row> lvf = new List<raw_filter_row>();
             foreach (ui_filter filt in ctx.views[idx].filters) {
-                var row = new raw_filter_row(filt.text, filt.apply_to_existing_lines) { enabled = filt.enabled };
+                var row = new raw_filter_row(filt.text) { enabled = filt.enabled };
                 if (row.is_valid)
                     lvf.Add(row);
             }
@@ -2565,7 +2566,7 @@ namespace LogWizard {
 
                         if (searcher.wants_to_filter) {
                             var filt = searcher.search.to_filter();
-                            add_or_edit_filter(filt.text, filt.id, filt.apply_to_existing_lines);
+                            add_or_edit_filter(filt.text, filt.id);
                         } else {
                             lv.set_search_for_text(searcher.search);
                             lv.search_for_text_first();

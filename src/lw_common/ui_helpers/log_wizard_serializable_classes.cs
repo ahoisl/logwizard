@@ -36,12 +36,9 @@ namespace lw_common {
         // if true, it's enabled
         public bool enabled = true;
 
-        public bool apply_to_existing_lines = false;
-
         internal void load_save(bool load, string prefix) {
             app.load_save(load, ref text, prefix + "text");
             app.load_save(load, ref enabled, prefix + "enabled", true);
-            app.load_save(load, ref apply_to_existing_lines,prefix + "apply_to_existing_lines", false);
         }
 
         public void load(string prefix) {

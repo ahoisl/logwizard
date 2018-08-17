@@ -398,9 +398,7 @@ namespace lw_common.ui {
 
         private int ignore_change_ = 0;
 
-        private line cur_line {
-            get { return lines_[cur_line_id_]; }
-        }
+        private line cur_line => lines_[cur_line_id_];
 
         private bool dirty_ = false;
 

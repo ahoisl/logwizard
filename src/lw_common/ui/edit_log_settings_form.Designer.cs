@@ -1150,7 +1150,7 @@
             // 
             // ofd
             // 
-            this.ofd.Filter = "Log Files|*.log;*.txt|All Files|*.*";
+            this.ofd.Filter = "Log Files|*.log;*.txt;*.xml;*.json|All Files|*.*";
             // 
             // refresh
             // 

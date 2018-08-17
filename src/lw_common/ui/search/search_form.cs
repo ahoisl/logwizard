@@ -568,7 +568,7 @@ namespace lw_common.ui {
         }
 
         private void filterHelp_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
-            Process.Start("https://github.com/jtorjo/logwizard/wiki/Filters");
+            new help_form("filters").Show(this);
         }
 
         private void toFilter_Click(object sender, EventArgs e) {

@@ -19,17 +19,16 @@
  * If you wish to use this code in a closed source application, please contact john.code@torjo.com 
  *  * **** Get Latest version at https://github.com/jtorjo/logwizard **** 
 */
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading;
 using BrightIdeasSoftware;
-using LogWizard;
-using lw_common;
+using System;
+using System.Diagnostics;
+using System.Threading;
 
 namespace lw_common.ui {
+    /// <summary>
+    /// Data Source for all the lines in log_view. This is a VirtualListDataSource.
+    /// This class also handles filtering.
+    /// </summary>
     internal class log_view_data_source : AbstractVirtualListDataSource, IDisposable {
 
         private VirtualObjectListView lv_ = null;
@@ -80,7 +79,7 @@ namespace lw_common.ui {
         public log_view_data_source(VirtualObjectListView lv, log_view parent ) : base(lv) {
             lv_ = lv;
             parent_ = parent;
-            items_ = parent.filter.matches ;
+            items_ = parent.filter.matches;
             change_event_.current_thread_is_owner();
 
             new Thread(update_filter_thread) {IsBackground = true}.Start();
@@ -94,7 +93,7 @@ namespace lw_common.ui {
         }
 
         public log_view_quick_filter quick_filter {
-            set { quick_filter_ = value; }
+            set => quick_filter_ = value;
         }
 
         private filter.match_list full_log_items {
@@ -163,9 +162,7 @@ namespace lw_common.ui {
             return item_count_;
         }
 
-        public int item_count {
-            get { return item_count_; }
-        }
+        public int item_count => item_count_;
 
         internal match_item item_at(int idx) {
             bool show_full_log;
@@ -175,12 +172,11 @@ namespace lw_common.ui {
             if (!is_filtering) {
                 // not filtered
                 if ( !show_full_log)
-                    return items_.match_at(idx) as match_item;
+                    return items_[idx] as match_item;
 
                 // it's showing all items - however, if item is in current view as well, preserve it (color and everything)
-                var i = full_log_items.match_at(idx) as match_item;
-                var in_cur_view = items_.binary_search(i.line_idx).Item1 as match_item;
-                if (in_cur_view != null)
+                var i = full_log_items[idx] as match_item;
+                if (items_.binary_search(i.line_idx).Item1 is match_item in_cur_view)
                     i = in_cur_view;
                 return i;
             }
@@ -198,6 +194,7 @@ namespace lw_common.ui {
             // we prefer finding from the current view - so we actually preserve colors and such
             var found_in_items = items_.binary_search(line_index).Item1;
             var found = found_in_items ?? full_log_items.binary_search(line_index).Item1;
+            Debug.WriteLine(found.line.part(info_type.msg));
             return found as match_item;
         }
 
@@ -247,14 +244,12 @@ namespace lw_common.ui {
                 // here, we're filtering the items
                 lock (this) {
                     Debug.Assert(sorted_line_indexes_ != null);
-                    return sorted_line_indexes_ != null ? sorted_line_indexes_.Count : 0;
+                    return sorted_line_indexes_?.Count ?? 0;
                 }
             }
         }
 
-        public bool is_running_filter {
-            get { return is_running_filter_; }
-        }
+        public bool is_running_filter => is_running_filter_;
 
         public void reapply_quick_filter() {
             // we never run anything on the full-log
@@ -323,6 +318,11 @@ namespace lw_common.ui {
             }
         }
 
+
+        /// <summary>
+        /// Runs the filter forreal.
+        /// </summary>
+        /// <param name="run_on_full_log">Whether View Full Log is checked or not</param>
         private void run_filter(bool run_on_full_log) {
             filter_func item_filter;
             lock (this) item_filter = this.item_filter;
@@ -338,11 +338,11 @@ namespace lw_common.ui {
             for (int idx = 0; idx < count; ++idx) {
                 match_item i;
                 if (!run_on_full_log)
-                    i = items.match_at(idx) as match_item;
+                    i = items[idx] as match_item;
                 else {
                     // at this point - we're run on the full log - however, if we find an item that exists in current view, use that
                     // (so that we can reference the matches)
-                    i = items.match_at(idx) as match_item;
+                    i = items[idx] as match_item;
                     var in_cur_view = items_.binary_search(i.line_idx).Item1 as match_item;
                     if (in_cur_view != null)
                         i = in_cur_view;

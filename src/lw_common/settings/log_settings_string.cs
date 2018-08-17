@@ -277,18 +277,12 @@ namespace lw_common {
         }
     }
 
-
-
-
-
-
-
     public enum log_type {
-        file, event_log, debug_print, db, multi
+        file, event_log, debug_print, db
     }
 
     public enum file_log_type {
-        line_by_line,part_to_line,csv,xml, best_guess
+        line_by_line, part_to_line, csv, xml, best_guess, json
     }
 
     // wrapper over setings_as_string, so that I don't have to hardcode strings in code 

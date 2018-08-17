@@ -156,8 +156,9 @@ namespace lw_common
         public void Dispose() {
             disposed_ = true;
             on_dispose();
-            if ( parser_ != null)
+            if (parser_ != null)
                 parser_.on_text_reader_dispose();
+            settings.on_changed -= on_settings_changed;
         }
 
         public static log_type type(text_reader reader) {

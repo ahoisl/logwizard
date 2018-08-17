@@ -26,21 +26,18 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text.RegularExpressions;
-using System.Windows.Forms;
-using log4net.Repository.Hierarchy;
-using lw_common.ui;
 
 namespace lw_common {
     public enum part_type {
-        date, time, level, message, file, func, thread, 
-            
-        ctx1, ctx2, ctx3, 
-            
+        date, time, level, message, file, func, thread,
+
+        ctx1, ctx2, ctx3,
+
         // added in 1.3.8
         ctx4, ctx5, ctx6, ctx7, ctx8, ctx9, ctx10, ctx11, ctx12, ctx13, ctx14, ctx15,
 
         class_, font, case_sensitive_info,
-        
+
         // 1.8.17+ matches any of the parts
         any,
 
@@ -50,82 +47,82 @@ namespace lw_common {
     internal static class part_type_io {
         internal static part_type from_str(string str) {
             part_type part = part_type.invalid;
-            switch ( str) {
-            case "$any": part = part_type.any; break;
-            case "$msg": part = part_type.message; break;
+            switch (str) {
+                case "$any": part = part_type.any; break;
+                case "$msg": part = part_type.message; break;
 
-            case "$date": part = part_type.date; break;
-            case "$time": part = part_type.time; break;
-            case "$level": part = part_type.level; break;
-            case "$file": part = part_type.file; break;
-            case "$func": part = part_type.func; break;
-            case "$class": part = part_type.class_; break;
-            case "$thread": part = part_type.thread; break;
+                case "$date": part = part_type.date; break;
+                case "$time": part = part_type.time; break;
+                case "$level": part = part_type.level; break;
+                case "$file": part = part_type.file; break;
+                case "$func": part = part_type.func; break;
+                case "$class": part = part_type.class_; break;
+                case "$thread": part = part_type.thread; break;
 
-            case "$ctx1": part = part_type.ctx1; break;
-            case "$ctx2": part = part_type.ctx2; break;
-            case "$ctx3": part = part_type.ctx3; break;
+                case "$ctx1": part = part_type.ctx1; break;
+                case "$ctx2": part = part_type.ctx2; break;
+                case "$ctx3": part = part_type.ctx3; break;
 
-            case "$ctx4": part = part_type.ctx4; break;
-            case "$ctx5": part = part_type.ctx5; break;
-            case "$ctx6": part = part_type.ctx6; break;
-            case "$ctx7": part = part_type.ctx7; break;
-            case "$ctx8": part = part_type.ctx8; break;
-            case "$ctx9": part = part_type.ctx9; break;
-            case "$ctx10": part = part_type.ctx10; break;
+                case "$ctx4": part = part_type.ctx4; break;
+                case "$ctx5": part = part_type.ctx5; break;
+                case "$ctx6": part = part_type.ctx6; break;
+                case "$ctx7": part = part_type.ctx7; break;
+                case "$ctx8": part = part_type.ctx8; break;
+                case "$ctx9": part = part_type.ctx9; break;
+                case "$ctx10": part = part_type.ctx10; break;
 
-            case "$ctx11": part = part_type.ctx11; break;
-            case "$ctx12": part = part_type.ctx12; break;
-            case "$ctx13": part = part_type.ctx13; break;
-            case "$ctx14": part = part_type.ctx14; break;
-            case "$ctx15": part = part_type.ctx15; break;
-            
+                case "$ctx11": part = part_type.ctx11; break;
+                case "$ctx12": part = part_type.ctx12; break;
+                case "$ctx13": part = part_type.ctx13; break;
+                case "$ctx14": part = part_type.ctx14; break;
+                case "$ctx15": part = part_type.ctx15; break;
+
             }
             return part;
         }
 
         internal static info_type to_info_type(part_type part) {
             switch (part) {
-            case part_type.message: return info_type.msg;
+                case part_type.message: return info_type.msg;
 
-            case part_type.date:    return info_type.date;
-            case part_type.time:    return info_type.time;
-            case part_type.level:   return info_type.level;
-            case part_type.file:    return info_type.file;
-            case part_type.func:    return info_type.func;
-            case part_type.class_:  return info_type.class_;
-            case part_type.thread:  return info_type.thread;
+                case part_type.date: return info_type.date;
+                case part_type.time: return info_type.time;
+                case part_type.level: return info_type.level;
+                case part_type.file: return info_type.file;
+                case part_type.func: return info_type.func;
+                case part_type.class_: return info_type.class_;
+                case part_type.thread: return info_type.thread;
 
-            case part_type.ctx1:    return info_type.ctx1;
-            case part_type.ctx2:    return info_type.ctx2;
-            case part_type.ctx3:    return info_type.ctx3;
+                case part_type.ctx1: return info_type.ctx1;
+                case part_type.ctx2: return info_type.ctx2;
+                case part_type.ctx3: return info_type.ctx3;
 
-            case part_type.ctx4:    return info_type.ctx4;
-            case part_type.ctx5:    return info_type.ctx5;
-            case part_type.ctx6:    return info_type.ctx6;
-            case part_type.ctx7:    return info_type.ctx7;
-            case part_type.ctx8:    return info_type.ctx8;
-            case part_type.ctx9:    return info_type.ctx9;
-            case part_type.ctx10:    return info_type.ctx10;
+                case part_type.ctx4: return info_type.ctx4;
+                case part_type.ctx5: return info_type.ctx5;
+                case part_type.ctx6: return info_type.ctx6;
+                case part_type.ctx7: return info_type.ctx7;
+                case part_type.ctx8: return info_type.ctx8;
+                case part_type.ctx9: return info_type.ctx9;
+                case part_type.ctx10: return info_type.ctx10;
 
-            case part_type.ctx11:    return info_type.ctx11;
-            case part_type.ctx12:    return info_type.ctx12;
-            case part_type.ctx13:    return info_type.ctx13;
-            case part_type.ctx14:    return info_type.ctx14;
-            case part_type.ctx15:    return info_type.ctx15;
+                case part_type.ctx11: return info_type.ctx11;
+                case part_type.ctx12: return info_type.ctx12;
+                case part_type.ctx13: return info_type.ctx13;
+                case part_type.ctx14: return info_type.ctx14;
+                case part_type.ctx15: return info_type.ctx15;
 
-            // we can't convert "all" to anything - since it includes all parts
-            case part_type.any: 
-                Debug.Assert(false);
-                return info_type.msg;
+                // we can't convert "all" to anything - since it includes all parts
+                case part_type.any:
+                    Debug.Assert(false);
+                    return info_type.msg;
 
-            default:
-                Debug.Assert(false);
-                return info_type.msg;
+                default:
+                    Debug.Assert(false);
+                    return info_type.msg;
             }
-            
+
         }
-        
+
     }
 
 
@@ -134,8 +131,8 @@ namespace lw_common {
 
 
         protected bool Equals(filter_line other) {
-            return Equals(fi, other.fi) && case_sensitive_ == other.case_sensitive_ && 
-                string.Equals(lo_text, other.lo_text) && string.Equals(text, other.text) && 
+            return Equals(fi, other.fi) && case_sensitive_ == other.case_sensitive_ &&
+                string.Equals(lo_text, other.lo_text) && string.Equals(text, other.text) &&
                 comparison == other.comparison && part == other.part;
         }
 
@@ -143,7 +140,7 @@ namespace lw_common {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != this.GetType()) return false;
-            return Equals((filter_line) obj);
+            return Equals((filter_line)obj);
         }
 
         public override int GetHashCode() {
@@ -154,8 +151,8 @@ namespace lw_common {
                 hashCode = (hashCode * 397) ^ (lo_text != null ? lo_text.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (words != null ? words.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (text != null ? text.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (int) comparison;
-                hashCode = (hashCode * 397) ^ (int) part;
+                hashCode = (hashCode * 397) ^ (int)comparison;
+                hashCode = (hashCode * 397) ^ (int)part;
                 return hashCode;
             }
         }
@@ -241,28 +238,28 @@ namespace lw_common {
         // color fg [bg]
         private static filter_line parse_font(string line) {
             // future: if "font" -> account for that as well
-            Debug.Assert( is_color_or_font_line( line));
+            Debug.Assert(is_color_or_font_line(line));
             bool is_color = line.StartsWith("color");
 
             string[] colors = line.Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries);
 
             filter_line fi = new filter_line(line) { part = part_type.font };
             if (colors.Length >= 2)
-                if ( is_color)
+                if (is_color)
                     fi.fi.fg = util.str_to_color(colors[1]);
-                else 
+                else
                     fi.fi.match_fg = util.str_to_color(colors[1]);
             if (colors.Length >= 3)
                 if (is_color)
                     fi.fi.bg = util.str_to_color(colors[2]);
-                else  
+                else
                     fi.fi.match_bg = util.str_to_color(colors[2]);
             return fi;
         }
 
         // guess if this is a regex
         private static bool is_regex_expression(string expr) {
-            return expr.IndexOfAny(new char[] { '*', '\\', '.', '^', '$' }) >= 0 ;
+            return expr.IndexOfAny(new char[] { '*', '\\', '.', '^', '$' }) >= 0;
         }
 
         private void create_regex() {
@@ -291,72 +288,65 @@ namespace lw_common {
                 return parse_font(line);
 
             if (line == "case-insensitive")
-                return new filter_line(line) {part = part_type.case_sensitive_info, case_sensitive = false };
+                return new filter_line(line) { part = part_type.case_sensitive_info, case_sensitive = false };
 
-            if ( !line.StartsWith("$"))
+            if (!line.StartsWith("$"))
                 return null;
 
-            string[] words = line.Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries);
-            
+            string[] words = line.Split(new[] { " " }, StringSplitOptions.RemoveEmptyEntries);
+
             // Syntax:
             // $ColumnName Comparison Text
-            bool ok = words.Length >= 3 || (words.Length == 2 && is_regex_expression(words[1]));
-            if (!ok)
+            if (words.Length < 3)
                 // we need at least $c compare word(s)
                 return null;
 
-            filter_line fi = new filter_line(line);
-            fi.part = part_type_io.from_str(words[0]);
+            filter_line fi = new filter_line(line) { part = part_type_io.from_str(words[0]) };
             if (fi.part == part_type.invalid)
                 return null;
 
-            if (words.Length == 2) {
-                // comparison is not present; inferred as regex
-                fi.text = words[1];
-                fi.comparison = comparison_type.regex;
-                fi.lo_text = fi.text.ToLower();
-                fi.create_regex();
-                return fi.regex_ != null ? fi : null ;
-            }
+            switch (words[1].ToLower()) {
+                case "!=": fi.comparison = comparison_type.not_equal; break;
 
-            switch ( words[1].ToLower() ) {
-            case "!=": fi.comparison = comparison_type.not_equal; break;
+                case "==":
+                case "=":
+                    fi.comparison = comparison_type.equal; break;
 
-            case "==": 
-            case "=": 
-                fi.comparison = comparison_type.equal; break;
+                case "+":
+                case "startswith":
+                    fi.comparison = comparison_type.starts_with; break;
 
-            case "+": 
-            case "startswith":
-                fi.comparison = comparison_type.starts_with; break;
+                case "-":
+                case "!startswith":
+                    fi.comparison = comparison_type.does_not_start_with; break;
 
-            case "-": 
-            case "!startswith":
-                fi.comparison = comparison_type.does_not_start_with; break;
+                case "++":
+                case "contains":
+                    fi.comparison = comparison_type.contains; break;
 
-            case "++": 
-            case "contains":
-                fi.comparison = comparison_type.contains; break;
+                case "--":
+                case "!contains":
+                    fi.comparison = comparison_type.does_not_contain; break;
 
-            case "--": 
-            case "!contains":
-                fi.comparison = comparison_type.does_not_contain; break;
+                case "containsany":
+                case "any":
+                case "in":
+                    fi.comparison = comparison_type.contains_any; break;
 
-            case "containsany":
-            case "any":
-                fi.comparison = comparison_type.contains_any; break;
+                case "containsnone":
+                case "none":
+                case "!in":
+                    fi.comparison = comparison_type.contains_none;
+                    break;
 
-            case "containsnone":
-            case "none":
-                fi.comparison = comparison_type.contains_none;
-                break;
-
-            case "matches":
-            case "match":
-                fi.comparison = comparison_type.regex;
-                break;
-            default:
-                return null;
+                case "matches":
+                case "match":
+                case "regex":
+                case "r":
+                    fi.comparison = comparison_type.regex;
+                    break;
+                default:
+                    return null;
             }
 
             // take the rest of the text
@@ -396,99 +386,99 @@ namespace lw_common {
         private bool compare(string line_part, string text, string[] words) {
             bool result = true;
             switch (comparison) {
-            case comparison_type.equal:
-                result = line_part == text;
-                break;
-            case comparison_type.not_equal:
-                result = line_part != text;
-                break;
-            case comparison_type.starts_with:
-                result = line_part.StartsWith(text);
-                break;
-            case comparison_type.does_not_start_with:
-                result = !line_part.StartsWith(text);
-                break;
-            case comparison_type.contains:
-                result = line_part.Contains(text);
-                break;
-            case comparison_type.does_not_contain:
-                result = !line_part.Contains(text);
-                break;
+                case comparison_type.equal:
+                    result = line_part == text;
+                    break;
+                case comparison_type.not_equal:
+                    result = line_part != text;
+                    break;
+                case comparison_type.starts_with:
+                    result = line_part.StartsWith(text);
+                    break;
+                case comparison_type.does_not_start_with:
+                    result = !line_part.StartsWith(text);
+                    break;
+                case comparison_type.contains:
+                    result = line_part.Contains(text);
+                    break;
+                case comparison_type.does_not_contain:
+                    result = !line_part.Contains(text);
+                    break;
 
-            case comparison_type.contains_any:
-                result = words.Any(line_part.Contains);
-                break;
-            case comparison_type.contains_none:
-                if (words.Any(line_part.Contains)) 
-                    result = false;                
-                break;
+                case comparison_type.contains_any:
+                    result = words.Any(line_part.Contains);
+                    break;
+                case comparison_type.contains_none:
+                    if (words.Any(line_part.Contains))
+                        result = false;
+                    break;
 
-            case comparison_type.regex:
-                result = false;
-                if (regex_ != null)
-                    result = regex_.IsMatch(line_part);
-                break;
+                case comparison_type.regex:
+                    result = false;
+                    if (regex_ != null)
+                        result = regex_.IsMatch(line_part);
+                    break;
 
-            default:
-                Debug.Assert(false);
-                break;
+                default:
+                    Debug.Assert(false);
+                    break;
             }
 
-            return result;            
+            return result;
         }
 
         private List<match_index> compare_with_indexes(string line_part, string text, string[] words, info_type type) {
             List<match_index> indexes = new List<match_index>();
             switch (comparison) {
-            case comparison_type.does_not_start_with:
-            case comparison_type.does_not_contain:
-            case comparison_type.contains_none:
-                Debug.Assert(false);
-                return empty_;
+                case comparison_type.does_not_start_with:
+                case comparison_type.does_not_contain:
+                case comparison_type.contains_none:
+                    Debug.Assert(false);
+                    return empty_;
 
-            case comparison_type.equal:
-                if ( line_part == text)
-                    indexes.Add(new match_index { start = 0, len = text.Length, type = type });
-                break;
-            case comparison_type.not_equal:
-                if ( line_part != text)
-                    indexes.Add(new match_index { start = 0, len = text.Length, type = type });
-                break;
-            case comparison_type.starts_with:
-                if ( line_part.StartsWith(text))
-                    indexes.Add(new match_index { start = 0, len = text.Length, type = type });
-                break;
-            case comparison_type.contains:
-                int pos = line_part.IndexOf(text);
-                if ( pos >= 0)
-                    indexes.Add(new match_index { start = pos, len = text.Length, type = type });
-                break;
+                case comparison_type.equal:
+                    if (line_part == text)
+                        indexes.Add(new match_index { start = 0, len = text.Length, type = type });
+                    break;
+                case comparison_type.not_equal:
+                    if (line_part != text)
+                        indexes.Add(new match_index { start = 0, len = text.Length, type = type });
+                    break;
+                case comparison_type.starts_with:
+                    if (line_part.StartsWith(text))
+                        indexes.Add(new match_index { start = 0, len = text.Length, type = type });
+                    break;
+                case comparison_type.contains:
+                    int pos = line_part.IndexOf(text);
+                    if (pos >= 0)
+                        indexes.Add(new match_index { start = pos, len = text.Length, type = type });
+                    break;
 
-            case comparison_type.contains_any:
-                foreach (string word in words) {
-                    int word_pos = line_part.IndexOf(word);
-                    if ( word_pos >= 0)
-                        indexes.Add(new match_index { start = word_pos, len = word.Length, type = type });
-                }
-                break;
+                case comparison_type.contains_any:
+                    foreach (string word in words) {
+                        int word_pos = line_part.IndexOf(word);
+                        if (word_pos >= 0)
+                            indexes.Add(new match_index { start = word_pos, len = word.Length, type = type });
+                    }
+                    break;
 
-            case comparison_type.regex:
-                var matches = regex_.Match(line_part);
-                while (matches.Success) {
-                    indexes.Add( new match_index { start = matches.Index, len = matches.Length, type = type } );
-                    matches = matches.NextMatch();
-                }                    
-                break;
-            default:
-                Debug.Assert(false);
-                break;
+                case comparison_type.regex:
+                    var matches = regex_.Match(line_part);
+                    while (matches.Success) {
+                        indexes.Add(new match_index { start = matches.Index, len = matches.Length, type = type });
+                        matches = matches.NextMatch();
+                    }
+                    break;
+                default:
+                    Debug.Assert(false);
+                    break;
             }
 
             return indexes;
         }
 
         private bool matches_case_sensitive(line l) {
-            Debug.Assert( part != part_type.font );
+            Debug.Assert(part != part_type.font);
             if (part == part_type.any)
                 return matches_case_sensitive_any_column(l);
 
@@ -497,18 +487,18 @@ namespace lw_common {
         }
 
         private bool matches_case_insensitive(line l) {
-            Debug.Assert( part != part_type.font );
+            Debug.Assert(part != part_type.font);
             if (part == part_type.any)
                 return matches_case_insensitive_any_column(l);
-            string line_part = this.line_part(l).ToLower() ;
+            string line_part = this.line_part(l).ToLower();
             return compare(line_part, lo_text, lo_words);
         }
 
         private bool matches_case_sensitive_any_column(line l) {
             string line_part = l.raw_full_msg();
-            if ( compare(line_part, text, words))
+            if (compare(line_part, text, words))
                 // we need an extra step, so that we don't mistakenly match the text in the time/date column, for instance
-                foreach ( var type in info_type_io.searchable)
+                foreach (var type in info_type_io.searchable)
                     if (compare(l.part(type), text, words))
                         return true;
             return false;
@@ -516,9 +506,9 @@ namespace lw_common {
 
         private bool matches_case_insensitive_any_column(line l) {
             string line_part = l.raw_full_msg().ToLower();
-            if ( compare(line_part, lo_text, lo_words))
+            if (compare(line_part, lo_text, lo_words))
                 // we need an extra step, so that we don't mistakenly match the text in the time/date column, for instance
-                foreach ( var type in info_type_io.searchable)
+                foreach (var type in info_type_io.searchable)
                     if (compare(l.part(type).ToLower(), lo_text, lo_words))
                         return true;
             return false;
@@ -530,7 +520,7 @@ namespace lw_common {
         }
 
         private static readonly List<match_index> empty_ = new List<match_index>();
-        public List< match_index > match_indexes(line l, info_type type) {
+        public List<match_index> match_indexes(line l, info_type type) {
             if (part == part_type.font || part == part_type.case_sensitive_info)
                 return empty_;
 
@@ -540,21 +530,21 @@ namespace lw_common {
 
             // we only care about "positive" matches - those that have "containing", "startswith", regex, etc.
             switch (comparison) {
-            case comparison_type.does_not_start_with:
-            case comparison_type.does_not_contain:
-            case comparison_type.contains_none:
-                return empty_;
+                case comparison_type.does_not_start_with:
+                case comparison_type.does_not_contain:
+                case comparison_type.contains_none:
+                    return empty_;
 
-            case comparison_type.equal:
-            case comparison_type.not_equal:
-            case comparison_type.starts_with:
-            case comparison_type.contains:
-            case comparison_type.contains_any:
-            case comparison_type.regex:
-                break;
-            default:
-                Debug.Assert(false);
-                return empty_;
+                case comparison_type.equal:
+                case comparison_type.not_equal:
+                case comparison_type.starts_with:
+                case comparison_type.contains:
+                case comparison_type.contains_any:
+                case comparison_type.regex:
+                    break;
+                default:
+                    Debug.Assert(false);
+                    return empty_;
             }
 
             return case_sensitive ? matches_case_sensitive_with_indexes(l, type) : matches_case_insensitive_with_indexes(l, type);
@@ -563,8 +553,8 @@ namespace lw_common {
         // returns all the matches from all columns
         public List<match_index> match_indexes_any_column(line l) {
             List<match_index> indexes = new List<match_index>();
-            foreach ( var type in info_type_io.searchable)
-                indexes.AddRange( match_indexes(l, type) );
+            foreach (var type in info_type_io.searchable)
+                indexes.AddRange(match_indexes(l, type));
             return indexes;
         }
 

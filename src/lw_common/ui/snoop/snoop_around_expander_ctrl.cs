@@ -172,5 +172,11 @@ namespace lw_common.ui.snoop {
             }
             prev_close_by_vertically_ = close_by_vertically;
         }
+
+        new public void Dispose() {
+            parent_ = null;
+            base.Dispose();
+        }
+
     }
 }

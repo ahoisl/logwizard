@@ -180,7 +180,7 @@ namespace lw_common.ui {
                 Visible = false;
                 return;
             }
-            int header_height = parent_.list.HeaderControl.ClientRectangle.Height;
+            int header_height = parent_.list.HeaderControl.GetItemRect(0).Height;
             if (location.Y < offset_y + header_height) {
                 // it was the first row when user is moving up (up arrow), we'll get notified again
                 last_force_invisible_ = DateTime.Now;
@@ -357,16 +357,9 @@ namespace lw_common.ui {
             after_click_sel_col_ = -1;
         }
 
-        public string sel_text {
-            get {
-                return cached_sel_text_;
-            }
-        }
-        internal string currently_selected_text {
-            get {
-                return raw_sel_text();
-            }
-        }
+        public string sel_text => cached_sel_text_;
+
+        internal string currently_selected_text => raw_sel_text();
 
         public bool force_hide {
             get { return force_hide_; }
@@ -422,6 +415,7 @@ namespace lw_common.ui {
 
             int pos = Text.ToLower().IndexOf(text_to_select);
             Debug.Assert(pos >= 0);
+            if (pos < 0) return;
 
             sel_start_ = pos;
             sel_len_ = text_to_select.Length;
@@ -567,16 +561,6 @@ namespace lw_common.ui {
             }
         }
 
-
-
-
-
-
-
-
-
-
-
         private string raw_sel_text() {
             if (cur_sel_is_forced)
                 return cached_sel_text_;
@@ -719,7 +703,7 @@ namespace lw_common.ui {
         }
 
         private void add_cur_text_to_positions() {
-            if (sel_len_ < 1)
+            if (sel_len_ < 1 || sel_start_ >= Text.Length)
                 return;
             string txt = Text.Substring(sel_start_, sel_len_).ToLower();
             if ( !last_positions_.ContainsKey(txt))

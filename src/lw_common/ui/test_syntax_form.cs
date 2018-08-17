@@ -151,13 +151,12 @@ namespace lw_common.ui {
         }
 
         private void help_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
-            Process.Start("https://github.com/jtorjo/logwizard/wiki/Syntax");
+            new help_form("syntax").Show(this);
         }
 
         private void use_lines(string lines_str, string guessed_syntax) {
-
             lines.Text = lines_str;
-            syntax.Text = guessed_syntax != "" ? guessed_syntax : new find_log_syntax().try_find_log_syntax(lines_str.Split( new string[] {"\r\n"}, StringSplitOptions.RemoveEmptyEntries) );
+            syntax.Text = guessed_syntax != "" ? guessed_syntax : new find_log_syntax().try_find_log_syntax(lines_str.Split( new string[] {"\r\n","\n"}, StringSplitOptions.RemoveEmptyEntries) );
             syntax.SelectionStart = syntax.TextLength;
 
             test_Click(null,null);
@@ -224,7 +223,12 @@ namespace lw_common.ui {
 
         private void use_Click(object sender, EventArgs e) {
             found_syntax_ = syntax.Text;
+            found_syntax_ = found_syntax_.Replace("\\t", "\t");
             DialogResult = DialogResult.OK;
+        }
+
+        private void detectBtn_Click(object sender, EventArgs e) {
+            syntax.Text = new find_log_syntax().try_find_log_syntax(lines.Text.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries));
         }
     }
 }

@@ -52,13 +52,9 @@ namespace lw_common.ui {
             TopMost = parent.TopMost;
         }
 
-        public bool wants_reset_settings {
-            get { return wants_reset_settings_; }
-        }
+        public bool wants_reset_settings => wants_reset_settings_;
 
-        public bool needs_restart {
-            get { return needs_restart_; }
-        }
+        public bool needs_restart => needs_restart_;
 
         private void load() {
             var font = app.inst.font;
@@ -304,7 +300,7 @@ namespace lw_common.ui {
         }
 
         private void hotkeyslink_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
-            Process.Start("https://github.com/jtorjo/logwizard/wiki/Hotkeys");
+            new help_form("hotkeys").Show(this);
         }
 
         private void browseFont_Click(object sender, EventArgs e) {
@@ -333,7 +329,7 @@ namespace lw_common.ui {
         }
 
         private void formatHelp_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
-            Process.Start("https://github.com/jtorjo/logwizard/wiki/Formatters");
+            new help_form("formatters").Show(this);
         }
     }
 }

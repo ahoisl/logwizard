@@ -461,7 +461,7 @@ namespace lw_common.parse.parsers {
 
             bool needs_reparse_last_line;
             lock (this)
-                needs_reparse_last_line = lines_.Count > 0 && was_last_line_incomplete ;
+                needs_reparse_last_line = lines_.Count > 0 && was_last_line_incomplete;
             int start_idx = old_line_count - (was_last_line_incomplete ? 1 : 0);
             int end_idx = string_.line_count;
             List<line> now = new List<line>(end_idx - start_idx);
@@ -499,7 +499,7 @@ namespace lw_common.parse.parsers {
                         adjust_line_time(idx);
                 was_last_line_incomplete_ = was_last_line_incomplete ? DateTime.Now : DateTime.MinValue;
             }
-            Debug.Assert( lines_.Count == string_.line_count);
+            //Debug.Assert( lines_.Count == string_.line_count);
 
             update_log_lines_capacity();
         }

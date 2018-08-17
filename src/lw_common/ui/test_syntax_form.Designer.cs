@@ -25,7 +25,6 @@
         private void InitializeComponent() {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(test_syntax_form));
             this.lines = new System.Windows.Forms.TextBox();
-            this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.test = new System.Windows.Forms.Button();
             this.use = new System.Windows.Forms.Button();
@@ -86,6 +85,7 @@
             this.olvColumn49 = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
             this.olvColumn50 = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
             this.olvColumn51 = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+            this.detectBtn = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.result)).BeginInit();
             this.SuspendLayout();
             // 
@@ -95,46 +95,32 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.lines.Font = new System.Drawing.Font("Courier New", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lines.Location = new System.Drawing.Point(32, 146);
-            this.lines.Margin = new System.Windows.Forms.Padding(8);
+            this.lines.Location = new System.Drawing.Point(16, 38);
+            this.lines.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.lines.Multiline = true;
             this.lines.Name = "lines";
             this.lines.ReadOnly = true;
             this.lines.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.lines.Size = new System.Drawing.Size(1380, 322);
+            this.lines.Size = new System.Drawing.Size(692, 163);
             this.lines.TabIndex = 0;
             this.lines.WordWrap = false;
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(26, 66);
-            this.label1.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(1363, 62);
-            this.label1.TabIndex = 1;
-            this.label1.Text = "To test, copy the beginning at least 10 lines of your log, and come back here. \r\n" +
-    "We will automatically paste them and try to guess the syntax. You can then tweak" +
-    " it and instantly see the results.";
             // 
             // label2
             // 
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(18, 16);
-            this.label2.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
+            this.label2.Location = new System.Drawing.Point(13, 15);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(1132, 29);
+            this.label2.Size = new System.Drawing.Size(624, 15);
             this.label2.TabIndex = 2;
             this.label2.Text = "The Log Syntax is the syntax of each line of your log. This is how we split each " +
     "line into columns.";
             // 
             // test
             // 
-            this.test.Location = new System.Drawing.Point(1203, 8);
-            this.test.Margin = new System.Windows.Forms.Padding(6);
+            this.test.Location = new System.Drawing.Point(602, 4);
             this.test.Name = "test";
-            this.test.Size = new System.Drawing.Size(136, 52);
+            this.test.Size = new System.Drawing.Size(68, 26);
             this.test.TabIndex = 4;
             this.test.Text = "Test";
             this.test.UseVisualStyleBackColor = true;
@@ -144,10 +130,9 @@
             // 
             this.use.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.use.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.use.Location = new System.Drawing.Point(1266, 490);
-            this.use.Margin = new System.Windows.Forms.Padding(6);
+            this.use.Location = new System.Drawing.Point(629, 240);
             this.use.Name = "use";
-            this.use.Size = new System.Drawing.Size(150, 88);
+            this.use.Size = new System.Drawing.Size(75, 44);
             this.use.TabIndex = 5;
             this.use.Text = "Use it!";
             this.use.UseVisualStyleBackColor = true;
@@ -157,10 +142,9 @@
             // 
             this.help.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.help.AutoSize = true;
-            this.help.Location = new System.Drawing.Point(1176, 500);
-            this.help.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
+            this.help.Location = new System.Drawing.Point(525, 213);
             this.help.Name = "help";
-            this.help.Size = new System.Drawing.Size(70, 31);
+            this.help.Size = new System.Drawing.Size(37, 17);
             this.help.TabIndex = 6;
             this.help.TabStop = true;
             this.help.Text = "Help";
@@ -170,10 +154,9 @@
             // 
             this.label3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(40, 498);
-            this.label3.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
+            this.label3.Location = new System.Drawing.Point(20, 213);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(105, 31);
+            this.label3.Size = new System.Drawing.Size(54, 17);
             this.label3.TabIndex = 7;
             this.label3.Text = "Syntax:";
             // 
@@ -182,19 +165,17 @@
             this.syntax.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.syntax.Font = new System.Drawing.Font("Courier New", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.syntax.Location = new System.Drawing.Point(160, 494);
-            this.syntax.Margin = new System.Windows.Forms.Padding(6);
+            this.syntax.Location = new System.Drawing.Point(23, 240);
             this.syntax.Name = "syntax";
-            this.syntax.Size = new System.Drawing.Size(1000, 35);
+            this.syntax.Size = new System.Drawing.Size(600, 21);
             this.syntax.TabIndex = 8;
             // 
             // cancel
             // 
             this.cancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.cancel.Location = new System.Drawing.Point(1351, 10);
-            this.cancel.Margin = new System.Windows.Forms.Padding(6);
+            this.cancel.Location = new System.Drawing.Point(676, 5);
             this.cancel.Name = "cancel";
-            this.cancel.Size = new System.Drawing.Size(136, 52);
+            this.cancel.Size = new System.Drawing.Size(68, 26);
             this.cancel.TabIndex = 9;
             this.cancel.Text = "Cancel";
             this.cancel.UseVisualStyleBackColor = true;
@@ -205,13 +186,11 @@
             this.label4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.Location = new System.Drawing.Point(162, 542);
-            this.label4.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
+            this.label4.Location = new System.Drawing.Point(20, 271);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(485, 48);
+            this.label4.Size = new System.Drawing.Size(268, 13);
             this.label4.TabIndex = 10;
-            this.label4.Text = "Press Enter to Test, Escape to exit this dialog.\r\nAs of 1.8.15, we recognize nlog" +
-    " and log4net syntax";
+            this.label4.Text = "Press Enter to Test, Escape to exit this dialog.\r\n";
             // 
             // result
             // 
@@ -321,12 +300,11 @@
             this.olvColumn50,
             this.olvColumn51});
             this.result.FullRowSelect = true;
-            this.result.Location = new System.Drawing.Point(23, 610);
-            this.result.Margin = new System.Windows.Forms.Padding(6);
+            this.result.Location = new System.Drawing.Point(12, 305);
             this.result.MultiSelect = false;
             this.result.Name = "result";
             this.result.ShowGroups = false;
-            this.result.Size = new System.Drawing.Size(1380, 431);
+            this.result.Size = new System.Drawing.Size(692, 218);
             this.result.TabIndex = 3;
             this.result.UseCompatibleStateImageBehavior = false;
             this.result.View = System.Windows.Forms.View.Details;
@@ -536,13 +514,24 @@
             // 
             this.olvColumn51.AspectName = "t50";
             // 
+            // detectBtn
+            // 
+            this.detectBtn.Location = new System.Drawing.Point(568, 208);
+            this.detectBtn.Name = "detectBtn";
+            this.detectBtn.Size = new System.Drawing.Size(140, 26);
+            this.detectBtn.TabIndex = 11;
+            this.detectBtn.Text = "Detect Syntax";
+            this.detectBtn.UseVisualStyleBackColor = true;
+            this.detectBtn.Click += new System.EventHandler(this.detectBtn_Click);
+            // 
             // test_syntax_form
             // 
             this.AcceptButton = this.test;
-            this.AutoScaleDimensions = new System.Drawing.SizeF(192F, 192F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.CancelButton = this.cancel;
-            this.ClientSize = new System.Drawing.Size(1452, 1056);
+            this.ClientSize = new System.Drawing.Size(726, 528);
+            this.Controls.Add(this.detectBtn);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.cancel);
             this.Controls.Add(this.syntax);
@@ -552,11 +541,10 @@
             this.Controls.Add(this.test);
             this.Controls.Add(this.result);
             this.Controls.Add(this.label2);
-            this.Controls.Add(this.label1);
             this.Controls.Add(this.lines);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(8);
+            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.Name = "test_syntax_form";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Test Log Syntax";
@@ -570,7 +558,6 @@
         #endregion
 
         private System.Windows.Forms.TextBox lines;
-        private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private BrightIdeasSoftware.ObjectListView result;
         private System.Windows.Forms.Button test;
@@ -631,5 +618,6 @@
         private BrightIdeasSoftware.OLVColumn olvColumn49;
         private BrightIdeasSoftware.OLVColumn olvColumn50;
         private BrightIdeasSoftware.OLVColumn olvColumn51;
+        private System.Windows.Forms.Button detectBtn;
     }
 }

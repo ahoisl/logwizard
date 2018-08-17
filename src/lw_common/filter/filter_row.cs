@@ -33,7 +33,7 @@ namespace lw_common {
     public class filter_row : raw_filter_row {
         private static log4net.ILog logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        public filter_row(string text, bool apply_to_existing_lines) : base(text, apply_to_existing_lines) {
+        public filter_row(string text) : base(text) {
         }
 
         public filter_row(raw_filter_row other) : base(other) {
@@ -60,8 +60,13 @@ namespace lw_common {
                 old_line_count_ = 0;                
             }
         }
-
-        // computes the line matches - does not care about colors or the additions - just to know which lines actually match
+        
+        /// <summary>
+        /// Computes the line matches -
+        /// sets this.line_matches to a valid value
+        /// - does not care about colors or the additions - just to know which lines actually match
+        /// </summary>
+        /// <param name="log"></param>
         public void compute_line_matches(log_reader log) {
             log.refresh();
             if (old_line_matches_log_ != log) {

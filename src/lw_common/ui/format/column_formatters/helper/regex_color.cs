@@ -14,15 +14,15 @@ namespace lw_common.ui.format.column_formatters {
 	    - strings (quotes and double quotes -> show them in different color, default = brown) 
 
     Brackets
-    (?<=\[).*(?=\])|(?<=\().*(?=\))|(?<=\{).*(?=\})
+    \[.*?\]|\(.*?\)|\{.*?\}
 
     Directory/file names
     http://stackoverflow.com/questions/6416065/c-sharp-regex-for-file-paths-e-g-c-test-test-exe
     Pretty much everything is not that 100% perfect, just need to use one and stick with it
-    (?:[a-zA-Z]\:|\\\\[\w\.]+\\[\w.$]+)\\(?:[\w]+\\)*\w([\w.])+
+    (?:[a-zA-Z]\:|\\\\[\w\.]+\\[\w.$]+)\\(?:[\w]+\\)*[\w \.]+
 
     Strings
-    (?<=")(?:\\.|[^"\\])*(?=")|(?<=')(?:\\.|[^'\\])*(?=')
+    "(?:\\.|[^"\\])*?"|'(?:\\.|[^'\\])*?'
 
     Syntax:
         expr=regex_expression

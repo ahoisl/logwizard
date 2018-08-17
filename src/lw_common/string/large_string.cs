@@ -51,8 +51,6 @@ namespace lw_common
         private bool computed_avg_line_ = false;
         private bool expected_bytes_set_ = false;
 
-        private simple_cache_dictionary<int, string> cache_ = new simple_cache_dictionary<int, string>() ;
-
         // tests to see we've computed the lines correctly
         private void test_compute_lines() {
             string[] lines = string_.ToString().Split(new string[] {"\n"}, StringSplitOptions.None);
@@ -81,7 +79,6 @@ namespace lw_common
         }
 
         public void merge_line_into_previous_line(int line_idx) {
-            cache_.clear();
             lock (this) {
                 Debug.Assert(line_idx > 0 && line_idx <= indexes_.Count);
                 indexes_.RemoveAt(line_idx - 1);
@@ -99,7 +96,6 @@ namespace lw_common
 
                 was_last_line_incomplete = false;
                 if (string_.Length > 0 && lines.Length > 0) {
-
                     bool might_be_incomplete = line_count > indexes_.Count;
                     const string LINE_SEP = "\r\n";
                     bool starts_with_enter = LINE_SEP.Contains(lines[0]);
@@ -205,14 +201,9 @@ namespace lw_common
         }
 
         public string line_at(int idx) {
-            var from_cache = cache_.get(idx);
-            if (from_cache != null)
-                return from_cache;
-
             string line;
             lock (this) 
                 line = line_at_impl(idx);
-            cache_.set(idx, line);
             return line;
         }
 

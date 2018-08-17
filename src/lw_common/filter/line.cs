@@ -90,7 +90,10 @@ namespace lw_common {
             Debug.Assert(idx_in_line.Length == (int) info_type.max);
             string msg = sub.msg;
             // ... indexes a short can hold
-            Debug.Assert(msg.Length < 32768);
+            if(msg.Length >= 32768) {
+                msg = msg.Substring(0, 32764);
+                msg += "...";
+            }
 
             for (int part_idx = 0; part_idx < idx_in_line.Length; ++part_idx) {
                 var index = idx_in_line[part_idx];

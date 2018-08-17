@@ -30,7 +30,6 @@
             this.enabledCol = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
             this.filterCol = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
             this.foundCol = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
-            this.applyToExistingLines = new System.Windows.Forms.CheckBox();
             this.label1 = new System.Windows.Forms.Label();
             this.delFilter = new System.Windows.Forms.Button();
             this.filterLabel = new System.Windows.Forms.Label();
@@ -128,6 +127,7 @@
             // enabledCol
             // 
             this.enabledCol.AspectName = "enabled";
+            this.enabledCol.CellPadding = null;
             this.enabledCol.CheckBoxes = true;
             this.enabledCol.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.enabledCol.Text = "Enabled";
@@ -140,32 +140,19 @@
             this.filterCol.AspectName = "name";
             this.filterCol.AutoCompleteEditor = false;
             this.filterCol.AutoCompleteEditorMode = System.Windows.Forms.AutoCompleteMode.None;
+            this.filterCol.CellPadding = null;
             this.filterCol.FillsFreeSpace = true;
             this.filterCol.Text = "Filter";
             // 
             // foundCol
             // 
             this.foundCol.AspectName = "found_count";
+            this.foundCol.CellPadding = null;
             this.foundCol.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.foundCol.IsEditable = false;
             this.foundCol.Text = "Found";
             this.foundCol.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.foundCol.ToolTipText = "Shows how many log lines this specific filter has found";
-            // 
-            // applyToExistingLines
-            // 
-            this.applyToExistingLines.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.applyToExistingLines.AutoSize = true;
-            this.applyToExistingLines.Location = new System.Drawing.Point(3, 488);
-            this.applyToExistingLines.Name = "applyToExistingLines";
-            this.applyToExistingLines.Size = new System.Drawing.Size(126, 17);
-            this.applyToExistingLines.TabIndex = 33;
-            this.applyToExistingLines.TabStop = false;
-            this.applyToExistingLines.Text = "Apply to existing lines";
-            this.applyToExistingLines.UseVisualStyleBackColor = true;
-            this.applyToExistingLines.CheckedChanged += new System.EventHandler(this.applyToExistingLines_CheckedChanged);
-            this.applyToExistingLines.Leave += new System.EventHandler(this.applyToExistingLines_Leave);
             // 
             // label1
             // 
@@ -414,7 +401,6 @@
             this.Controls.Add(this.viewFromClipboard);
             this.Controls.Add(this.viewToClipboard);
             this.Controls.Add(this.filterCtrl);
-            this.Controls.Add(this.applyToExistingLines);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.filterBox);
             this.Controls.Add(this.delFilter);
@@ -440,7 +426,6 @@
         private BrightIdeasSoftware.OLVColumn enabledCol;
         private BrightIdeasSoftware.OLVColumn filterCol;
         private BrightIdeasSoftware.OLVColumn foundCol;
-        private System.Windows.Forms.CheckBox applyToExistingLines;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button delFilter;
         private System.Windows.Forms.Label filterLabel;

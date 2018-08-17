@@ -127,11 +127,6 @@ namespace lw_common.ui {
                 // at this time (1.2), we only care about filtering the message column
                 return;
 
-            bool does_belong_to_view = parent_.sel.has_matches_via_include(parent_.filter) ;
-            bool allow_include = parent_.is_full_log || !parent_.filter.has_include_filters || !does_belong_to_view;
-            if (!allow_include)
-                return;
-
             // if this is a view with no filters so far, append ONLY to the "Include" message
             bool is_only = !parent_.is_full_log && parent_.filter.row_count == 0;
             string only = is_only ? "ONLY " : "";
@@ -160,11 +155,6 @@ namespace lw_common.ui {
                 return;
             if (parent_.sel_col_idx != parent_.msgCol.fixed_index())
                 // at this time (1.2), we only care about filtering the message column
-                return;
-            // 1.4.2 - allow excluding lines: this should work at all times - if it's matched by the filter, 
-            //                                or i don't have any include filters (thus, by default, all lines are included)
-            bool belongs_to_view = parent_.sel.has_matches_via_include(parent_.filter);
-            if (!belongs_to_view)
                 return;
 
             bool sel_at_start = parent_.sel_subitem_text.StartsWith(sel);
@@ -252,21 +242,6 @@ namespace lw_common.ui {
                 else {
                     append_filter_include_actions(actions);
                     append_current_view_filter_actions(actions);
-                }
-
-                if (!parent_.is_full_log) {
-                    // 1.7.2+ - if we don't have any filter selected, allow color filters
-                    //bool belongs_to_view = parent_.sel.matches.Count > 0;
-                    bool belongs_to_view = parent_.sel.has_matches_via_include(parent_.filter);
-                    if (belongs_to_view) {
-                        var i = parent_.sel;
-                        Debug.Assert(i != null);
-                        bool is_default = i.match.font.fg == font_info.default_font.fg;
-                        if (is_default)
-                            append_filter_create_actions(actions);
-                        else
-                            append_filter_existing_actions(actions);
-                    }
                 }
             }
             else 
@@ -504,11 +479,7 @@ namespace lw_common.ui {
 
             string id = easy_filter_prefix(is_color_filter, is_include_lines_filter, is_exclude_lines_filter);
             filter_str = id + "\r\n## " + filter_description + "\r\n" + filter_str;
-            bool apply_to_existing_lines = is_color_filter || is_exclude_lines_filter;
-            if (is_include_lines_filter)
-                apply_to_existing_lines = false;
-
-            parent_.lv_parent.add_or_edit_filter(filter_str, id, apply_to_existing_lines);
+            parent_.lv_parent.add_or_edit_filter(filter_str, id);
         }
 
         // this is an easy way for me to later find the filter - in case it needs changing

@@ -171,14 +171,12 @@ namespace lw_common.ui {
             // the filter itself
             public readonly string text ;
             public readonly string id ;
-            public readonly bool apply_to_existing_lines ;
 
             public readonly Color fg, bg;
 
-            public filter_info(string text, string id, bool apply_to_existing_lines, Color fg, Color bg) {
+            public filter_info(string text, string id, Color fg, Color bg) {
                 this.text = text;
                 this.id = id;
-                this.apply_to_existing_lines = apply_to_existing_lines;
                 this.fg = fg;
                 this.bg = bg;
             }
@@ -216,7 +214,7 @@ namespace lw_common.ui {
                     filter_str += "match_color " + util.color_to_str(fg) + " " + (bg != util.transparent ? util.color_to_str(bg) : "") + "\r\n";
 
             bool apply_to_existing_lines = is_color_filter || is_exclude_filter;
-            return new filter_info(filter_str, id, apply_to_existing_lines, fg, bg);
+            return new filter_info(filter_str, id, fg, bg);
         }
 
 

@@ -101,20 +101,15 @@ namespace lw_common.ui {
                 set { filter_.text = value; }
             }
 
-            public bool apply_to_existing_lines {
-                get { return filter_.apply_to_existing_lines; }
-                set { filter_.apply_to_existing_lines = value; }
-            }
-
             public string filter_id {
                 get {
-                    raw_filter_row row = new raw_filter_row(filter_.text, filter_.apply_to_existing_lines);
+                    raw_filter_row row = new raw_filter_row(filter_.text);
                     return row.filter_id;
                 }
             }
             public string unique_id {
                 get {
-                    raw_filter_row row = new raw_filter_row(filter_.text, filter_.apply_to_existing_lines);
+                    raw_filter_row row = new raw_filter_row(filter_.text);
                     return row.unique_id;
                 }
             }
@@ -172,7 +167,7 @@ namespace lw_common.ui {
             int count = filterCtrl.GetItemCount();
             for (int idx = 0; idx < count; ++idx) {
                 filter_item i = filterCtrl.GetItem(idx).RowObject as filter_item;
-                raw_filter_row filt = new raw_filter_row(i.text, i.apply_to_existing_lines) { enabled = i.enabled };
+                raw_filter_row filt = new raw_filter_row(i.text) { enabled = i.enabled };
 
                 if (filt.is_valid)
                     lvf.Add(filt);
@@ -204,6 +199,7 @@ namespace lw_common.ui {
             on_save();
             ui_to_view(view_idx_);
             on_rerun_view(view_idx_);
+            on_refresh_view(view_idx_);
         }
 
 
@@ -227,7 +223,6 @@ namespace lw_common.ui {
             filterCtrl.SetObjects(items);
 
             filterBox.Text = "";
-            applyToExistingLines.Checked = false;
             --ignore_change_;
 
             ui_to_view(view_idx_);
@@ -250,7 +245,6 @@ namespace lw_common.ui {
             if (sel <= 0) {
                 ++ignore_change_;
                 filterBox.ResetText();
-                applyToExistingLines.Checked = false;
 
                 --ignore_change_;
                 mark_match(-1);
@@ -258,11 +252,8 @@ namespace lw_common.ui {
             }
 
             filter_item i = filterCtrl.GetItem(sel).RowObject as filter_item;
-            ++ignore_change_;
-            applyToExistingLines.Checked = i.apply_to_existing_lines;
-            --ignore_change_;
 
-            raw_filter_row filt = new raw_filter_row(i.text, i.apply_to_existing_lines);
+            raw_filter_row filt = new raw_filter_row(i.text);
             if (filt.is_valid) {
                 /*
                 var lv = ensure_we_have_log_view_for_tab(sel_view);
@@ -318,7 +309,7 @@ namespace lw_common.ui {
             delFilter.Enabled = filterCtrl.SelectedIndices.Count >= 1;
             cancelFilter.Enabled = filterCtrl.SelectedIndices.Count == 1;
             if (sel != null) {
-                var row = new raw_filter_row(sel.text, sel.apply_to_existing_lines);
+                var row = new raw_filter_row(sel.text);
                 filterLabel.BackColor = row.bg;
                 filterLabel.ForeColor = row.fg;
             } else {
@@ -344,7 +335,7 @@ namespace lw_common.ui {
                 return;
 
 
-            var row = new raw_filter_row(filterBox.Text, applyToExistingLines.Checked);
+            var row = new raw_filter_row(filterBox.Text);
             // Realtime text change to list object
             if (filterCtrl.SelectedObject is filter_item sel && row.is_valid) {
                 if (sel.text != filterBox.Text) {
@@ -382,37 +373,20 @@ namespace lw_common.ui {
             addFilter.Enabled = filterBox.Text.Trim() != "" && row.is_valid;
         }
 
-        private void applyToExistingLines_CheckedChanged(object sender, EventArgs e) {
-            if (ignore_change_ > 0)
-                return;
-            if (filterCtrl.GetItemCount() == 0)
-                return;
-
-            if (!(filterCtrl.SelectedObject is filter_item sel))
-                return;
-
-            if (sel.apply_to_existing_lines != applyToExistingLines.Checked) {
-                sel.apply_to_existing_lines = applyToExistingLines.Checked;
-                filterCtrl.RefreshObject(sel);
-                needs_save_ = true;
-                on_save();
-            }
-        }
-
         private void addFilter_Click(object sender, EventArgs e) {
             if (view_ == null) {
                 Debug.Assert(false);
                 return;
             }
 
-            var row = new raw_filter_row(filterBox.Text, applyToExistingLines.Checked);
+            var row = new raw_filter_row(filterBox.Text);
             if (!row.is_valid) {
                 status.set_status("Failed to save the filter. Please check the syntax!", status_ctrl.status_type.err, 1000);
                 return;
             }
 
             if (sel < 0) {
-                var new_ui = new ui_filter { enabled = true, text = filterBox.Text, apply_to_existing_lines = applyToExistingLines.Checked };
+                var new_ui = new ui_filter { enabled = true, text = filterBox.Text };
                 var new_ = new filter_item(new_ui);
 
                 view_.filters.Add(new_ui);
@@ -674,7 +648,7 @@ namespace lw_common.ui {
         private void save_if_user_left() {
             if (needs_save_) {
                 var focus = win32.focused_ctrl();
-                bool is_ours = focus == filterBox || focus == applyToExistingLines || focus == filterCtrl || focus == addFilter || focus == delFilter;
+                bool is_ours = focus == filterBox || focus == filterCtrl || focus == addFilter || focus == delFilter;
                 if (!is_ours) {
                     needs_save_ = false;
                     on_save();
@@ -691,11 +665,6 @@ namespace lw_common.ui {
 
         private void filter_ctrl_SizeChanged(object sender, EventArgs e) {
             logger.Info("filter pane =" + Width + " x" + Height);
-        }
-
-        private void applyToExistingLines_Leave(object sender, EventArgs e) {
-            if (needs_save_)
-                util.postpone(save_if_user_left, 10);
         }
 
         private void filterCtrl_Leave(object sender, EventArgs e) {
@@ -742,10 +711,10 @@ namespace lw_common.ui {
         }
 
 
-        public void update_filter_row(string id, string filter_str, bool apply_to_existing_lines) {
+        public void update_filter_row(string id, string filter_str) {
             bool updated = false;
             bool was_selected = false;
-            string unique_id = new raw_filter_row(filter_str, apply_to_existing_lines).unique_id;
+            string unique_id = new raw_filter_row(filter_str).unique_id;
             for (int idx = 0; idx < filterCtrl.GetItemCount(); ++idx) {
                 var i = filterCtrl.GetItem(idx).RowObject as filter_item;
                 bool is_same = i.filter_id == id;
@@ -763,7 +732,7 @@ namespace lw_common.ui {
 
             if (!updated) {
                 // new filter
-                ui_filter new_ui = new ui_filter { enabled = true, text = filter_str, apply_to_existing_lines = apply_to_existing_lines };
+                ui_filter new_ui = new ui_filter { enabled = true, text = filter_str };
                 filter_item new_ = new filter_item(new_ui);
 
                 view_.filters.Add(new_ui);
@@ -833,7 +802,7 @@ namespace lw_common.ui {
                 bg = app.inst.bg;
             } else {
                 filter_item i = olv_row.RowObject as filter_item;
-                var row = new raw_filter_row(i.text, i.apply_to_existing_lines);
+                var row = new raw_filter_row(i.text);
                 fg = row.fg;
                 bg = row.bg;
 

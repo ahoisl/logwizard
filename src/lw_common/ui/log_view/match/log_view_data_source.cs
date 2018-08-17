@@ -79,7 +79,7 @@ namespace lw_common.ui {
         public log_view_data_source(VirtualObjectListView lv, log_view parent ) : base(lv) {
             lv_ = lv;
             parent_ = parent;
-            items_ = parent.filter.matches ;
+            items_ = parent.filter.matches;
             change_event_.current_thread_is_owner();
 
             new Thread(update_filter_thread) {IsBackground = true}.Start();
@@ -172,10 +172,10 @@ namespace lw_common.ui {
             if (!is_filtering) {
                 // not filtered
                 if ( !show_full_log)
-                    return items_.match_at(idx) as match_item;
+                    return items_[idx] as match_item;
 
                 // it's showing all items - however, if item is in current view as well, preserve it (color and everything)
-                var i = full_log_items.match_at(idx) as match_item;
+                var i = full_log_items[idx] as match_item;
                 if (items_.binary_search(i.line_idx).Item1 is match_item in_cur_view)
                     i = in_cur_view;
                 return i;
@@ -194,6 +194,7 @@ namespace lw_common.ui {
             // we prefer finding from the current view - so we actually preserve colors and such
             var found_in_items = items_.binary_search(line_index).Item1;
             var found = found_in_items ?? full_log_items.binary_search(line_index).Item1;
+            Debug.WriteLine(found.line.part(info_type.msg));
             return found as match_item;
         }
 
@@ -337,11 +338,11 @@ namespace lw_common.ui {
             for (int idx = 0; idx < count; ++idx) {
                 match_item i;
                 if (!run_on_full_log)
-                    i = items.match_at(idx) as match_item;
+                    i = items[idx] as match_item;
                 else {
                     // at this point - we're run on the full log - however, if we find an item that exists in current view, use that
                     // (so that we can reference the matches)
-                    i = items.match_at(idx) as match_item;
+                    i = items[idx] as match_item;
                     var in_cur_view = items_.binary_search(i.line_idx).Item1 as match_item;
                     if (in_cur_view != null)
                         i = in_cur_view;

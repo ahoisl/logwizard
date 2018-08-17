@@ -42,6 +42,7 @@ namespace lw_common.ui {
         public const string ALL_VIEWS = "__all_views__";
 
         private Form parent;
+        public status_ctrl status { get; set; }
         private readonly filter filter_;
         private log_reader log_ = null;
 
@@ -119,7 +120,10 @@ namespace lw_common.ui {
             Debug.Assert(parent is log_view_parent);
 
             logger.Debug("new log view " + name);
-            filter_ = new filter(this.create_match_object) { on_change = on_change };
+            filter_ = new filter(this.create_match_object) {
+                on_change = on_change,
+                status = status
+            };
 
             InitializeComponent();
             this.parent = parent;
@@ -461,10 +465,6 @@ namespace lw_common.ui {
                 // after search complete, return ' ', so that we clear the search status visually
                 return was_seaching && status == "" ? " " : status;
             }
-        }
-
-        public void rerun_filters() {
-            model_.reapply_quick_filter();
         }
 
         private filter.match create_match_object(BitArray matches, font_info font, line line, int line_idx) {
@@ -1249,6 +1249,7 @@ namespace lw_common.ui {
                 lv_parent.after_set_filter_update();
             }
 
+            list.UpdateVirtualListSize();
             list.Refresh();
             if (needs_scroll_ && more_items && !needs_ui_update)
                 go_last();

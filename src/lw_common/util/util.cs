@@ -739,7 +739,7 @@ namespace lw_common {
                 byte[] buff = new byte[len];
                 file.Read(buff, 0, (int) len);
 
-                var detected = EncodingTools.DetectInputCodepage(buff);
+                var detected = EncodingTools.DetectInputCodepage(buff) as Encoding;
                 if (!detected.Equals(Encoding.Default) && !detected.Equals(Encoding.ASCII))
                     return detected;
 

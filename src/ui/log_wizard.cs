@@ -1456,7 +1456,7 @@ namespace LogWizard {
             if (exception_keeper.inst.is_fatal || exception_keeper.inst.too_many_errors) {
                 if (!status.is_showing_error)
                     set_status((exception_keeper.inst.is_fatal ? "A <b>Fatal</b> error occured" : "Too many errors happened lately") + ". Please open " +
-                                       "an issue on <a https://github.com/jtorjo/logwizard/issues>github</a>.", status_ctrl.status_type.err);
+                                       "an issue on <a https://github.com/habjoc/logwizard/issues>github</a>.", status_ctrl.status_type.err);
             }
         }
 
@@ -3528,6 +3528,8 @@ namespace LogWizard {
                     set_status("Select a log file to open!", status_ctrl.status_type.err, 1000);
                     return;
                 }
+                /*msg_details_ = null;
+                description = null;*/
                 if (is_log_in_history(ref settings)) {
                     // we already have this in history
                     create_text_reader(settings);
@@ -3792,20 +3794,33 @@ namespace LogWizard {
             Close();
         }
 
+        private Dictionary<string, EventHandler> actions = new Dictionary<string, EventHandler>();
+
         private void fill_open_recent(List<history> history) {
             var MAX_OPEN_RECENT = 5;
+            foreach (ToolStripMenuItem item in openRecentToolStripMenuItem.DropDownItems) {
+                item.Click -= actions[item.Text];
+            }
+            openRecentToolStripMenuItem.DropDownItems.Clear();
+            actions.Clear();
+
             var items = new List<ToolStripMenuItem>();
             for (var i = history.Count - 1; i >= 0 && i >= history.Count - MAX_OPEN_RECENT; i--) {
                 var entry = history[i];
                 var item = new ToolStripMenuItem(entry.ui_short_friendly_name);
                 var iteration = i;
-                item.Click += (o, args) => {
+                /*item.Click += (o, args) => {
                     logHistory.SelectedIndex = iteration;
                     logHistory_SelectedIndexChanged(null, null);
-                };
+                };*/
+                actions.Add(entry.ui_short_friendly_name, new EventHandler((o, args) => {
+                    logHistory.SelectedIndex = iteration;
+                    logHistory_SelectedIndexChanged(null, null);
+                }));
+                item.Click += actions[entry.ui_short_friendly_name];
                 items.Add(item);
             }
-            openRecentToolStripMenuItem.DropDownItems.Clear();
+            
             openRecentToolStripMenuItem.DropDownItems.AddRange(items.ToArray());
         }
 

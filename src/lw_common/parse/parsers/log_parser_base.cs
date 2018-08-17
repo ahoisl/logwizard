@@ -114,6 +114,7 @@ namespace lw_common.parse.parsers {
 
         public void Dispose() {
             disposed_ = true;
+            settings.on_changed -= on_settings_changed;
         }
 
     }

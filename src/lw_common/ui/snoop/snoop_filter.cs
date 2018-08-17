@@ -60,7 +60,7 @@ namespace lw_common {
         }
 
         private Dictionary<info_type, snoop_form_info> snoops_ = new Dictionary<info_type, snoop_form_info>();
-        private List<snoop_form_info> unused_ = new List<snoop_form_info>();
+        //private List<snoop_form_info> unused_ = new List<snoop_form_info>();
         private bool disposed_ = false;
 
         private log_view view_;
@@ -220,17 +220,17 @@ namespace lw_common {
             Debug.Assert(info_type_io.is_snoopable(type));
             lock (this) {
                 if (!snoops_.ContainsKey(type)) {
-                    if(unused_.Count > 0) {
+                    /*if(unused_.Count > 0) {
                         var use_now = unused_[0];
                         unused_.RemoveAt(0);
                         use_now.clear();
                         snoops_.Add(type, use_now);
-                    } else {
+                    } else {*/
                         var form = new snoop_around_form();
                         form.on_apply = on_apply;
                         form.on_snoop = on_snoop;
                         snoops_.Add(type, new snoop_form_info { form = form });
-                    }
+                    //}
                 }
                 return snoops_[type].form;
             }
@@ -247,7 +247,7 @@ namespace lw_common {
                             if (snoops_.ContainsKey(type)) {
                                 var unuse_now = snoops_[type];
                                 snoops_.Remove(type);
-                                unused_.Add(unuse_now);
+                                //unused_.Add(unuse_now);
                                 unuse_now.form.is_visible = false;
                             }
                         }            
@@ -261,11 +261,11 @@ namespace lw_common {
             disposed_ = true;
             foreach ( var snoop in snoops_.Values)
                 snoop.form.Dispose();
-            foreach (var snoop in unused_)
-                snoop.form.Dispose();
+            /*foreach (var snoop in unused_)
+                snoop.form.Dispose();*/
 
             snoops_.Clear();
-            unused_.Clear();
+            //unused_.Clear();
         }
     }
 }

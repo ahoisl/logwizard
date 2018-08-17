@@ -158,6 +158,7 @@ namespace lw_common
             on_dispose();
             if (parser_ != null)
                 parser_.on_text_reader_dispose();
+            settings.on_changed -= on_settings_changed;
         }
 
         public static log_type type(text_reader reader) {

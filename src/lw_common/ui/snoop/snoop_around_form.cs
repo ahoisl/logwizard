@@ -203,6 +203,11 @@ namespace lw_common.ui {
             list.Items.Clear();
         }
 
+        new public void Dispose() {
+            expander_.Dispose();
+            base.Dispose();
+        }
+
         private bool can_apply_filter() {
             if (list.GetItemCount() < 1)
                 return false; // nothing to filter

@@ -259,7 +259,7 @@ namespace lw_common.ui {
         }
 
         public void update_column_names() {
-            if (filter.log == null) {
+            if (filter == null || filter.log == null) {
                 // wait until the log is set
                 util.postpone(update_column_names, 100);
                 return;

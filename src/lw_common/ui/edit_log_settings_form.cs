@@ -369,8 +369,17 @@ namespace lw_common.ui {
             if (fileType.SelectedIndex > 0)
                 fileTypeTab.SelectedIndex = fileType.SelectedIndex - 1;
             else 
-                // best guess
-                fileTypeTab.SelectedIndex = file_type_to_index(factory.guess_file_type(fileName.Text)) - 1;
+                fileTypeTab.SelectedIndex = file_type_to_index(factory.guess_file_type(fileName.Text)) - 1; // best guess
+            
+            if(!string.IsNullOrEmpty(fileName.Text)) {
+                if (fileTypeTab.SelectedIndex == 0) {
+                    // line-by-line , try to find syntax
+                    string file_syntax = log_to.file_to_syntax(fileName.Text);
+                    file_syntax = new find_log_syntax().try_find_log_syntax_file(fileName.Text);
+                    settings_.syntax.set(file_syntax);
+                    update_syntax();
+                }
+            }
         }
 
         private void editSyntax_Click(object sender, EventArgs e) {
@@ -522,14 +531,16 @@ namespace lw_common.ui {
                 save_settings();
 
                 // best guess
-                fileTypeTab.SelectedIndex = file_type_to_index(factory.guess_file_type(fileName.Text)) - 1;
-                if (fileTypeTab.SelectedIndex == 0) {
-                    // line-by-line , try to find syntax
-                    string file_syntax = log_to.file_to_syntax(fileName.Text);
-                    file_syntax = new find_log_syntax().try_find_log_syntax_file(fileName.Text);
-                    settings_.syntax.set(file_syntax);
+                if(fileType.SelectedIndex == 0) {
+                    fileTypeTab.SelectedIndex = file_type_to_index(factory.guess_file_type(fileName.Text)) - 1;
+                    if (fileTypeTab.SelectedIndex == 0) {
+                        // line-by-line , try to find syntax
+                        string file_syntax = log_to.file_to_syntax(fileName.Text);
+                        file_syntax = new find_log_syntax().try_find_log_syntax_file(fileName.Text);
+                        settings_.syntax.set(file_syntax);
+                        update_syntax();
+                    }
                 }
-                update_syntax();
             }
         }
 

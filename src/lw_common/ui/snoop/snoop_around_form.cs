@@ -32,12 +32,11 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using lw_common.ui.snoop;
 
-namespace lw_common.ui
-{
+namespace lw_common.ui {
     // note: the reason this is a form is that we should not tie it to a control - it might end up exceeding the control's boundaries
     public partial class snoop_around_form : Form {
         private static log4net.ILog logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-        
+
         // the control this form conceptually belongs to - the coordinates we relate to are always given relative to this
         private Control logical_parent_ = null;
 
@@ -70,7 +69,6 @@ namespace lw_common.ui
         public on_snoop_func on_snoop;
 
         // how many values do we allow? (we don't visually show more than this)
-        private int max_distinct_values_count_ = 50;
 
         private bool too_many_distinct_values_ = false;
 
@@ -88,30 +86,13 @@ namespace lw_common.ui
         private bool_box stop_snoop_ = new bool_box();
 
         private class snoop_item {
-            private int number_ = 0;
-            private string value_ = "";
-            private string count_ = "";
-            private bool is_checked_ = false;
+            public int number { get; set; } = 0;
 
-            public int number {
-                get { return number_; }
-                set { number_ = value; }
-            }
+            public string value { get; set; } = "";
 
-            public string value {
-                get { return value_; }
-                set { value_ = value; }
-            }
+            public string count { get; set; } = "";
 
-            public string count {
-                get { return count_; }
-                set { count_ = value; }
-            }
-
-            public bool is_checked {
-                get { return is_checked_; }
-                set { is_checked_ = value; }
-            }
+            public bool is_checked { get; set; } = false;
         }
 
         public snoop_around_form() {
@@ -128,9 +109,7 @@ namespace lw_common.ui
             is_visible = true;
         }
 
-        public Rectangle logical_parent_rect {
-            get { return logical_parent_rect_; }
-        }
+        public Rectangle logical_parent_rect => logical_parent_rect_;
 
         // this way, I can change the parent as well!
         public void set_parent_rect(Control logical_parent, Rectangle rect) {
@@ -163,42 +142,40 @@ namespace lw_common.ui
             on_parent_move();
         }
 
-        public Rectangle screen_logical_parent_rect {
-            get { return logical_parent_ != null && logical_parent_rect_.Width > 0 && logical_parent_rect_.Height > 0 ?  logical_parent_.RectangleToScreen(logical_parent_rect_) : Rectangle.Empty; }
-        }
+        public Rectangle screen_logical_parent_rect => logical_parent_ != null && logical_parent_rect_.Width > 0 && logical_parent_rect_.Height > 0
+                                                       ? logical_parent_.RectangleToScreen(logical_parent_rect_)
+                                                       : Rectangle.Empty;
 
         public bool expanded {
-            get { return expanded_; }
+            get => expanded_;
             set {
                 if (expanded_ == value)
                     return;
                 expanded_ = value;
-                expander_.show_filter = expanded_ ? false : can_apply_filter();
+                expander_.show_filter = !expanded_ && can_apply_filter();
                 do_snoop(expanded_);
                 update_pos();
             }
         }
 
         public bool is_visible {
-            get { return is_visible_; }
+            get => is_visible_;
             set {
                 is_visible_ = value;
                 update_visible();
             }
         }
 
-        public int max_distinct_values_count {
-            get { return max_distinct_values_count_; }
-            set { max_distinct_values_count_ = value; }
-        }
+        public int max_distinct_values_count { get; set; } = 50;
 
-        protected override bool ShowWithoutActivation { get { return true; } } // stops the window from stealing focus
+        protected override bool ShowWithoutActivation => true; // stops the window from stealing focus
+
         const int WS_EX_NOACTIVATE = 0x08000000;
         protected override CreateParams CreateParams {
             get {
                 var Params = base.CreateParams;
-                Params.ExStyle |= WS_EX_NOACTIVATE ;
-                return Params;                
+                Params.ExStyle |= WS_EX_NOACTIVATE;
+                return Params;
             }
         }
 
@@ -245,13 +222,13 @@ namespace lw_common.ui
 
         private void update_visible() {
             Visible = is_visible_ && expanded_ && logical_parent_ != null && logical_parent_.Visible && logical_parent_.Width > 0;
-            expander_.Visible = is_visible_ && logical_parent_ != null && logical_parent_.Visible && logical_parent_.Width > 0;            
+            expander_.Visible = is_visible_ && logical_parent_ != null && logical_parent_.Visible && logical_parent_.Width > 0;
         }
 
-        public void set_values(Dictionary< string, int> values, bool finished, bool snooped_all_rows) {
-            if ( snooped_all_rows)
+        public void set_values(Dictionary<string, int> values, bool finished, bool snooped_all_rows) {
+            if (snooped_all_rows)
                 Debug.Assert(finished);
-            this.async_call(() => set_values_impl(values, finished, snooped_all_rows) );
+            this.async_call(() => set_values_impl(values, finished, snooped_all_rows));
         }
 
         public void reuse_last_values() {
@@ -259,7 +236,7 @@ namespace lw_common.ui
         }
 
         // important: we visually sort them!
-        private void set_values_impl(Dictionary< string, int> values, bool finished, bool snooped_all_rows) {
+        private void set_values_impl(Dictionary<string, int> values, bool finished, bool snooped_all_rows) {
             too_many_distinct_values_ = values.Count > max_distinct_values_count;
             finished_ = finished;
             snooped_all_rows_ = snooped_all_rows;
@@ -278,7 +255,7 @@ namespace lw_common.ui
                 former_sel = (list.GetItem(sel).RowObject as snoop_item).value;
 
             // find out the existing items 
-            SortedDictionary<string,int> value_to_index = new SortedDictionary<string, int>(StringComparer.InvariantCultureIgnoreCase);
+            SortedDictionary<string, int> value_to_index = new SortedDictionary<string, int>(StringComparer.InvariantCultureIgnoreCase);
             // just in case we're snooping, and there was a former snoop - we keep existing entries...
             // but, when the snoop is over, anything that found 0 results, is removed from the list
             int values_contain_existing_count = 0;
@@ -294,18 +271,18 @@ namespace lw_common.ui
                 value_to_index.Clear();
             }
 
-            foreach( string value in values.Keys)
-                if ( !value_to_index.ContainsKey(value))
+            foreach (string value in values.Keys)
+                if (!value_to_index.ContainsKey(value))
                     value_to_index.Add(value, -1);
 
             // snooped_all_rows - if false, we always append "+" to the count. Otherwise, we print only the count
             int offset = 0;
             int new_sel_idx = -1;
-            foreach ( var val_and_idx in value_to_index) {
+            foreach (var val_and_idx in value_to_index) {
                 string value = val_and_idx.Key;
                 int count = values.ContainsKey(value) ? values[value] : 0;
-                if (val_and_idx.Value < 0) 
-                    list.InsertObjects(offset, new[] {new snoop_item() } );
+                if (val_and_idx.Value < 0)
+                    list.InsertObjects(offset, new[] { new snoop_item() });
                 var i = list.GetItem(offset).RowObject as snoop_item;
                 i.number = offset + 1;
                 i.value = value;
@@ -336,7 +313,7 @@ namespace lw_common.ui
             int left = above.Left;
             int top = above.Bottom;
             Location = new Point(left, top);
-            Size = new Size( Math.Max( above.Width, min_width_), Height);
+            Size = new Size(Math.Max(above.Width, min_width_), Height);
 
             if (expanded && Visible) {
                 BringToFront();
@@ -366,9 +343,9 @@ namespace lw_common.ui
             List<string> is_checked = new List<string>(), is_unchecked = new List<string>();
             for (int idx = 0; idx < list.GetItemCount(); ++idx) {
                 var i = list.GetItem(idx).RowObject as snoop_item;
-                if ( i.is_checked)
+                if (i.is_checked)
                     is_checked.Add(i.value);
-                else 
+                else
                     is_unchecked.Add(i.value);
             }
             int all = is_checked.Count + is_unchecked.Count;
@@ -379,7 +356,7 @@ namespace lw_common.ui
                 used = false;
 
             logger.Debug("snoop filter: [" + util.concatenate(is_checked, ",") + "]");
-            if ( on_apply != null)
+            if (on_apply != null)
                 on_apply(this, is_checked, used);
         }
 
@@ -395,9 +372,9 @@ namespace lw_common.ui
             List<string> is_checked = new List<string>(), is_unchecked = new List<string>();
             for (int idx = 0; idx < list.GetItemCount(); ++idx) {
                 var i = list.GetItem(idx).RowObject as snoop_item;
-                if ( i.is_checked)
+                if (i.is_checked)
                     is_checked.Add(i.value);
-                else 
+                else
                     is_unchecked.Add(i.value);
             }
 
@@ -408,7 +385,7 @@ namespace lw_common.ui
                 int all = is_checked.Count + is_unchecked.Count;
                 if (is_checked.Count < all && is_unchecked.Count < all) {
                     status_text += is_checked.Count < is_unchecked.Count
-                        ? (is_checked.Count == 1 ? "Value is " : "Any of ") + util.concatenate(is_checked, ", ") : 
+                        ? (is_checked.Count == 1 ? "Value is " : "Any of ") + util.concatenate(is_checked, ", ") :
                           (is_unchecked.Count == 1 ? "Value is NOT " : "None of ") + util.concatenate(is_unchecked, ", ");
                     status_tip = is_checked.Count < is_unchecked.Count
                         ? "Any of \r\n" + util.concatenate(is_checked, "\r\n") : "None of \r\n" + util.concatenate(is_unchecked, "\r\n");
@@ -466,8 +443,8 @@ namespace lw_common.ui
         }
 
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData) {
-            if ( keyData == (Keys.F4 | Keys.Alt))
-                return true;            
+            if (keyData == (Keys.F4 | Keys.Alt))
+                return true;
             return base.ProcessCmdKey(ref msg, keyData);
         }
     }

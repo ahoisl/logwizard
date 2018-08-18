@@ -20,6 +20,8 @@
  *
  * **** Get Latest version at https://github.com/jtorjo/logwizard **** 
 */
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -33,7 +35,7 @@ namespace lw_common {
     // more info at https://developer.github.com/v3/repos/releases/
     public class read_github_release {
 
-        public delegate bool is_good_version_func(Dictionary<string, object> ver);
+        public delegate bool is_good_version_func(JToken ver);
 
         public is_good_version_func is_stable, is_beta;
 
@@ -143,7 +145,7 @@ namespace lw_common {
             get { return error_msg_; }
         }
 
-        public static bool is_valid_version(Dictionary<string, object> release) {
+        public static bool is_valid_version(JToken release) {
             try {
                 new Version(release["tag_name"].ToString());
                 return true;
@@ -152,28 +154,26 @@ namespace lw_common {
             }            
         }
 
-        private bool default_is_stable(Dictionary<string, object> release) {
+        private bool default_is_stable(JToken release) {
             return is_valid_version(release);
         }
-        private bool default_is_beta(Dictionary<string, object> release) {
+        private bool default_is_beta(JToken release) {
             return release["name"].ToString().ToLower().EndsWith("(beta)");
         }
 
 
         private void parse_releases_page(string page) {
             try {
-                json_page_ = fastJSON.JSON.ToObject(page);
+                json_page_ = JsonConvert.DeserializeObject(page);
             } catch(Exception e) {
                 add_error("Can't parse json : " + e.Message);
             }
         }
 
-        private release_info to_release(Dictionary<string, object> ver) {
+        private release_info to_release(JToken ver) {
             List<string> downloads = new List<string>();
-            var assets = (List<object>) ver["assets"];
-            foreach (var asset in assets) {
-                var cur_asset = ((Dictionary<string, object>) asset);
-                downloads.Add(cur_asset["browser_download_url"].ToString());
+            foreach (var asset in ver["assets"]) {
+                downloads.Add(asset["browser_download_url"].ToString());
             }
 
             release_info release = new release_info() {
@@ -192,16 +192,17 @@ namespace lw_common {
             Version max = new Version(up_to_version);
             List<release_info> releases = new List<release_info>();
             bool found_top = false;
-            if ( json_page_ != null)
-                foreach (object o in (object[]) json_page_) {
-                    var ver = (Dictionary<string, object>) o;
-                    if ( is_valid_version(ver))
-                        if (new Version(ver["tag_name"].ToString()) <= max) 
+            if ( json_page_ != null) {
+                foreach (var o in (JArray) json_page_) {
+                    if (is_valid_version(o))
+                        if (new Version(o["tag_name"].ToString()) <= max)
                             found_top = true;
 
-                    if ( found_top)
-                        releases.Add( to_release(ver) );
+                    if (found_top)
+                        releases.Add(to_release(o));
                 }
+            }
+                
 
             return releases;
         }
@@ -212,22 +213,21 @@ namespace lw_common {
             bool at_least_one_bigger = false;
 
             if ( json_page_ != null)
-                foreach (object o in (object[]) json_page_) {
-                    var ver = (Dictionary<string, object>) o;
-                    if ( is_valid_version(ver))
-                        if (new Version(ver["tag_name"].ToString()) <= min) 
+                foreach (var o in (JArray)json_page_) {
+                    if ( is_valid_version(o))
+                        if (new Version(o["tag_name"].ToString()) <= min) 
                             break;
-                    if ( is_valid_version(ver))
+                    if ( is_valid_version(o))
                         at_least_one_bigger = true;
 
                     // if this version is not a valid version, we will show it in the list
                     // (perhaps an interim - still, the user should be able to see it)
                     bool is_stable = true;
-                    if ( is_valid_version(ver))
-                        if (!this.is_stable(ver))
+                    if ( is_valid_version(o))
+                        if (!this.is_stable(o))
                             is_stable = false;
                     if ( is_stable)
-                        releases.Add( to_release(ver) );
+                        releases.Add( to_release(o) );
                 }
 
             if ( !at_least_one_bigger)
@@ -243,15 +243,15 @@ namespace lw_common {
             bool at_least_one_bigger = false;
 
             if ( json_page_ != null)
-                foreach (object o in (object[]) json_page_) {
-                    var ver = (Dictionary<string, object>) o;
+                foreach (object o in (JArray) json_page_) {
+                    /*var ver = (Dictionary<string, object>) o;
                     if ( is_valid_version(ver))
                         if (new Version(ver["tag_name"].ToString()) <= min) 
                             break;
                     if ( is_valid_version(ver))
                         at_least_one_bigger = true;
 
-                    releases.Add( to_release(ver) );
+                    releases.Add( to_release(ver) );*/
                 }
 
             if ( !at_least_one_bigger)

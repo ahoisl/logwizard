@@ -43,6 +43,7 @@ using lw_common.ui;
 using lw_common.ui.format;
 using LogWizard.context;
 using LogWizard.Properties;
+using Newtonsoft.Json.Linq;
 
 namespace LogWizard {
     partial class log_wizard : Form, log_view_parent {
@@ -262,8 +263,8 @@ namespace LogWizard {
         }
 
         // 1.6.3+ - "(interim)" - are interim versions - they are not stable ; they contain small fixes for beta or stable versions
-        private static bool is_stable(Dictionary<string, object> release) {
-            string short_desc = release.ContainsKey("name") ? release["name"].ToString() : "";
+        private static bool is_stable(JToken release) {
+            string short_desc = ((JObject) release).ContainsKey("name") ? release["name"].ToString() : "";
             return !short_desc.EndsWith("(beta)") && !short_desc.EndsWith("(interim)");
         }
 
@@ -3948,18 +3949,6 @@ namespace LogWizard {
             TopMost = !TopMost;
             global_ui.topmost = TopMost;
             update_topmost_image();
-        }
-
-        private void defaultSampleToolStripMenuItem_Click(object sender, EventArgs e) {
-            on_file_drop(util.personal_dir() + "LogWizard\\samples\\LogWizardSetup.sample.log");
-        }
-
-        private void bigLogToolStripMenuItem_Click(object sender, EventArgs e) {
-            on_file_drop(util.personal_dir() + "LogWizard\\samples\\uk_small.sample.log");
-        }
-
-        private void smallSampleLogToolStripMenuItem_Click(object sender, EventArgs e) {
-            on_file_drop(util.personal_dir() + "LogWizard\\samples\\LogWizard.sample.log");
         }
 
     }

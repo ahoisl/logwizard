@@ -135,7 +135,7 @@ namespace lw_common {
                 var time_str = part(info_type.time);
                 var date_str = part(info_type.date);
                 if (time_str != "")
-                    this.time = util.str_to_normalized_datetime(date_str, time_str);
+                    this.time = util.str_to_normalized_datetime(date_str + " " + time_str);
             }
         }
 

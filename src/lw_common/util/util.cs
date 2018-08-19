@@ -574,6 +574,7 @@ namespace lw_common {
         }
 
         public static DateTime str_to_normalized_datetime(string datetime_str) {
+            datetime_str = datetime_str.Trim();
             int idx = datetime_str.IndexOfAny(new[] {' ', 'T', 't'});
             if (idx >= 0) {
                 string date = datetime_str.Substring(0, idx);

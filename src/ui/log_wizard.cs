@@ -60,7 +60,7 @@ namespace LogWizard {
 
         private text_reader text_ = null;
         private log_parser log_parser_ = null;
-        private readonly log_view full_log_ctrl_ = null;
+        private log_view full_log_ctrl_ = null;
 
         private int old_line_count_ = 0;
 
@@ -1000,7 +1000,7 @@ namespace LogWizard {
         public void on_view_name_changed(log_view view, string name) {
             if (ignore_change_ > 0)
                 return;
-            if (view == full_log)
+            if (view == full_log || view.name == log_view.FULLLOG_NAME)
                 return;
 
             ui_context cur = cur_context();
@@ -1862,6 +1862,13 @@ namespace LogWizard {
                 on_context_changed();
             }
 
+            /*full_log_ctrl_ = new log_view(this, log_view.FULLLOG_NAME) {
+                Dock = DockStyle.Fill,
+                show_name = false,
+                status = status
+            };
+            filteredLeft.Panel2.Controls.Add(full_log_ctrl_);
+            full_log_ctrl_.show_view(true);*/
             full_log_ctrl_.set_filter(new List<raw_filter_row>());
             on_new_log_parser();
             load();
@@ -3535,8 +3542,10 @@ namespace LogWizard {
                     set_status("Select a log file to open!", status_ctrl.status_type.err, 1000);
                     return;
                 }
-                /*msg_details_ = null;
-                description = null;*/
+
+                update_msg_details(true);
+                active_pane_ = null;
+
                 if (is_log_in_history(ref settings)) {
                     // we already have this in history
                     create_text_reader(settings);
@@ -3816,10 +3825,6 @@ namespace LogWizard {
                 var entry = history[i];
                 var item = new ToolStripMenuItem(entry.ui_short_friendly_name);
                 var iteration = i;
-                /*item.Click += (o, args) => {
-                    logHistory.SelectedIndex = iteration;
-                    logHistory_SelectedIndexChanged(null, null);
-                };*/
                 actions.Add(entry.ui_short_friendly_name, new EventHandler((o, args) => {
                     logHistory.SelectedIndex = iteration;
                     logHistory_SelectedIndexChanged(null, null);

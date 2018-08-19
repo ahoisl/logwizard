@@ -871,6 +871,7 @@ namespace lw_common.ui {
 
         // called when this log view is not used anymore (like, when it's removed from its tab page)
         public new void Dispose() {
+            this.BeginInvoke(new MethodInvoker(base.Dispose));
             lv_parent.description_pane().on_internal_resize -= on_description_pane_resized;
             refreshUI.Enabled = false;
             snooper_.Dispose();

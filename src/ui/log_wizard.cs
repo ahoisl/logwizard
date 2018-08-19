@@ -828,9 +828,14 @@ namespace LogWizard {
             if (!show) {
                 extra_width_ = Width - RectangleToScreen(ClientRectangle).Width;
                 extra_height_ = Height - RectangleToScreen(ClientRectangle).Height;
+                bool maximize = WindowState == FormWindowState.Maximized;
+                if(maximize) WindowState = FormWindowState.Normal;
+
                 FormBorderStyle = FormBorderStyle.None;
                 Height += extra_height_;
                 Width += extra_width_;
+
+                if(maximize) WindowState = FormWindowState.Maximized;
             } else {
                 Height -= extra_height_;
                 Width -= extra_width_;

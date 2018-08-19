@@ -92,7 +92,6 @@ namespace lw_common.ui {
 
             try {
                 WebClient client = new WebClient();
-                // this is optional
                 client.Headers.Add("user-agent", 
                     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36");
                 Stream data = client.OpenRead(url);
@@ -115,6 +114,8 @@ namespace lw_common.ui {
                 var append = add;
                 if (line.Contains("<body")) {
                     add = false;
+                    append = true;
+                } else if (line.Contains("<h1 ")) {
                     append = true;
                 } else if (line.Contains("wiki-body")) {
                     add = true;
